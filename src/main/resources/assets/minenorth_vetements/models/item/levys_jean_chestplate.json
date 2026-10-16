@@ -1,0 +1,4 @@
+{
+  "parent": "item/generated",
+  "textures": {"layer0": "minenorth_vetements:item/levys_jean_chestplate"}
+}

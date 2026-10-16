@@ -1,0 +1,4 @@
+{
+  "parent": "item/generated",
+  "textures": {"layer0": "minenorth_vetements:item/nayk_noir_helmet"}
+}
