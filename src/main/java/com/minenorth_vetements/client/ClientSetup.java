@@ -12,11 +12,14 @@ import net.minecraftforge.fml.common.Mod;
 public final class ClientSetup {
     private ClientSetup() {}
 
+    /** Reliefs 3D (ourlets, poignets, semelles) : coupés, ils ne collaient plus aux textures actuelles (512 x 256) et faisaient des blocs qui dépassent. */
+    private static final boolean RELIEF = false;
+
     @SubscribeEvent
     public static void addLayers(EntityRenderersEvent.AddLayers event) {
         for (String skin : new String[]{"default", "slim"}) {
             PlayerRenderer renderer = event.getSkin(skin);
-            if (renderer != null) renderer.addLayer(new ClothesExtrasLayer(renderer));
+            if (renderer != null && RELIEF) renderer.addLayer(new ClothesExtrasLayer(renderer));
         }
     }
 }

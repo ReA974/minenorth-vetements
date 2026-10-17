@@ -39,6 +39,6 @@ public class MineNorthVetements {
     }
 
     private static void add(String name, ClothesMaterial mat, ArmorItem.Type type) {
-        ALL.add(ITEMS.register(name, () -> new ArmorItem(mat, type, new Item.Properties().stacksTo(1))));
+        ALL.add(ITEMS.register(name, () -> new ClothesItem(mat, type, new Item.Properties().stacksTo(1))));
     }
 }
