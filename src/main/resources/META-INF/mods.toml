@@ -24,3 +24,10 @@ ordering = "NONE"
 side = "BOTH"
 
 # Les billets viennent du mod d'economie (optionnel au chargement, configurable)
+
+[[dependencies.${mod_id}]]
+modId="minenorthapi"
+mandatory=true
+versionRange="[1.0.0,2)"
+ordering="AFTER"
+side="BOTH"
