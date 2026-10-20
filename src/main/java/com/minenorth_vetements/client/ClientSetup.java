@@ -13,7 +13,7 @@ public final class ClientSetup {
     private ClientSetup() {}
 
     /** Reliefs 3D (ourlets, poignets, semelles) : coupés, ils ne collaient plus aux textures actuelles (512 x 256) et faisaient des blocs qui dépassent. */
-    private static final boolean RELIEF = false;
+    private static final boolean RELIEF = true;   // la couche ne dessine que les casquettes et les tenues RP / accessoires (voir ClothesExtras#hasRelief)
 
     @SubscribeEvent
     public static void addLayers(EntityRenderersEvent.AddLayers event) {

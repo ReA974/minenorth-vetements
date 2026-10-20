@@ -41,7 +41,9 @@ public class ClothesExtrasLayer extends RenderLayer<AbstractClientPlayer, Player
             ResourceLocation tex = new ResourceLocation(MineNorthVetements.MODID,
                     "textures/models/armor/" + id + "_layer_" + (slot == EquipmentSlot.LEGS ? 2 : 1) + ".png");
             VertexConsumer vc = buffers.getBuffer(RenderType.armorCutoutNoCull(tex));
-            Map<String, ModelPart> parts = ClothesExtras.parts(slot, ClothesExtras.styleOf(id), ClothesExtras.beanie(id));
+            ClothesExtras.Style style = ClothesExtras.styleOf(id);
+            if (!ClothesExtras.hasRelief(slot, style)) continue;
+            Map<String, ModelPart> parts = ClothesExtras.parts(slot, style, ClothesExtras.beanie(id));
             for (Map.Entry<String, ModelPart> e : parts.entrySet()) {
                 ModelPart parent = parentPart(model, e.getKey());
                 if (parent == null) continue;

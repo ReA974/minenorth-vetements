@@ -51,6 +51,14 @@ final class ClothesExtras {
         };
     }
 
+    /** Tenues dont le relief 3D est dessiné : casquettes (tête), costards, robes, accessoires. Les anciens hauts / pantalons restent à plat (textures seules). */
+    static boolean hasRelief(EquipmentSlot slot, Style style) {
+        return slot == EquipmentSlot.HEAD || switch (style) {
+            case SUIT, GOWN, MINI, SCARF -> true;
+            default -> false;
+        };
+    }
+
     static boolean beanie(String id) {
         return false;   // plus de bonnets : tout le monde porte des casquettes (les bonnets tombaient devant les yeux)
     }
