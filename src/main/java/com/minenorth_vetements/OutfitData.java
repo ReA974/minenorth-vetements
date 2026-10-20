@@ -51,6 +51,9 @@ final class OutfitData {
         new Outfit("cagoule_vuiten", "Cagoule Louis Vuiten", true, false, false, false),
         new Outfit("cagoule_supreem", "Cagoule Supreem Box Logo", true, false, false, false),
         new Outfit("cagoule_nayk", "Cagoule Nayk", true, false, false, false),
+        new Outfit("costard_noir_pin", "Costard noir à pin's", false, true, false, false),
+        new Outfit("costard_marine_pin", "Costard bleu nuit à pin's", false, true, false, false),
+        new Outfit("costard_gris_pin", "Costard gris à pin's", false, true, false, false),
     };
 
     private OutfitData() {}

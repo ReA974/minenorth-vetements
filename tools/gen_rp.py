@@ -257,6 +257,16 @@ def draw_suit_front(name, o):
     d.line([(40, 70), (56, 70)], fill=dark + (255,), width=1)
     d.line([(8, 71), (24, 71)], fill=sh(o['main'], 1.2) + (255,), width=1)
     d.line([(40, 71), (56, 71)], fill=sh(o['main'], 1.2) + (255,), width=1)
+    if o.get('pin'):
+        # pin's sur le revers gauche du porteur (a droite de l'image) : equerre et compas dores
+        g = (214, 176, 70, 255)
+        gd = (150, 112, 36, 255)
+        d.line([(50, 17), (46, 29)], fill=g, width=2)       # branche du compas
+        d.line([(50, 17), (54, 29)], fill=g, width=2)
+        d.line([(46, 22), (54, 30)], fill=gd, width=1)      # equerre qui croise
+        d.line([(54, 22), (46, 30)], fill=gd, width=1)
+        d.rectangle([49, 24, 51, 26], fill=(255, 238, 160, 255))   # le G
+        d.point([(50, 16)], fill=(255, 238, 160, 255))
     im.paste(f, (160, 160))
     # dos : pli central discret
     d2 = ImageDraw.Draw(im)
@@ -359,6 +369,9 @@ OUT = [
     dict(id='costard_marine', fr='Costard bleu nuit', kind='suit', parts='clb', main=0x1B2A4A, shirt=WHITE, tie=GOLD, lapel=sh(0x1B2A4A, 2.0), pants=0x1B2A4A, boots=True),
     dict(id='costard_blanc', fr='Costard blanc', kind='suit', parts='clb', main=0xEDEDE6, shirt=0x1E1E22, tie=GOLD, lapel=sh(0xEDEDE6, .72), pants=0xEDEDE6, boots=True),
     dict(id='costard_gris', fr='Costard gris anthracite', kind='suit', parts='clb', main=0x4A4D52, shirt=WHITE, tie=0xB02030, lapel=sh(0x4A4D52, 1.7), pants=0x4A4D52, boots=True),
+    dict(id='costard_noir_pin', fr="Costard noir à pin's", kind='suit', parts='c', main=BLACK, shirt=WHITE, tie=0x8B1A1E, lapel=sh(BLACK, 2.6), pants=BLACK, pin=True),
+    dict(id='costard_marine_pin', fr="Costard bleu nuit à pin's", kind='suit', parts='c', main=0x1B2A4A, shirt=WHITE, tie=GOLD, lapel=sh(0x1B2A4A, 2.0), pants=0x1B2A4A, pin=True),
+    dict(id='costard_gris_pin', fr="Costard gris à pin's", kind='suit', parts='c', main=0x4A4D52, shirt=WHITE, tie=0x1E3A8A, lapel=sh(0x4A4D52, 1.7), pants=0x4A4D52, pin=True),
     dict(id='smoking', fr='Smoking', kind='suit', parts='clb', main=BLACK, shirt=WHITE, tie=0xB01E26, tiekind='bow', lapel=0x3C3C46, pants=BLACK, stripe=True, boots=True),
     dict(id='robe_soiree_rouge', fr='Robe de soirée rouge', kind='dress', parts='clb', main=0xB0121E, accent=0xB0121E, hem=sh(0xB0121E, .75), skirt=12, boots=True, shoe=0x1A1A1A, pants=0xB0121E),
     dict(id='robe_soiree_noire', fr='Robe de soirée noire', kind='dress', parts='clb', main=0x141418, accent=GOLD, hem=GOLD, skirt=12, boots=True, shoe=GOLD, pants=0x141418),
