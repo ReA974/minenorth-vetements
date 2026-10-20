@@ -36,6 +36,16 @@ final class OutfitData {
         new Outfit("bikini_noir", "Bikini noir et or", false, true, true, false),
         new Outfit("maillot_bleu", "Short de bain bleu", false, false, true, false),
         new Outfit("maillot_tropical", "Short de bain tropical", false, false, true, false),
+        new Outfit("lunettes_aviator", "Lunettes aviator dorées", true, false, false, false),
+        new Outfit("lunettes_wayfarer", "Lunettes noires Ray-Band", true, false, false, false),
+        new Outfit("lunettes_sport", "Lunettes sport miroir", true, false, false, false),
+        new Outfit("lunettes_rose", "Lunettes de star roses", true, false, false, false),
+        new Outfit("cagoule_noire", "Cagoule noire", true, false, false, false),
+        new Outfit("cagoule_kaki", "Cagoule kaki", true, false, false, false),
+        new Outfit("bandana_rouge", "Bandana rouge", true, false, false, false),
+        new Outfit("bandana_noir", "Bandana noir", true, false, false, false),
+        new Outfit("echarpe_grise", "Écharpe en laine grise", true, false, false, false),
+        new Outfit("echarpe_rouge", "Foulard en soie rouge", true, false, false, false),
     };
 
     private OutfitData() {}
