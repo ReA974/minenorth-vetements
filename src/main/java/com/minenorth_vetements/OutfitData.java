@@ -54,6 +54,13 @@ final class OutfitData {
         new Outfit("costard_noir_pin", "Costard noir à pin's", false, true, false, false),
         new Outfit("costard_marine_pin", "Costard bleu nuit à pin's", false, true, false, false),
         new Outfit("costard_gris_pin", "Costard gris à pin's", false, true, false, false),
+        new Outfit("haut_de_forme_noir", "Haut-de-forme noir", true, false, false, false),
+        new Outfit("haut_de_forme_blanc", "Haut-de-forme blanc et or", true, false, false, false),
+        new Outfit("chapeau_melon", "Chapeau melon", true, false, false, false),
+        new Outfit("fedora_gris", "Fedora gris", true, false, false, false),
+        new Outfit("fedora_marron", "Fedora marron", true, false, false, false),
+        new Outfit("panama", "Panama", true, false, false, false),
+        new Outfit("chapeau_cowboy", "Chapeau de cowboy", true, false, false, false),
     };
 
     private OutfitData() {}

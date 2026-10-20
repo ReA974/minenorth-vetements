@@ -31,6 +31,13 @@ ITEMS = [
     ('cagoule_kaki', 'Cagoule kaki', 'BALA', 0x4B5A3A, 0x0A0A0C, 0x6B7B54),
     ('bandana_rouge', 'Bandana rouge', 'BANDANA', 0xB3202A, 0x7A1219, 0xF2F2EE),
     ('bandana_noir', 'Bandana noir', 'BANDANA', 0x1A1A1D, 0x0A0A0C, 0xC8C8C8),
+    ('haut_de_forme_noir', 'Haut-de-forme noir', 'TOPHAT', 0x141416, 0x2A2A2E, 0x4A4A52),
+    ('haut_de_forme_blanc', 'Haut-de-forme blanc et or', 'TOPHAT', 0xEDEDE6, 0xC9A24A, 0xFFFFFF),
+    ('chapeau_melon', 'Chapeau melon', 'BOWLER', 0x1C1C20, 0x0E0E10, 0x4A4A52),
+    ('fedora_gris', 'Fedora gris', 'FEDORA', 0x6E7075, 0x1A1A1D, 0x9A9CA2),
+    ('fedora_marron', 'Fedora marron', 'FEDORA', 0x6B4423, 0x2A1A0E, 0x8E6238),
+    ('panama', 'Panama', 'FEDORA', 0xE6D8A8, 0x1A1A1D, 0xF4EBCB),
+    ('chapeau_cowboy', 'Chapeau de cowboy', 'COWBOY', 0x7A4A22, 0xC9A24A, 0x9C6A38),
     ('echarpe_grise', 'Écharpe en laine grise', 'SCARF', 0x7D8086, 0x5A5D62, 0xE0E0E0),
     ('echarpe_rouge', 'Foulard en soie rouge', 'SCARF', 0xB3202A, 0x7A1219, 0xD4AF37),
 ]
@@ -169,6 +176,45 @@ def item_model(name, style, main, lens, light):
         E.append(box('bout_d', [9.5, 0.8, 1.0], [11.5, 1.6, 3.2], 'dark'))
         for i, (x, z) in enumerate(((4, 5), (8, 4.6), (11.5, 5.6), (6, 7.6), (10, 8))):
             E.append(box('motif%d' % i, [x, 0.8, z], [x + 1.2, 1.0, z + 1.2], 'light'))
+    elif style in ('TOPHAT', 'BOWLER', 'FEDORA', 'COWBOY'):
+        if style == 'TOPHAT':
+            E.append(box('bord', [1, 0, 1], [15, 0.8, 15], 'main', top='light'))
+            E.append(box('bord_g', [0.6, 0.6, 2.5], [1.2, 1.6, 13.5], 'light'))
+            E.append(box('bord_d', [14.8, 0.6, 2.5], [15.4, 1.6, 13.5], 'light'))
+            E.append(box('calotte', [4, 0.8, 4], [12, 12, 12], 'main'))
+            E.append(box('dessus', [3.8, 12, 3.8], [12.2, 12.7, 12.2], 'light'))
+            E.append(box('ruban', [3.85, 1.2, 3.85], [12.15, 3.8, 12.15], 'lens'))
+            E.append(box('boucle', [7, 1.6, 3.7], [9, 3.4, 3.85], 'light'))
+        elif style == 'BOWLER':
+            E.append(box('bord', [2.4, 0, 2.4], [13.6, 0.7, 13.6], 'main'))
+            E.append(box('bord_g', [1.9, 0.5, 4], [2.5, 1.5, 12], 'light'))
+            E.append(box('bord_d', [13.5, 0.5, 4], [14.1, 1.5, 12], 'light'))
+            E.append(box('calotte_1', [4.2, 0.7, 4.2], [11.8, 5.2, 11.8], 'main'))
+            E.append(box('calotte_2', [4.9, 5.2, 4.9], [11.1, 7.2, 11.1], 'main'))
+            E.append(box('calotte_3', [5.8, 7.2, 5.8], [10.2, 8.2, 10.2], 'light'))
+            E.append(box('ruban', [4.15, 0.9, 4.15], [11.85, 2.6, 11.85], 'lens'))
+        elif style == 'FEDORA':
+            E.append(box('bord', [1.6, 0, 1.2], [14.4, 0.7, 14.8], 'main'))
+            E.append(box('bord_avant', [2.4, -0.6, -0.2], [13.6, 0.1, 1.2], 'main'))
+            E.append(box('bord_g', [1.2, 0.5, 3], [1.8, 1.4, 13], 'light'))
+            E.append(box('bord_d', [14.2, 0.5, 3], [14.8, 1.4, 13], 'light'))
+            E.append(box('calotte', [4.2, 0.7, 4.2], [11.8, 8, 11.8], 'main'))
+            E.append(box('haut', [4.6, 8, 4.4], [11.4, 8.9, 11.6], 'main'))
+            E.append(box('pincement', [7.4, 8.9, 4.5], [8.6, 9.2, 11.5], 'dark'))
+            E.append(box('pli_g', [4.5, 8.6, 4.5], [7.2, 9.0, 11.5], 'light'))
+            E.append(box('pli_d', [8.8, 8.6, 4.5], [11.5, 9.0, 11.5], 'light'))
+            E.append(box('ruban', [4.15, 1.0, 4.15], [11.85, 2.8, 11.85], 'lens'))
+        else:
+            E.append(box('bord', [0.2, 0, 1.2], [15.8, 0.7, 14.8], 'main'))
+            E.append(box('courbe_g', [-0.4, 0.5, 3], [0.6, 1.8, 13], 'light'))
+            E.append(box('courbe_d', [15.4, 0.5, 3], [16.4, 1.8, 13], 'light'))
+            E.append(box('creux_av', [4.5, -0.2, -0.4], [11.5, 0.5, 1.2], 'main'))
+            E.append(box('creux_ar', [4.5, -0.2, 14.8], [11.5, 0.5, 16.4], 'main'))
+            E.append(box('calotte', [4.3, 0.7, 4.3], [11.7, 7.8, 11.7], 'main'))
+            E.append(box('haut', [4.7, 7.8, 4.7], [11.3, 8.4, 11.3], 'main'))
+            E.append(box('creux', [7.3, 8.4, 4.8], [8.7, 8.7, 11.2], 'dark'))
+            E.append(box('ruban', [4.25, 1.0, 4.25], [11.75, 2.6, 11.75], 'dark'))
+            E.append(box('boucle', [7, 1.0, 4.1], [9, 2.6, 4.25], 'lens'))
     else:   # SCARF
         E.append(box('tour', [1, 0, 3], [15, 2.4, 9], 'main'))
         E.append(box('rayure_1', [1, 0, 5.2], [15, 2.5, 5.8], 'light'))

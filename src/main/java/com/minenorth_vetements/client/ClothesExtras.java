@@ -20,7 +20,7 @@ import java.util.Map;
 final class ClothesExtras {
     private ClothesExtras() {}
 
-    enum Style { TEE, HOODIE, JACKET, POLO, PUFFER, DENIM, SUIT, GOWN, MINI, SWIM, AVIATOR, WAYFARER, SPORT, BALA, BANDANA, SCARF }
+    enum Style { TEE, HOODIE, JACKET, POLO, PUFFER, DENIM, SUIT, GOWN, MINI, SWIM, AVIATOR, WAYFARER, SPORT, BALA, BANDANA, SCARF, TOPHAT, BOWLER, FEDORA, COWBOY }
 
     // Pastilles (voir tools : 4x4 px chacune, ligne 0 puis ligne 1)
     static final int M = 0, A = 1, L = 2, P = 3, S = 4, O = 5, C = 6, D = 7, H = 8, PD = 9, SD = 10, AD = 11;
@@ -32,6 +32,10 @@ final class ClothesExtras {
 
     static Style styleOf(String id) {
         return switch (id) {
+            case "haut_de_forme_noir", "haut_de_forme_blanc" -> Style.TOPHAT;
+            case "chapeau_melon" -> Style.BOWLER;
+            case "fedora_gris", "fedora_marron", "panama" -> Style.FEDORA;
+            case "chapeau_cowboy" -> Style.COWBOY;
             case "lunettes_aviator", "lunettes_rose" -> Style.AVIATOR;
             case "lunettes_wayfarer" -> Style.WAYFARER;
             case "lunettes_sport" -> Style.SPORT;
@@ -119,6 +123,46 @@ final class ClothesExtras {
                             both(l, "head", sgn < 0 ? -4.45f : 4.15f, top, -4.6f, sgn < 0 ? -4.15f : 4.45f, top + 0.5f, 4.0f, M);   // branche
                         }
                         both(l, "head", -0.55f, top + 0.3f, -4.8f, 0.55f, top + 0.8f, -4.5f, M);   // pont
+                    }
+                    case TOPHAT -> {
+                        both(l, "head", -5.6f, -8.6f, -5.6f, 5.6f, -8.0f, 5.6f, M);               // bord
+                        both(l, "head", -5.9f, -9.1f, -4.6f, -5.5f, -8.3f, 4.6f, H);              // bord relevé à gauche
+                        both(l, "head", 5.5f, -9.1f, -4.6f, 5.9f, -8.3f, 4.6f, H);                // et à droite
+                        both(l, "head", -4.0f, -14.2f, -4.0f, 4.0f, -8.6f, 4.0f, M);              // haute calotte
+                        both(l, "head", -4.15f, -14.7f, -4.15f, 4.15f, -14.2f, 4.15f, H);         // dessus
+                        both(l, "head", -4.1f, -10.2f, -4.1f, 4.1f, -8.6f, 4.1f, A);              // ruban
+                        both(l, "head", -0.9f, -9.9f, -4.25f, 0.9f, -8.9f, -4.1f, L);             // boucle
+                    }
+                    case BOWLER -> {
+                        both(l, "head", -4.9f, -8.6f, -4.9f, 4.9f, -8.1f, 4.9f, M);               // bord étroit
+                        both(l, "head", -5.2f, -9.0f, -3.6f, -4.8f, -8.3f, 3.6f, H);              // bords relevés
+                        both(l, "head", 4.8f, -9.0f, -3.6f, 5.2f, -8.3f, 3.6f, H);
+                        both(l, "head", -4.1f, -10.8f, -4.1f, 4.1f, -8.6f, 4.1f, M);              // calotte ronde (3 étages)
+                        both(l, "head", -3.4f, -11.8f, -3.4f, 3.4f, -10.8f, 3.4f, M);
+                        both(l, "head", -2.3f, -12.3f, -2.3f, 2.3f, -11.8f, 2.3f, H);
+                        both(l, "head", -4.15f, -9.7f, -4.15f, 4.15f, -8.6f, 4.15f, A);           // ruban
+                    }
+                    case FEDORA -> {
+                        both(l, "head", -5.2f, -8.6f, -5.2f, 5.2f, -8.1f, 5.2f, M);               // bord
+                        both(l, "head", -4.6f, -8.2f, -6.3f, 4.6f, -7.8f, -5.1f, M);              // bord avant rabattu
+                        both(l, "head", -5.5f, -9.0f, -3.6f, -5.1f, -8.3f, 3.6f, H);              // bords relevés
+                        both(l, "head", 5.1f, -9.0f, -3.6f, 5.5f, -8.3f, 3.6f, H);
+                        both(l, "head", -4.0f, -12.0f, -4.0f, 4.0f, -8.6f, 4.0f, M);              // calotte
+                        both(l, "head", -3.5f, -12.5f, -3.5f, 3.5f, -12.0f, 3.5f, M);
+                        both(l, "head", -0.6f, -12.7f, -3.4f, 0.6f, -12.3f, 3.4f, D);             // pincement du dessus
+                        both(l, "head", -4.1f, -9.9f, -4.1f, 4.1f, -8.6f, 4.1f, A);               // ruban
+                    }
+                    case COWBOY -> {
+                        both(l, "head", -6.2f, -8.5f, -6.2f, 6.2f, -8.0f, 6.2f, M);               // très large bord
+                        both(l, "head", -6.7f, -9.4f, -5.0f, -6.0f, -8.4f, 5.0f, H);              // bords roulés
+                        both(l, "head", 6.0f, -9.4f, -5.0f, 6.7f, -8.4f, 5.0f, H);
+                        both(l, "head", -3.2f, -8.2f, -6.9f, 3.2f, -7.7f, -6.1f, M);              // creux avant
+                        both(l, "head", -3.2f, -8.2f, 6.1f, 3.2f, -7.7f, 6.9f, M);                // creux arrière
+                        both(l, "head", -4.0f, -12.2f, -4.0f, 4.0f, -8.6f, 4.0f, M);              // calotte
+                        both(l, "head", -3.5f, -12.6f, -3.5f, 3.5f, -12.2f, 3.5f, M);
+                        both(l, "head", -0.7f, -12.8f, -3.5f, 0.7f, -12.4f, 3.5f, D);             // creux du dessus
+                        both(l, "head", -4.1f, -9.8f, -4.1f, 4.1f, -8.6f, 4.1f, D);               // ceinture
+                        both(l, "head", -1.0f, -9.9f, -4.25f, 1.0f, -8.8f, -4.1f, A);             // boucle dorée
                     }
                     case BALA -> {
                         both(l, "head", -4.5f, -1.6f, -4.5f, 4.5f, 0.9f, 4.5f, D);                    // col roulé
