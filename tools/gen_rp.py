@@ -211,6 +211,59 @@ def paint_trunks(o):
     return l1, l2
 
 
+def draw_suit_front(name, o):
+    """Devant du costume peint en haute resolution (face avant du torse : 64 x 96 px a (160,160)) : col de chemise, V, revers crantes, cravate, boutons, pochette."""
+    from PIL import ImageDraw
+    path = R + 'textures/models/armor/' + name + '_layer_1.png'
+    im = Image.open(path).convert('RGBA')
+    j, shirt, tie, lap = rgb(o['main']), rgb(o['shirt']), rgb(o['tie']), rgb(o['lapel'])
+    dark = sh(o['main'], .62)
+    W, H = 64, 96
+    f = Image.new('RGBA', (W, H), j + (255,))
+    d = ImageDraw.Draw(f)
+    # fines rayures tennis
+    for x in range(4, W, 8):
+        d.line([(x, 0), (x, H)], fill=sh(o['main'], 1.07) + (255,))
+    # bas de la veste plus sombre
+    d.rectangle([0, 84, W, H], fill=sh(o['main'], .78) + (255,))
+    # chemise en V
+    d.polygon([(21, 0), (43, 0), (32, 46)], fill=shirt + (255,))
+    # revers : bandes le long du V, avec cran
+    d.polygon([(10, 0), (21, 0), (32, 46), (28, 52), (18, 34), (8, 20)], fill=lap + (255,))
+    d.polygon([(54, 0), (43, 0), (32, 46), (36, 52), (46, 34), (56, 20)], fill=lap + (255,))
+    d.polygon([(8, 20), (18, 34), (12, 36), (6, 26)], fill=sh(lap, .8) + (255,))      # cran
+    d.polygon([(56, 20), (46, 34), (52, 36), (58, 26)], fill=sh(lap, .8) + (255,))
+    d.line([(21, 0), (32, 46)], fill=dark + (255,), width=1)
+    d.line([(43, 0), (32, 46)], fill=dark + (255,), width=1)
+    # col de chemise
+    d.polygon([(20, 0), (28, 0), (26, 9)], fill=sh(shirt, .88) + (255,))
+    d.polygon([(44, 0), (36, 0), (38, 9)], fill=sh(shirt, .88) + (255,))
+    if o.get('tiekind') == 'bow':
+        d.polygon([(32, 6), (24, 2), (24, 12)], fill=tie + (255,))
+        d.polygon([(32, 6), (40, 2), (40, 12)], fill=tie + (255,))
+        d.rectangle([30, 4, 34, 9], fill=sh(o['tie'], .7) + (255,))
+    else:
+        d.polygon([(29, 6), (35, 6), (34, 14), (30, 14)], fill=sh(o['tie'], .85) + (255,))   # noeud
+        d.polygon([(30, 14), (34, 14), (37, 50), (32, 57), (27, 50)], fill=tie + (255,))      # lame
+        d.line([(32, 15), (32, 52)], fill=sh(o['tie'], 1.35) + (255,), width=1)                # reflet
+    # fermeture de la veste + boutons
+    d.line([(32, 50), (32, 96)], fill=dark + (255,), width=1)
+    d.line([(31, 52), (31, 96)], fill=sh(o['main'], 1.15) + (255,), width=1)
+    for by in (64, 78):
+        d.ellipse([34, by - 2, 38, by + 2], fill=(26, 26, 30, 255), outline=(90, 90, 96, 255))
+    # pochette et rabats de poches
+    d.polygon([(10, 30), (19, 30), (18, 36), (11, 36)], fill=shirt + (255,))
+    d.line([(8, 70), (24, 70)], fill=dark + (255,), width=1)
+    d.line([(40, 70), (56, 70)], fill=dark + (255,), width=1)
+    d.line([(8, 71), (24, 71)], fill=sh(o['main'], 1.2) + (255,), width=1)
+    d.line([(40, 71), (56, 71)], fill=sh(o['main'], 1.2) + (255,), width=1)
+    im.paste(f, (160, 160))
+    # dos : pli central discret
+    d2 = ImageDraw.Draw(im)
+    d2.line([(256 + 0 - 32 + 32 * 4 // 4, 0)], fill=None) if False else None
+    im.save(path)
+
+
 def enhance(big, base):
     """Detail de tissu : leger grain, degrade vertical et fines lignes sombres a la frontiere des couleurs (hors palette de pastilles)."""
     import random
@@ -336,6 +389,8 @@ def main():
         k = o['kind']
         l1, l2 = {'suit': paint_suit, 'dress': paint_dress, 'bikini': paint_bikini, 'trunks': paint_trunks}[k](o)
         finish(l1, l2, palette(o), o['id'])
+        if k == 'suit':
+            draw_suit_front(o['id'], o)
         for ch in o['parts']:
             n = o['id'] + '_' + PIECE[ch]
             if k == 'suit':
