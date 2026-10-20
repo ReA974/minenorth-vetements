@@ -21,7 +21,10 @@ public final class SlimArmor {
     public static HumanoidModel<?> model(EquipmentSlot slot, HumanoidModel<?> original) {
         return CACHE.computeIfAbsent(slot, s -> {
             float d = s == EquipmentSlot.LEGS ? INNER : OUTER;
-            LayerDefinition def = LayerDefinition.create(HumanoidModel.createMesh(new CubeDeformation(d), 0.0f), 64, 32);
+            var mesh = HumanoidModel.createMesh(new CubeDeformation(d), 0.0f);
+            // La couche « chapeau » (texOffs 32,0) tomberait sur la palette de pastilles de la texture : on la vide.
+            mesh.getRoot().addOrReplaceChild("hat", net.minecraft.client.model.geom.builders.CubeListBuilder.create(), net.minecraft.client.model.geom.PartPose.ZERO);
+            LayerDefinition def = LayerDefinition.create(mesh, 64, 32);
             return new HumanoidModel<>(def.bakeRoot());
         });
     }

@@ -46,6 +46,11 @@ final class OutfitData {
         new Outfit("bandana_noir", "Bandana noir", true, false, false, false),
         new Outfit("echarpe_grise", "Écharpe en laine grise", true, false, false, false),
         new Outfit("echarpe_rouge", "Foulard en soie rouge", true, false, false, false),
+        new Outfit("cagoule_guchi", "Cagoule Guchi monogramme", true, false, false, false),
+        new Outfit("cagoule_guchi_noire", "Cagoule Guchi noire et or", true, false, false, false),
+        new Outfit("cagoule_vuiten", "Cagoule Louis Vuiten", true, false, false, false),
+        new Outfit("cagoule_supreem", "Cagoule Supreem Box Logo", true, false, false, false),
+        new Outfit("cagoule_nayk", "Cagoule Nayk", true, false, false, false),
     };
 
     private OutfitData() {}

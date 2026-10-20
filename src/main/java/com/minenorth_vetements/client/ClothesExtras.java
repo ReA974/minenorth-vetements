@@ -35,7 +35,7 @@ final class ClothesExtras {
             case "lunettes_aviator", "lunettes_rose" -> Style.AVIATOR;
             case "lunettes_wayfarer" -> Style.WAYFARER;
             case "lunettes_sport" -> Style.SPORT;
-            case "cagoule_noire", "cagoule_kaki" -> Style.BALA;
+            case "cagoule_noire", "cagoule_kaki", "cagoule_guchi", "cagoule_guchi_noire", "cagoule_vuiten", "cagoule_supreem", "cagoule_nayk" -> Style.BALA;
             case "bandana_rouge", "bandana_noir" -> Style.BANDANA;
             case "echarpe_grise", "echarpe_rouge" -> Style.SCARF;
             case "costard_noir", "costard_marine", "costard_blanc", "costard_gris", "smoking" -> Style.SUIT;
@@ -54,7 +54,7 @@ final class ClothesExtras {
     /** Tenues dont le relief 3D est dessiné : casquettes (tête), costards, robes, accessoires. Les anciens hauts / pantalons restent à plat (textures seules). */
     static boolean hasRelief(EquipmentSlot slot, Style style) {
         return slot == EquipmentSlot.HEAD || switch (style) {
-            case SUIT, GOWN, MINI, SCARF -> true;
+            case GOWN, MINI, SCARF -> true;
             default -> false;
         };
     }
@@ -103,31 +103,31 @@ final class ClothesExtras {
         switch (slot) {
             case HEAD -> {
                 switch (style) {
-                    case AVIATOR, WAYFARER -> {
-                        boolean w = style == Style.WAYFARER;
-                        both(l, "head", -4.3f, -5.4f, -4.7f, -0.2f, w ? -2.2f : -1.8f, -4.45f, M);     // monture gauche
-                        both(l, "head", 0.2f, -5.4f, -4.7f, 4.3f, w ? -2.2f : -1.8f, -4.45f, M);       // monture droite
-                        both(l, "head", -3.9f, w ? -4.8f : -5.0f, -4.9f, -0.6f, w ? -2.6f : -2.2f, -4.7f, A);   // verre gauche
-                        both(l, "head", 0.6f, w ? -4.8f : -5.0f, -4.9f, 3.9f, w ? -2.6f : -2.2f, -4.7f, A);     // verre droit
-                        if (!w) { both(l, "head", -3.2f, -2.2f, -4.9f, -1.3f, -1.6f, -4.7f, A); both(l, "head", 1.3f, -2.2f, -4.9f, 3.2f, -1.6f, -4.7f, A); }
-                        if (w) both(l, "head", -4.4f, -5.7f, -4.8f, 4.4f, -4.9f, -4.4f, M);            // arcade épaisse
-                        both(l, "head", -0.3f, -4.8f, -4.85f, 0.3f, -4.2f, -4.45f, M);                 // pont
-                        both(l, "head", -4.6f, -5.0f, -4.6f, -4.3f, -4.3f, 4.0f, M);                   // branches
-                        both(l, "head", 4.3f, -5.0f, -4.6f, 4.6f, -4.3f, 4.0f, M);
-                        both(l, "head", -3.6f, -4.9f, -4.95f, -2.6f, -4.4f, -4.85f, L);                // reflet
-                    }
-                    case SPORT -> {
-                        both(l, "head", -4.4f, -5.2f, -4.9f, 4.4f, -2.8f, -4.5f, A);                   // verre miroir enveloppant
-                        both(l, "head", -4.6f, -5.7f, -4.95f, 4.6f, -5.2f, -4.4f, M);                  // arcade
-                        both(l, "head", -4.7f, -5.2f, -4.7f, -4.3f, -3.0f, 3.6f, M);                   // branches enveloppantes
-                        both(l, "head", 4.3f, -5.2f, -4.7f, 4.7f, -3.0f, 3.6f, M);
-                        both(l, "head", -0.7f, -4.6f, -5.0f, 0.7f, -3.6f, -4.85f, L);                  // nez
+                    case AVIATOR, WAYFARER, SPORT -> {
+                        boolean w = style == Style.WAYFARER, sp = style == Style.SPORT;
+                        float t = w ? 0.5f : 0.3f;                                   // épaisseur de monture
+                        float top = sp ? -4.9f : -4.8f, bot = sp ? -2.9f : w ? -2.8f : -2.4f;
+                        for (int sgn : new int[]{-1, 1}) {
+                            float x0 = sgn < 0 ? -3.8f : 0.5f, x1 = sgn < 0 ? -0.5f : 3.8f;
+                            both(l, "head", x0 - t, top - t, -4.8f, x1 + t, top, -4.45f, M);       // haut de monture
+                            both(l, "head", x0 - t, bot, -4.8f, x1 + t, bot + t, -4.45f, M);       // bas
+                            both(l, "head", x0 - t, top, -4.8f, x0, bot, -4.45f, M);               // côté extérieur
+                            both(l, "head", x1, top, -4.8f, x1 + t, bot, -4.45f, M);               // côté intérieur
+                            both(l, "head", x0, top, -4.7f, x1, bot, -4.55f, A);                   // verre
+                            if (!w && !sp) both(l, "head", x0 + 0.5f, bot, -4.7f, x1 - 0.5f, bot + 0.45f, -4.55f, A);   // goutte d'aviator
+                            both(l, "head", x0 + 0.3f, top + 0.2f, -4.8f, x0 + 1.1f, top + 0.5f, -4.7f, L);   // reflet
+                            both(l, "head", sgn < 0 ? -4.45f : 4.15f, top, -4.6f, sgn < 0 ? -4.15f : 4.45f, top + 0.5f, 4.0f, M);   // branche
+                        }
+                        both(l, "head", -0.55f, top + 0.3f, -4.8f, 0.55f, top + 0.8f, -4.5f, M);   // pont
                     }
                     case BALA -> {
-                        both(l, "head", -4.6f, -1.4f, -4.6f, 4.6f, 0.6f, 4.6f, D);                     // col roulé
-                        both(l, "head", -3.6f, -5.2f, -4.6f, 3.6f, -4.7f, -4.35f, H);                  // ourlet au-dessus des yeux
-                        both(l, "head", -3.6f, -3.3f, -4.6f, 3.6f, -2.8f, -4.35f, H);                  // ourlet sous les yeux
-                        both(l, "head", -4.5f, -8.5f, -4.5f, 4.5f, -8.0f, 4.5f, D);                    // sommet côtelé
+                        both(l, "head", -4.5f, -1.6f, -4.5f, 4.5f, 0.9f, 4.5f, D);                    // col roulé
+                        both(l, "head", -3.7f, -5.35f, -4.5f, 3.7f, -4.85f, -4.4f, H);                // ourlet haut de l'ouverture
+                        both(l, "head", -3.7f, -3.2f, -4.5f, 3.7f, -2.7f, -4.4f, H);                  // ourlet bas
+                        both(l, "head", -3.95f, -4.85f, -4.5f, -3.7f, -3.2f, -4.4f, H);               // ourlet côté gauche
+                        both(l, "head", 3.7f, -4.85f, -4.5f, 3.95f, -3.2f, -4.4f, H);                 // ourlet côté droit
+                        both(l, "head", -4.4f, -8.6f, -4.4f, 4.4f, -8.35f, 4.4f, D);                  // sommet côtelé
+                        both(l, "body", -3.9f, -1.8f, -2.7f, 3.9f, 1.6f, 2.7f, D);                    // encolure qui retombe sur les épaules
                     }
                     case BANDANA -> {
                         both(l, "head", -4.5f, -3.3f, -4.5f, 4.5f, 0.4f, 4.5f, M);                     // tissu sur le bas du visage
@@ -149,15 +149,17 @@ final class ClothesExtras {
                     default -> { }
                 }
                 if (style == Style.AVIATOR || style == Style.WAYFARER || style == Style.SPORT || style == Style.BALA || style == Style.BANDANA || style == Style.SCARF) break;
-                // casquette : calotte haute, visière courbe, œillets, patte arrière. Tout reste au-dessus des yeux (y < -5,6).
-                both(l, "head", -5.4f, -10.2f, -5.4f, 5.4f, -6.6f, 5.4f, C);            // calotte
-                both(l, "head", -5.5f, -7.0f, -5.5f, 5.5f, -6.5f, 5.5f, D);             // bandeau
-                both(l, "head", -4.9f, -6.8f, -8.3f, 4.9f, -5.9f, -5.0f, C);            // visière (base)
-                both(l, "head", -4.4f, -7.2f, -10.6f, 4.4f, -6.3f, -8.3f, C);           // visière (bout relevé)
-                both(l, "head", -4.9f, -6.2f, -8.3f, 4.9f, -5.9f, -5.0f, D);            // dessous ombré
-                both(l, "head", -0.5f, -10.5f, -0.5f, 0.5f, -10.2f, 0.5f, D);           // bouton du dessus
-                both(l, "head", -1.0f, -9.6f, -5.8f, 1.0f, -7.6f, -5.4f, L);            // écusson
-                both(l, "head", -2.4f, -7.4f, 5.3f, 2.4f, -6.6f, 5.9f, A);              // patte de réglage
+                // casquette près de la tête, arrondie : deux étages de calotte, bandeau, visière courte inclinée, écusson, sangle arrière.
+                both(l, "head", -4.55f, -8.6f, -4.55f, 4.55f, -6.0f, 4.55f, C);          // calotte
+                both(l, "head", -4.05f, -9.2f, -4.05f, 4.05f, -8.6f, 4.05f, C);          // arrondi
+                both(l, "head", -2.4f, -9.6f, -2.4f, 2.4f, -9.2f, 2.4f, C);              // sommet
+                both(l, "head", -0.5f, -10.0f, -0.5f, 0.5f, -9.6f, 0.5f, D);             // bouton
+                both(l, "head", -4.62f, -6.5f, -4.62f, 4.62f, -5.9f, 4.62f, D);          // bandeau
+                both(l, "head", -3.6f, -6.4f, -7.0f, 3.6f, -5.9f, -4.5f, C);             // visière (base)
+                both(l, "head", -3.2f, -6.1f, -7.6f, 3.2f, -5.7f, -7.0f, C);             // visière (bout, incliné)
+                both(l, "head", -3.5f, -6.0f, -6.9f, 3.5f, -5.9f, -4.5f, D);             // dessous ombré
+                both(l, "head", -1.3f, -8.3f, -4.7f, 1.3f, -6.7f, -4.55f, L);            // écusson
+                both(l, "head", -1.8f, -6.6f, 4.5f, 1.8f, -5.9f, 5.0f, A);               // sangle de réglage
             }
             case CHEST -> {
                 switch (style) {

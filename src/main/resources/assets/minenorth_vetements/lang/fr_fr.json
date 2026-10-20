@@ -91,5 +91,10 @@
   "item.minenorth_vetements.bandana_rouge_helmet": "Bandana rouge",
   "item.minenorth_vetements.bandana_noir_helmet": "Bandana noir",
   "item.minenorth_vetements.echarpe_grise_helmet": "Écharpe en laine grise",
-  "item.minenorth_vetements.echarpe_rouge_helmet": "Foulard en soie rouge"
+  "item.minenorth_vetements.echarpe_rouge_helmet": "Foulard en soie rouge",
+  "item.minenorth_vetements.cagoule_guchi_helmet": "Cagoule Guchi monogramme",
+  "item.minenorth_vetements.cagoule_guchi_noire_helmet": "Cagoule Guchi noire et or",
+  "item.minenorth_vetements.cagoule_vuiten_helmet": "Cagoule Louis Vuiten",
+  "item.minenorth_vetements.cagoule_supreem_helmet": "Cagoule Supreem Box Logo",
+  "item.minenorth_vetements.cagoule_nayk_helmet": "Cagoule Nayk"
 }

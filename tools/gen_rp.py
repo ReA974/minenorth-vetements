@@ -77,14 +77,24 @@ def paint_suit(o):
     def t(face, x, y):
         if face == 'front':
             if y >= 11:
-                return sh(j, .75)
-            if x in (2, 5) and y < 6:
-                return lap
-            if x in (3, 4):
-                return tie if (1 <= y <= 7 and o.get('tiekind') != 'bow') else shirt
-            if x == 2 and y == 8:
-                return 0x303030
-            return j
+                return sh(j, .72)
+            if y == 10 and x in (0, 7):
+                return sh(j, .85)
+            if x in (2, 5) and y < 7:                      # revers crantes
+                return lap if not (y == 3 and x in (2, 5)) else sh(lap, .7)
+            if x in (3, 4) and y < 7:                      # chemise + cravate
+                if y == 0:
+                    return shirt
+                if o.get('tiekind') == 'bow':
+                    return shirt
+                return tie if (y >= 1 and not (y == 1 and False)) else shirt
+            if x in (3, 4):                                # veste croisee en bas
+                return sh(j, 1.08) if y != 8 else 0x222226
+            if x == 1 and y == 6 and o.get('pocket', True):
+                return shirt                               # pochette
+            if y == 8 and x in (2, 5):
+                return 0x2A2A2E                            # boutons
+            return j if (x + y) % 5 else sh(j, 1.05)
         if face == 'back':
             return sh(j, .75) if y >= 11 else (sh(j, .88) if x in (3, 4) else j)
         return sh(j, .75) if y >= 11 else j
@@ -201,10 +211,35 @@ def paint_trunks(o):
     return l1, l2
 
 
+def enhance(big, base):
+    """Detail de tissu : leger grain, degrade vertical et fines lignes sombres a la frontiere des couleurs (hors palette de pastilles)."""
+    import random
+    rnd = random.Random(7)
+    src = base.im
+    for X in range(512):
+        for Y in range(256):
+            if X >= 256 and Y < 64:
+                continue
+            px = big.getpixel((X, Y))
+            if px[3] == 0:
+                continue
+            f = 1.0 + rnd.uniform(-.035, .035) * (1 if (X // 2 + Y // 2) % 2 else -1)
+            f *= 1.0 - 0.10 * ((Y % 64) / 64.0) if Y >= 128 else 1.0
+            gx, gy = X // 8, Y // 8
+            c = src.getpixel((gx, gy))
+            for dx, dy, edge in ((1, 0, X % 8 == 7), (-1, 0, X % 8 == 0), (0, 1, Y % 8 == 7), (0, -1, Y % 8 == 0)):
+                if edge and 0 <= gx + dx < 64 and 0 <= gy + dy < 32:
+                    n = src.getpixel((gx + dx, gy + dy))
+                    if n[3] and n != c and sum(n[:3]) > sum(c[:3]) + 30:
+                        f *= 0.78
+            big.putpixel((X, Y), tuple(max(0, min(255, int(v * f))) for v in px[:3]) + (px[3],))
+    return big
+
+
 def finish(l1, l2, pal, name):
     out = []
     for im in (l1, l2):
-        big = im.im.resize((512, 256), Image.NEAREST)
+        big = enhance(im.im.resize((512, 256), Image.NEAREST), im)
         for k, col in enumerate(pal):
             cx, cy = 256 + 32 * (k % 8), 32 * (k // 8)
             for x in range(32):
@@ -267,10 +302,10 @@ def icon_dress(o, shape):
 
 
 OUT = [
-    dict(id='costard_noir', fr='Costard noir', kind='suit', parts='clb', main=BLACK, shirt=WHITE, tie=0x8B1A1E, lapel=sh(BLACK, 1.6), pants=BLACK, boots=True),
-    dict(id='costard_marine', fr='Costard bleu nuit', kind='suit', parts='clb', main=0x1B2A4A, shirt=WHITE, tie=GOLD, lapel=sh(0x1B2A4A, 1.5), pants=0x1B2A4A, boots=True),
-    dict(id='costard_blanc', fr='Costard blanc', kind='suit', parts='clb', main=0xEDEDE6, shirt=0x1E1E22, tie=GOLD, lapel=sh(0xEDEDE6, .85), pants=0xEDEDE6, boots=True),
-    dict(id='costard_gris', fr='Costard gris anthracite', kind='suit', parts='clb', main=0x4A4D52, shirt=WHITE, tie=0xB02030, lapel=sh(0x4A4D52, 1.35), pants=0x4A4D52, boots=True),
+    dict(id='costard_noir', fr='Costard noir', kind='suit', parts='clb', main=BLACK, shirt=WHITE, tie=0x8B1A1E, lapel=sh(BLACK, 2.6), pants=BLACK, boots=True),
+    dict(id='costard_marine', fr='Costard bleu nuit', kind='suit', parts='clb', main=0x1B2A4A, shirt=WHITE, tie=GOLD, lapel=sh(0x1B2A4A, 2.0), pants=0x1B2A4A, boots=True),
+    dict(id='costard_blanc', fr='Costard blanc', kind='suit', parts='clb', main=0xEDEDE6, shirt=0x1E1E22, tie=GOLD, lapel=sh(0xEDEDE6, .72), pants=0xEDEDE6, boots=True),
+    dict(id='costard_gris', fr='Costard gris anthracite', kind='suit', parts='clb', main=0x4A4D52, shirt=WHITE, tie=0xB02030, lapel=sh(0x4A4D52, 1.7), pants=0x4A4D52, boots=True),
     dict(id='smoking', fr='Smoking', kind='suit', parts='clb', main=BLACK, shirt=WHITE, tie=0xB01E26, tiekind='bow', lapel=0x3C3C46, pants=BLACK, stripe=True, boots=True),
     dict(id='robe_soiree_rouge', fr='Robe de soirée rouge', kind='dress', parts='clb', main=0xB0121E, accent=0xB0121E, hem=sh(0xB0121E, .75), skirt=12, boots=True, shoe=0x1A1A1A, pants=0xB0121E),
     dict(id='robe_soiree_noire', fr='Robe de soirée noire', kind='dress', parts='clb', main=0x141418, accent=GOLD, hem=GOLD, skirt=12, boots=True, shoe=GOLD, pants=0x141418),

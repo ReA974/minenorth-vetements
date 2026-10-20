@@ -23,12 +23,23 @@ ITEMS = [
     ('lunettes_sport', 'Lunettes sport miroir', 'SPORT', 0xF2F2EE, 0x2E6FD0, 0xC8202A),
     ('lunettes_rose', 'Lunettes de star roses', 'AVIATOR', 0xF2F2EE, 0xE86FA0, 0xD4AF37),
     ('cagoule_noire', 'Cagoule noire', 'BALA', 0x1A1A1D, 0x0A0A0C, 0x3A3A40),
+    ('cagoule_guchi', 'Cagoule Guchi monogramme', 'BALA', 0xC8B48A, 0x0A0A0C, 0x5A3A22),
+    ('cagoule_guchi_noire', 'Cagoule Guchi noire et or', 'BALA', 0x141416, 0x0A0A0C, 0xD4AF37),
+    ('cagoule_vuiten', 'Cagoule Louis Vuiten', 'BALA', 0x5A3A22, 0x0A0A0C, 0xB88B4A),
+    ('cagoule_supreem', 'Cagoule Supreem Box Logo', 'BALA', 0xC8202A, 0x0A0A0C, 0xF2F2EE),
+    ('cagoule_nayk', 'Cagoule Nayk', 'BALA', 0x141416, 0x0A0A0C, 0xF2F2EE),
     ('cagoule_kaki', 'Cagoule kaki', 'BALA', 0x4B5A3A, 0x0A0A0C, 0x6B7B54),
     ('bandana_rouge', 'Bandana rouge', 'BANDANA', 0xB3202A, 0x7A1219, 0xF2F2EE),
     ('bandana_noir', 'Bandana noir', 'BANDANA', 0x1A1A1D, 0x0A0A0C, 0xC8C8C8),
     ('echarpe_grise', 'Écharpe en laine grise', 'SCARF', 0x7D8086, 0x5A5D62, 0xE0E0E0),
     ('echarpe_rouge', 'Foulard en soie rouge', 'SCARF', 0xB3202A, 0x7A1219, 0xD4AF37),
 ]
+
+
+GREEN, RED = 0x1E6B3A, 0xB3202A
+PAT = {'cagoule_guchi': ('mono', 0x5A3A22, True), 'cagoule_guchi_noire': ('mono', 0xD4AF37, True), 'cagoule_vuiten': ('mono', 0xB88B4A, False),
+       'cagoule_supreem': ('box', 0xF2F2EE, False), 'cagoule_nayk': ('swoosh', 0xF2F2EE, False)}
+MONO = ["X.X.", ".X..", "X.X.", "...."]
 
 
 def palette(main, lens, light):
@@ -46,15 +57,39 @@ def finish(img1, name, pal):
         big.save(R + 'textures/models/armor/%s_layer_%d.png' % (name, lay))
 
 
-def head_art(style, main):
+def head_art(style, main, name=None):
     im = Image.new('RGBA', (64, 32), (0, 0, 0, 0))
     if style != 'BALA':
         return im
-    for (ox, oy, w, h) in ((8, 0, 8, 8), (0, 8, 8, 8), (8, 8, 8, 8), (16, 8, 8, 8), (24, 8, 8, 8)):
+    for (ox, oy, w, h) in ((8, 0, 8, 8), (16, 0, 8, 8), (0, 8, 8, 8), (8, 8, 8, 8), (16, 8, 8, 8), (24, 8, 8, 8)):
         for x in range(w):
             for y in range(h):
-                f = 1.0 if (x + y) % 2 else .92
+                f = (1.0 if (x + y) % 2 else .9) * (0.85 if y % 4 == 3 else 1.0)   # mailles et côtes du tricot
                 im.putpixel((ox + x, oy + y), sh(main, f) + (255,))
+    pat = PAT.get(name)
+    if pat:
+        kind, pc, band = pat
+        for (ox, oy) in ((8, 0), (16, 0), (0, 8), (8, 8), (16, 8), (24, 8)):
+            if kind == 'mono':
+                for x in range(8):
+                    for y in range(8):
+                        if MONO[y % 4][x % 4] == 'X':
+                            im.putpixel((ox + x, oy + y), rgb(pc) + (255,))
+        if band:                                     # bande vert-rouge-vert tout autour, au-dessus des yeux
+            for ox in (0, 8, 16, 24):
+                for x in range(8):
+                    im.putpixel((ox + x, 9), rgb(GREEN) + (255,)); im.putpixel((ox + x, 10), rgb(RED) + (255,))
+                    im.putpixel((ox + x, 8), rgb(GREEN) + (255,))
+        if kind == 'box':
+            for x in range(10, 14):
+                for y in (9, 10): im.putpixel((x, y), rgb(RED if False else 0xC8202A) + (255,))
+            for x in range(10, 14): im.putpixel((x, 8), rgb(pc) + (255,))
+            for x in range(10, 14): im.putpixel((x, 11 if False else 10), rgb(pc) + (255,))
+            im.putpixel((9, 9), rgb(pc) + (255,)); im.putpixel((14, 9), rgb(pc) + (255,))
+        if kind == 'swoosh':
+            for (x, y) in ((13, 9), (14, 9), (12, 10), (13, 10), (11, 10)): im.putpixel((x, y), rgb(pc) + (255,))
+        if kind == 'mono' and name == 'cagoule_vuiten':
+            pass
     for x in range(9, 15):          # fente des yeux (la peau et les yeux du joueur restent visibles)
         for y in (11, 12):
             im.putpixel((x, y), (0, 0, 0, 0))
@@ -70,6 +105,17 @@ def icon_cell(img, cx, cy, col):
 def item_model(name, style, main, lens, light):
     tex = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
     icon_cell(tex, 0, 0, main)
+    if name in PAT:
+        kind, pc, band = PAT[name]
+        if kind == 'mono':
+            for (x, y) in ((0, 0), (2, 0), (1, 1), (0, 2), (2, 2)):
+                tex.putpixel((x, y), rgb(pc) + (255,))
+        elif kind == 'box':
+            for (x, y) in ((1, 1), (2, 1), (1, 2), (2, 2)):
+                tex.putpixel((x, y), rgb(pc) + (255,))
+        else:
+            for (x, y) in ((3, 1), (2, 2), (1, 2)):
+                tex.putpixel((x, y), rgb(pc) + (255,))
     icon_cell(tex, 1, 0, sh(main, .7))
     icon_cell(tex, 2, 0, lens)
     icon_cell(tex, 3, 0, light)
@@ -144,7 +190,7 @@ def main():
     lang = {}
     src = open(J, encoding='utf-8').read()
     for (i, fr, style, main_c, lens, light) in ITEMS:
-        finish(head_art(style, main_c), i, palette(main_c, lens, light))
+        finish(head_art(style, main_c, i), i, palette(main_c, lens, light))
         item_model(i, style, main_c, lens, light)
         lang['item.minenorth_vetements.%s_helmet' % i] = fr
         if '"%s"' % i not in src:
