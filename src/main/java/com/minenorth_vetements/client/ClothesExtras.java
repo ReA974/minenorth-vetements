@@ -20,7 +20,7 @@ import java.util.Map;
 final class ClothesExtras {
     private ClothesExtras() {}
 
-    enum Style { TEE, HOODIE, JACKET, POLO, PUFFER, DENIM }
+    enum Style { TEE, HOODIE, JACKET, POLO, PUFFER, DENIM, SUIT, GOWN, MINI, SWIM }
 
     // Pastilles (voir tools : 4x4 px chacune, ligne 0 puis ligne 1)
     static final int M = 0, A = 1, L = 2, P = 3, S = 4, O = 5, C = 6, D = 7, H = 8, PD = 9, SD = 10, AD = 11;
@@ -32,6 +32,10 @@ final class ClothesExtras {
 
     static Style styleOf(String id) {
         return switch (id) {
+            case "costard_noir", "costard_marine", "costard_blanc", "costard_gris", "smoking" -> Style.SUIT;
+            case "robe_soiree_rouge", "robe_soiree_noire" -> Style.GOWN;
+            case "robe_cocktail", "robe_ete" -> Style.MINI;
+            case "bikini_rouge", "bikini_turquoise", "bikini_noir", "maillot_bleu", "maillot_tropical" -> Style.SWIM;
             case "nayk_noir", "nayk_gris", "supreem_noir", "champyon_gris" -> Style.HOODIE;
             case "abidas_bleu", "abidas_noir", "louis_vuiten" -> Style.JACKET;
             case "lacroste_vert", "lacroste_blanc", "guchi_vert" -> Style.POLO;
@@ -96,6 +100,22 @@ final class ClothesExtras {
             }
             case CHEST -> {
                 switch (style) {
+                    case SUIT -> {
+                        both(l, "body", -3.6f, -2.0f, 2.9f, 3.6f, 0.2f, 3.9f, M);      // col de la veste
+                        both(l, "body", -4.4f, -0.2f, -3.9f, -1.0f, 6.0f, -3.4f, D);   // revers gauche
+                        both(l, "body", 1.0f, -0.2f, -3.9f, 4.4f, 6.0f, -3.4f, D);     // revers droit
+                        both(l, "body", -4.7f, 10.2f, -3.2f, 4.7f, 14.0f, 3.4f, M);    // basques de la veste
+                        both(l, "body", -3.8f, 9.0f, -3.9f, -1.4f, 9.5f, -3.4f, D);    // rabats de poches
+                        both(l, "body", 1.4f, 9.0f, -3.9f, 3.8f, 9.5f, -3.4f, D);
+                        pair(l, "right_arm", "left_arm", -4.6f, -2.0f, -3.4f, 2.6f, 1.0f, 3.4f, M);   // épaulettes
+                        pair(l, "right_arm", "left_arm", -4.4f, 10.3f, -3.3f, 2.4f, 11.1f, 3.3f, L);   // poignets de chemise
+                    }
+                    case GOWN, MINI -> {
+                        both(l, "body", -4.4f, 5.2f, -3.3f, 4.4f, 6.4f, 3.3f, D);      // ceinture marquée
+                        both(l, "body", -4.2f, -0.6f, -3.3f, -0.8f, 0.8f, -2.8f, M);    // bonnets du décolleté
+                        both(l, "body", 0.8f, -0.6f, -3.3f, 4.2f, 0.8f, -2.8f, M);
+                    }
+                    case SWIM -> { }
                     case TEE -> {
                         both(l, "body", -3.4f, -1.5f, -3.5f, 3.4f, 0.2f, 3.5f, A);   // col rond
                         pair(l, "right_arm", "left_arm", -4.6f, 1.8f, -3.6f, 2.6f, 3.0f, 3.6f, A);
@@ -140,6 +160,19 @@ final class ClothesExtras {
                 }
             }
             case LEGS -> {
+                if (style == Style.SWIM) break;
+                if (style == Style.SUIT) {
+                    both(l, "body", -4.7f, 10.2f, -2.9f, 4.7f, 11.4f, 2.9f, PD);   // ceinture
+                    both(l, "body", -1.0f, 10.2f, -3.3f, 1.0f, 11.4f, -2.8f, O);   // boucle
+                    break;
+                }
+                if (style == Style.GOWN || style == Style.MINI) {
+                    boolean gown = style == Style.GOWN;
+                    both(l, "body", -4.6f, 10.0f, -3.2f, 4.6f, 14.0f, 3.2f, P);                       // hanches
+                    both(l, "body", -5.4f, 14.0f, -3.9f, 5.4f, gown ? 19.0f : 17.0f, 3.9f, P);       // évasement
+                    both(l, "body", -6.2f, gown ? 19.0f : 17.0f, -4.6f, 6.2f, gown ? 23.4f : 18.4f, 4.6f, PD);   // bas de la robe
+                    break;
+                }
                 pair(l, "right_leg", "left_leg", -2.9f, 0.6f, -2.9f, 2.9f, 9.8f, 2.9f, P);     // jambes amples
                 pair(l, "right_leg", "left_leg", -3.1f, 9.6f, -3.1f, 3.1f, 12.2f, 3.1f, PD);   // revers
                 both(l, "body", -4.9f, 10.2f, -2.9f, 4.9f, 11.8f, 2.9f, PD);                   // ceinture
@@ -148,6 +181,16 @@ final class ClothesExtras {
                 both(l, "body", 2.6f, 6.5f, -3.1f, 4.9f, 9.0f, -2.7f, PD);
             }
             case FEET -> {
+                if (style == Style.SUIT) {
+                    pair(l, "right_leg", "left_leg", -3.1f, 11.7f, -3.7f, 3.1f, 12.5f, 3.2f, O);   // semelle fine
+                    pair(l, "right_leg", "left_leg", -3.0f, 10.2f, -3.8f, 3.0f, 11.8f, -1.5f, S);   // bout verni
+                    break;
+                }
+                if (style == Style.GOWN || style == Style.MINI) {
+                    pair(l, "right_leg", "left_leg", -1.4f, 10.6f, 1.6f, 1.4f, 13.4f, 3.0f, S);     // talon aiguille
+                    pair(l, "right_leg", "left_leg", -3.0f, 11.7f, -3.5f, 3.0f, 12.3f, 1.2f, O);    // semelle
+                    break;
+                }
                 pair(l, "right_leg", "left_leg", -3.4f, 11.6f, -3.9f, 3.4f, 13.2f, 3.5f, O);   // semelle épaisse
                 pair(l, "right_leg", "left_leg", -3.2f, 9.4f, -4.3f, 3.2f, 11.8f, -1.0f, S);   // bout de la chaussure
                 pair(l, "right_leg", "left_leg", -3.2f, 8.6f, 2.4f, 3.2f, 12.0f, 3.7f, S);     // talon

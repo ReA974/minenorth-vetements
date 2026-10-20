@@ -1,0 +1,6 @@
+{
+ "parent": "item/generated",
+ "textures": {
+  "layer0": "minenorth_vetements:item/costard_gris_chestplate"
+ }
+}

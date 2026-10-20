@@ -22,6 +22,20 @@ final class OutfitData {
         new Outfit("louis_vuiten", "Louis Vuiten Monogram", false, true, true, true),
         new Outfit("jordane_rouge", "Jordane Retro", false, true, true, true),
         new Outfit("levys_jean", "Levys Jean", false, true, true, true),
+        new Outfit("costard_noir", "Costard noir", false, true, true, true),
+        new Outfit("costard_marine", "Costard bleu nuit", false, true, true, true),
+        new Outfit("costard_blanc", "Costard blanc", false, true, true, true),
+        new Outfit("costard_gris", "Costard gris anthracite", false, true, true, true),
+        new Outfit("smoking", "Smoking", false, true, true, true),
+        new Outfit("robe_soiree_rouge", "Robe de soirée rouge", false, true, true, true),
+        new Outfit("robe_soiree_noire", "Robe de soirée noire", false, true, true, true),
+        new Outfit("robe_cocktail", "Robe cocktail bleu roi", false, true, true, true),
+        new Outfit("robe_ete", "Robe d'été fleurie", false, true, true, false),
+        new Outfit("bikini_rouge", "Bikini rouge", false, true, true, false),
+        new Outfit("bikini_turquoise", "Bikini turquoise", false, true, true, false),
+        new Outfit("bikini_noir", "Bikini noir et or", false, true, true, false),
+        new Outfit("maillot_bleu", "Short de bain bleu", false, false, true, false),
+        new Outfit("maillot_tropical", "Short de bain tropical", false, false, true, false),
     };
 
     private OutfitData() {}
