@@ -192,7 +192,7 @@ final class ClothesExtras {
                     }
                     default -> { }
                 }
-                if (style == Style.AVIATOR || style == Style.WAYFARER || style == Style.SPORT || style == Style.BALA || style == Style.BANDANA || style == Style.SCARF) break;
+                if (style.ordinal() >= Style.AVIATOR.ordinal()) break;   // accessoires et chapeaux : pas de casquette par-dessus
                 // casquette près de la tête, arrondie : deux étages de calotte, bandeau, visière courte inclinée, écusson, sangle arrière.
                 both(l, "head", -4.55f, -8.6f, -4.55f, 4.55f, -6.0f, 4.55f, C);          // calotte
                 both(l, "head", -4.05f, -9.2f, -4.05f, 4.05f, -8.6f, 4.05f, C);          // arrondi
