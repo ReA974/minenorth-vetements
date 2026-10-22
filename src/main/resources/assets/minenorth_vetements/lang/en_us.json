@@ -106,5 +106,10 @@
   "item.minenorth_vetements.fedora_gris_helmet": "Fedora gris",
   "item.minenorth_vetements.fedora_marron_helmet": "Fedora marron",
   "item.minenorth_vetements.panama_helmet": "Panama",
-  "item.minenorth_vetements.chapeau_cowboy_helmet": "Chapeau de cowboy"
+  "item.minenorth_vetements.chapeau_cowboy_helmet": "Chapeau de cowboy",
+  "item.minenorth_vetements.casquette_inverse_noire_helmet": "Casquette à l'envers noire",
+  "item.minenorth_vetements.casquette_inverse_rouge_helmet": "Casquette à l'envers rouge",
+  "item.minenorth_vetements.casquette_inverse_marine_helmet": "Casquette à l'envers bleu marine",
+  "item.minenorth_vetements.casquette_inverse_blanche_helmet": "Casquette à l'envers blanche",
+  "item.minenorth_vetements.casquette_inverse_kaki_helmet": "Casquette à l'envers kaki"
 }

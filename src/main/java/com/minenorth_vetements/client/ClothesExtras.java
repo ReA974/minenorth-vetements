@@ -20,7 +20,7 @@ import java.util.Map;
 final class ClothesExtras {
     private ClothesExtras() {}
 
-    enum Style { TEE, HOODIE, JACKET, POLO, PUFFER, DENIM, SUIT, GOWN, MINI, SWIM, AVIATOR, WAYFARER, SPORT, BALA, BANDANA, SCARF, TOPHAT, BOWLER, FEDORA, COWBOY }
+    enum Style { TEE, HOODIE, JACKET, POLO, PUFFER, DENIM, SUIT, GOWN, MINI, SWIM, BACKCAP, AVIATOR, WAYFARER, SPORT, BALA, BANDANA, SCARF, TOPHAT, BOWLER, FEDORA, COWBOY }
 
     // Pastilles (voir tools : 4x4 px chacune, ligne 0 puis ligne 1)
     static final int M = 0, A = 1, L = 2, P = 3, S = 4, O = 5, C = 6, D = 7, H = 8, PD = 9, SD = 10, AD = 11;
@@ -32,6 +32,7 @@ final class ClothesExtras {
 
     static Style styleOf(String id) {
         return switch (id) {
+            case "casquette_inverse_noire", "casquette_inverse_rouge", "casquette_inverse_marine", "casquette_inverse_blanche", "casquette_inverse_kaki" -> Style.BACKCAP;
             case "haut_de_forme_noir", "haut_de_forme_blanc" -> Style.TOPHAT;
             case "chapeau_melon" -> Style.BOWLER;
             case "fedora_gris", "fedora_marron", "panama" -> Style.FEDORA;
@@ -192,7 +193,8 @@ final class ClothesExtras {
                     }
                     default -> { }
                 }
-                if (style.ordinal() >= Style.AVIATOR.ordinal()) break;   // accessoires et chapeaux : pas de casquette par-dessus
+                if (style.ordinal() >= Style.AVIATOR.ordinal()) break;
+                int capFrom = l.size();   // accessoires et chapeaux : pas de casquette par-dessus
                 // casquette près de la tête, arrondie : deux étages de calotte, bandeau, visière courte inclinée, écusson, sangle arrière.
                 both(l, "head", -4.55f, -8.6f, -4.55f, 4.55f, -6.0f, 4.55f, C);          // calotte
                 both(l, "head", -4.05f, -9.2f, -4.05f, 4.05f, -8.6f, 4.05f, C);          // arrondi
@@ -204,6 +206,13 @@ final class ClothesExtras {
                 both(l, "head", -3.5f, -6.0f, -6.9f, 3.5f, -5.9f, -4.5f, D);             // dessous ombré
                 both(l, "head", -1.3f, -8.3f, -4.7f, 1.3f, -6.7f, -4.55f, L);            // écusson
                 both(l, "head", -1.8f, -6.6f, 4.5f, 1.8f, -5.9f, 5.0f, A);               // sangle de réglage
+                if (style == Style.BACKCAP) {   // casquette à l'envers : visière dans la nuque (l'écusson reste devant, la sangle derrière)
+                    for (int i = capFrom; i < l.size(); i++) {
+                        Box b = l.get(i);
+                        if (b.swatch() == L || b.swatch() == A) continue;
+                        l.set(i, new Box(b.part(), b.x0(), b.y0(), -b.z1(), b.x1(), b.y1(), -b.z0(), b.swatch()));
+                    }
+                }
             }
             case CHEST -> {
                 switch (style) {

@@ -61,6 +61,11 @@ final class OutfitData {
         new Outfit("fedora_marron", "Fedora marron", true, false, false, false),
         new Outfit("panama", "Panama", true, false, false, false),
         new Outfit("chapeau_cowboy", "Chapeau de cowboy", true, false, false, false),
+        new Outfit("casquette_inverse_noire", "Casquette à l'envers noire", true, false, false, false),
+        new Outfit("casquette_inverse_rouge", "Casquette à l'envers rouge", true, false, false, false),
+        new Outfit("casquette_inverse_marine", "Casquette à l'envers bleu marine", true, false, false, false),
+        new Outfit("casquette_inverse_blanche", "Casquette à l'envers blanche", true, false, false, false),
+        new Outfit("casquette_inverse_kaki", "Casquette à l'envers kaki", true, false, false, false),
     };
 
     private OutfitData() {}
