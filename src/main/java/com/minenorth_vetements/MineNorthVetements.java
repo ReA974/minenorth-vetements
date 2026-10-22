@@ -30,12 +30,18 @@ public class MineNorthVetements {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         for (OutfitData.Outfit o : OutfitData.ALL) {
             ClothesMaterial mat = new ClothesMaterial(o.id());
-            if (o.cap()) add(o.id() + "_helmet", mat, ArmorItem.Type.HELMET);
+            if (o.cap() && Accessories.isAccessory(o.id())) addAccessory(o.id() + "_helmet");     // lunettes, cagoules, bandanas, écharpes : emplacement accessoire
+            else if (o.cap()) add(o.id() + "_helmet", mat, ArmorItem.Type.HELMET);
             if (o.chest()) add(o.id() + "_chestplate", mat, ArmorItem.Type.CHESTPLATE);
             if (o.legs()) add(o.id() + "_leggings", mat, ArmorItem.Type.LEGGINGS);
             if (o.boots()) add(o.id() + "_boots", mat, ArmorItem.Type.BOOTS);
         }
         ITEMS.register(bus);
+        AccNet.register();
+    }
+
+    private static void addAccessory(String name) {
+        ALL.add(ITEMS.register(name, () -> new AccessoryItem(new Item.Properties().stacksTo(1))));
     }
 
     private static void add(String name, ClothesMaterial mat, ArmorItem.Type type) {

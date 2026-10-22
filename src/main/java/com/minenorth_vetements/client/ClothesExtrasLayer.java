@@ -52,6 +52,32 @@ public class ClothesExtrasLayer extends RenderLayer<AbstractClientPlayer, Player
                 extra.render(ps, vc, light, OverlayTexture.NO_OVERLAY);
             }
         }
+        renderAccessory(ps, buffers, light, player, model);
+        if (player.tickCount % 400 == 0) AccessoryClient.prune();
+    }
+
+    /** Accessoire de visage (lunettes, cagoule, bandana, écharpe) porté en plus du chapeau : texture de tête (cagoule) puis relief. */
+    private void renderAccessory(PoseStack ps, MultiBufferSource buffers, int light, AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> model) {
+        ItemStack st = AccessoryClient.get(player.getId());
+        if (st.isEmpty()) return;
+        net.minecraft.resources.ResourceLocation key = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(st.getItem());
+        if (key == null || !key.getNamespace().equals(MineNorthVetements.MODID)) return;
+        String id = key.getPath().replace("_helmet", "");
+        ResourceLocation tex = new ResourceLocation(MineNorthVetements.MODID, "textures/models/armor/" + id + "_layer_1.png");
+        VertexConsumer vc = buffers.getBuffer(RenderType.armorCutoutNoCull(tex));
+        ClothesExtras.Style style = ClothesExtras.styleOf(id);
+        if (style == ClothesExtras.Style.BALA) {      // la cagoule a une vraie texture de tête (maille, fente des yeux)
+            ModelPart head = SlimArmor.model(EquipmentSlot.HEAD, null).head;
+            head.copyFrom(model.head);
+            head.render(ps, vc, light, OverlayTexture.NO_OVERLAY);
+        }
+        for (Map.Entry<String, ModelPart> e : ClothesExtras.parts(EquipmentSlot.HEAD, style, false).entrySet()) {
+            ModelPart parent = parentPart(model, e.getKey());
+            if (parent == null) continue;
+            ModelPart extra = e.getValue();
+            extra.copyFrom(parent);
+            extra.render(ps, vc, light, OverlayTexture.NO_OVERLAY);
+        }
     }
 
     private static ModelPart parentPart(PlayerModel<AbstractClientPlayer> m, String name) {
