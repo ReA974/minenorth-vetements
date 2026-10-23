@@ -85,6 +85,22 @@ public final class Accessories {
         if (remove(p)) { e.setCanceled(true); e.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS); }
     }
 
+    /** Même geste quand on vise un bloc (le clic « dans le vide » ne se déclenche pas alors). */
+    @SubscribeEvent
+    public static void rightClickBlock(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock e) {
+        if (!(e.getEntity() instanceof ServerPlayer p) || !p.isShiftKeyDown() || !e.getItemStack().isEmpty()) return;
+        if (e.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND) return;
+        if (remove(p)) { e.setCanceled(true); e.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS); }
+    }
+
+    /** Même geste quand on vise une entité ou un joueur. */
+    @SubscribeEvent
+    public static void rightClickEntity(net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract e) {
+        if (!(e.getEntity() instanceof ServerPlayer p) || !p.isShiftKeyDown() || !e.getItemStack().isEmpty()) return;
+        if (e.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND) return;
+        if (remove(p)) { e.setCanceled(true); e.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS); }
+    }
+
     /** À la mort, l'accessoire tombe avec le reste de l'équipement. */
     @SubscribeEvent
     public static void death(LivingDropsEvent e) {
