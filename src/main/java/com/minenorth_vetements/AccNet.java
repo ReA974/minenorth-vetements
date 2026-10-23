@@ -17,12 +17,24 @@ import java.util.function.Supplier;
 public final class AccNet {
     private AccNet() {}
 
-    private static final String PROTOCOL = "1";
+    private static final String PROTOCOL = "2";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(MineNorthVetements.MODID, "acc"), () -> PROTOCOL, PROTOCOL::equals, PROTOCOL::equals);
 
     public static void register() {
         CHANNEL.registerMessage(0, Sync.class, Sync::encode, Sync::decode, Sync::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(1, Remove.class, (m, b) -> {}, b -> new Remove(), Remove::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+    }
+
+    /** Demande de retrait de l'accessoire (clic droit dans le vide, accroupi, main vide) : le serveur revérifie tout. */
+    public record Remove() {
+        static void handle(Remove m, Supplier<NetworkEvent.Context> c) {
+            c.get().enqueueWork(() -> {
+                net.minecraft.server.level.ServerPlayer p = c.get().getSender();
+                if (p != null && p.isShiftKeyDown() && p.getMainHandItem().isEmpty()) Accessories.remove(p);
+            });
+            c.get().setPacketHandled(true);
+        }
     }
 
     /** entityId du joueur et accessoire porté (EMPTY = aucun). */

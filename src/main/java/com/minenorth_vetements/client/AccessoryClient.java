@@ -23,6 +23,14 @@ public final class AccessoryClient {
 
     public static ItemStack get(int entityId) { return WORN.getOrDefault(entityId, ItemStack.EMPTY); }
 
+    /** Accroupi + clic droit dans le vide, main vide : on demande au serveur de retirer l'accessoire. */
+    @SubscribeEvent
+    public static void rightClickEmpty(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickEmpty e) {
+        if (e.getEntity().isShiftKeyDown() && e.getItemStack().isEmpty() && e.getHand() == net.minecraft.world.InteractionHand.MAIN_HAND
+                && !get(e.getEntity().getId()).isEmpty())
+            com.minenorth_vetements.AccNet.CHANNEL.sendToServer(new com.minenorth_vetements.AccNet.Remove());
+    }
+
     @SubscribeEvent
     public static void logout(ClientPlayerNetworkEvent.LoggingOut e) { WORN.clear(); }
 

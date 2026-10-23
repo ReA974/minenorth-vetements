@@ -212,6 +212,9 @@ final class ClothesExtras {
                         if (b.swatch() == L || b.swatch() == A) continue;
                         l.set(i, new Box(b.part(), b.x0(), b.y0(), -b.z1(), b.x1(), b.y1(), -b.z0(), b.swatch()));
                     }
+                    both(l, "head", -3.8f, -6.5f, 4.4f, 3.8f, -5.8f, 7.0f, C);                // visière arrière bien marquée
+                    both(l, "head", -3.4f, -6.2f, 7.0f, 3.4f, -5.6f, 8.2f, C);                // bout de la visière, incliné vers le bas
+                    both(l, "head", -3.6f, -5.9f, 4.6f, 3.6f, -5.8f, 7.0f, D);                // dessous ombré
                 }
             }
             case CHEST -> {

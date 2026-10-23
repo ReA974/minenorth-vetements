@@ -51,6 +51,6 @@ public class AccessoryItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tip, TooltipFlag flag) {
         tip.add(Component.literal("§7Clic droit : le porter (en plus du chapeau)."));
-        tip.add(Component.literal("§7Accroupi + clic droit : retirer l'accessoire porté."));
+        tip.add(Component.literal("§7Accroupi + clic droit (même main vide) : retirer l'accessoire porté."));
     }
 }

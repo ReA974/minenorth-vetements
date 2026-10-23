@@ -66,6 +66,25 @@ public final class Accessories {
         }
     }
 
+    /** Retire l'accessoire porté et le rend au joueur (inventaire, sinon au sol). Renvoie false s'il n'en portait pas. */
+    public static boolean remove(ServerPlayer p) {
+        ItemStack worn = worn(p);
+        if (worn.isEmpty()) return false;
+        set(p, ItemStack.EMPTY);
+        if (!p.getInventory().add(worn)) p.drop(worn, false);
+        p.displayClientMessage(net.minecraft.network.chat.Component.literal("§7Accessoire retiré."), true);
+        p.level().playSound(null, p.blockPosition(), net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_GENERIC, net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, 1.1f);
+        return true;
+    }
+
+    /** Accroupi + clic droit à mains nues : retire l'accessoire sans rien avoir en main (le serveur décide, jamais le client). */
+    @SubscribeEvent
+    public static void rightClickEmpty(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem e) {
+        if (!(e.getEntity() instanceof ServerPlayer p) || !p.isShiftKeyDown() || !e.getItemStack().isEmpty()) return;
+        if (e.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND) return;
+        if (remove(p)) { e.setCanceled(true); e.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS); }
+    }
+
     /** À la mort, l'accessoire tombe avec le reste de l'équipement. */
     @SubscribeEvent
     public static void death(LivingDropsEvent e) {
