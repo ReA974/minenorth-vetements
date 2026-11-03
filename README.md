@@ -30,6 +30,12 @@ préfixe VIP caché) ; le TAB garde le vrai nom. Dépend de MineNorth API 1.2.0.
   de ces tenues (bas des jambes du calque 1) et écrit `Formes.java` (formes réparties en méthodes : limite Java de 64 Ko par méthode).
   Attention : `Gen.java` réécrit les fichiers de langue en entier, ne le relancer qu'en connaissance de cause.
 
+## Casquettes
+Forme d'après la « boss cap » de ZeroContact (03/11) : `cap_boxes` de `gen_streetwear.py` (formes `CAP` et `CAP_INV` pour les casquettes
+à l'envers, générées là depuis, plus dans `gen_acc.py`) ; calotte à plateau et bouton, panneau avant structuré, coutures et œillets,
+visière incurvée et inclinée, sangle à pression. Les casquettes des anciennes tenues (Nayk, Supreem…) ont la même forme, recopiée dans
+`ClothesExtras` (relief Java). Aperçus : `apercu-casquettes-avant.png`, `apercu-casquettes-apres.png`.
+
 ## Chaussures
 Toutes les paires `*_boots` (03/11) : tige peinte en 512 × 256 sur le bas des jambes (cuir, vernis, daim, toile, maille, nubuck, caoutchouc,
 monogramme ; empiècements, piqûres, lacets croisés, œillets, logos) et relief généré : semelle, bout arrondi, talon (aiguille pour les escarpins),

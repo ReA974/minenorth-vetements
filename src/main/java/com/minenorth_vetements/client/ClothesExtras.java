@@ -20,7 +20,7 @@ import java.util.Map;
 final class ClothesExtras {
     private ClothesExtras() {}
 
-    enum Style { TEE, HOODIE, JACKET, POLO, PUFFER, DENIM, SUIT, GOWN, MINI, SWIM, BACKCAP, AVIATOR, WAYFARER, SPORT, BALA, BANDANA, SCARF, TOPHAT, BOWLER, FEDORA, COWBOY }
+    enum Style { TEE, HOODIE, JACKET, POLO, PUFFER, DENIM, SUIT, GOWN, MINI, SWIM, AVIATOR, WAYFARER, SPORT, BALA, BANDANA, SCARF, TOPHAT, BOWLER, FEDORA, COWBOY }
 
     // Pastilles (voir tools : 4x4 px chacune, ligne 0 puis ligne 1)
     static final int M = 0, A = 1, L = 2, P = 3, S = 4, O = 5, C = 6, D = 7, H = 8, PD = 9, SD = 10, AD = 11;
@@ -32,7 +32,6 @@ final class ClothesExtras {
 
     static Style styleOf(String id) {
         return switch (id) {
-            case "casquette_inverse_noire", "casquette_inverse_rouge", "casquette_inverse_marine", "casquette_inverse_blanche", "casquette_inverse_kaki" -> Style.BACKCAP;
             case "haut_de_forme_noir", "haut_de_forme_blanc" -> Style.TOPHAT;
             case "chapeau_melon" -> Style.BOWLER;
             case "fedora_gris", "fedora_marron", "panama" -> Style.FEDORA;
@@ -194,28 +193,42 @@ final class ClothesExtras {
                     default -> { }
                 }
                 if (style.ordinal() >= Style.AVIATOR.ordinal()) break;
-                int capFrom = l.size();   // accessoires et chapeaux : pas de casquette par-dessus
-                // casquette près de la tête, arrondie : deux étages de calotte, bandeau, visière courte inclinée, écusson, sangle arrière.
-                both(l, "head", -4.55f, -8.6f, -4.55f, 4.55f, -6.0f, 4.55f, C);          // calotte
-                both(l, "head", -4.05f, -9.2f, -4.05f, 4.05f, -8.6f, 4.05f, C);          // arrondi
-                both(l, "head", -2.4f, -9.6f, -2.4f, 2.4f, -9.2f, 2.4f, C);              // sommet
-                both(l, "head", -0.5f, -10.0f, -0.5f, 0.5f, -9.6f, 0.5f, D);             // bouton
-                both(l, "head", -4.62f, -6.5f, -4.62f, 4.62f, -5.9f, 4.62f, D);          // bandeau
-                both(l, "head", -3.6f, -6.4f, -7.0f, 3.6f, -5.9f, -4.5f, C);             // visière (base)
-                both(l, "head", -3.2f, -6.1f, -7.6f, 3.2f, -5.7f, -7.0f, C);             // visière (bout, incliné)
-                both(l, "head", -3.5f, -6.0f, -6.9f, 3.5f, -5.9f, -4.5f, D);             // dessous ombré
-                both(l, "head", -1.3f, -8.3f, -4.7f, 1.3f, -6.7f, -4.55f, L);            // écusson
-                both(l, "head", -1.8f, -6.6f, 4.5f, 1.8f, -5.9f, 5.0f, A);               // sangle de réglage
-                if (style == Style.BACKCAP) {   // casquette à l'envers : visière dans la nuque (l'écusson reste devant, la sangle derrière)
-                    for (int i = capFrom; i < l.size(); i++) {
-                        Box b = l.get(i);
-                        if (b.swatch() == L || b.swatch() == A) continue;
-                        l.set(i, new Box(b.part(), b.x0(), b.y0(), -b.z1(), b.x1(), b.y1(), -b.z0(), b.swatch()));
-                    }
-                    both(l, "head", -3.8f, -6.5f, 4.4f, 3.8f, -5.8f, 7.0f, C);                // visière arrière bien marquée
-                    both(l, "head", -3.4f, -6.2f, 7.0f, 3.4f, -5.6f, 8.2f, C);                // bout de la visière, incliné vers le bas
-                    both(l, "head", -3.6f, -5.9f, 4.6f, 3.6f, -5.8f, 7.0f, D);                // dessous ombré
-                }
+                // casquette des anciennes tenues : même forme que les casquettes générées (cap_boxes de tools/gen_streetwear.py,
+                // d'après la « boss cap » de ZeroContact) : calotte à plateau, panneau avant, coutures, visière incurvée, sangle.
+                both(l, "head", -4.62f, -8.3f, -4.62f, 4.62f, -5.45f, 4.62f, C);
+                both(l, "head", -4.3f, -8.75f, -4.3f, 4.3f, -8.3f, 4.3f, C);
+                both(l, "head", -3.4f, -9.05f, -3.4f, 3.4f, -8.75f, 3.4f, C);
+                both(l, "head", -0.45f, -9.35f, -0.45f, 0.45f, -9.05f, 0.45f, D);
+                both(l, "head", -4.68f, -5.75f, -4.68f, 4.68f, -5.3f, 4.68f, D);
+                both(l, "head", -2.6f, -8.1f, -4.92f, 2.6f, -5.35f, -4.62f, C);
+                both(l, "head", -3.5f, -7.7f, -4.8f, 3.5f, -5.35f, -4.62f, C);
+                both(l, "head", -1.9f, -8.45f, -4.48f, 1.9f, -8.3f, -4.3f, C);
+                both(l, "head", -4.66f, -8.3f, -1.62f, -4.62f, -5.75f, -1.48f, D);
+                both(l, "head", 4.62f, -8.3f, -1.62f, 4.66f, -5.75f, -1.48f, D);
+                both(l, "head", -4.66f, -8.3f, 1.48f, -4.62f, -5.75f, 1.62f, D);
+                both(l, "head", 4.62f, -8.3f, 1.48f, 4.66f, -5.75f, 1.62f, D);
+                both(l, "head", -1.62f, -8.79f, -4.3f, -1.48f, -8.75f, 4.3f, D);
+                both(l, "head", 1.48f, -8.79f, -4.3f, 1.62f, -8.75f, 4.3f, D);
+                both(l, "head", -4.68f, -7.7f, -3f, -4.62f, -7.3f, -2.6f, D);
+                both(l, "head", 4.62f, -7.7f, -3f, 4.68f, -7.3f, -2.6f, D);
+                both(l, "head", -4.68f, -7.7f, 2.6f, -4.62f, -7.3f, 3f, D);
+                both(l, "head", 4.62f, -7.7f, 2.6f, 4.68f, -7.3f, 3f, D);
+                both(l, "head", -1.7f, -5.55f, -6.4f, 1.7f, -5.1f, -4.7f, C);
+                both(l, "head", -1.6f, -5.3f, -8.1f, 1.6f, -4.85f, -6.4f, C);
+                both(l, "head", -3.2f, -5.45f, -6.4f, -1.7f, -5f, -4.7f, C);
+                both(l, "head", 1.7f, -5.45f, -6.4f, 3.2f, -5f, -4.7f, C);
+                both(l, "head", -3f, -5.2f, -7.7f, -1.6f, -4.75f, -6.4f, C);
+                both(l, "head", 1.6f, -5.2f, -7.7f, 3f, -4.75f, -6.4f, C);
+                both(l, "head", -4.25f, -5.3f, -6.5f, -3.2f, -4.85f, -4.7f, C);
+                both(l, "head", 3.2f, -5.3f, -6.5f, 4.25f, -4.85f, -4.7f, C);
+                both(l, "head", -3.8f, -5.05f, -7.1f, -3f, -4.65f, -6.5f, C);
+                both(l, "head", 3f, -5.05f, -7.1f, 3.8f, -4.65f, -6.5f, C);
+                both(l, "head", -1.5f, -4.85f, -7.9f, 1.5f, -4.78f, -4.75f, D);
+                both(l, "head", -1.5f, -5.37f, -8f, 1.5f, -5.3f, -6.45f, D);
+                both(l, "head", -1.7f, -6.5f, 4.62f, 1.7f, -5.75f, 4.7f, D);
+                both(l, "head", -1.9f, -5.75f, 4.6f, 1.9f, -5.3f, 4.85f, A);
+                both(l, "head", -0.35f, -5.85f, 4.85f, 0.35f, -5.25f, 4.95f, A);
+                both(l, "head", -1.3f, -7.6f, -4.98f, 1.3f, -6f, -4.92f, L);
             }
             case CHEST -> {
                 switch (style) {

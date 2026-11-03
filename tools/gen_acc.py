@@ -17,6 +17,7 @@ def sh(c, f):
 
 
 # id, nom, style, couleur principale, verres/accent, clair
+# Casquettes à l'envers : générées par gen_streetwear.py (forme CAP_INV) depuis le 03/11.
 ITEMS = [
     ('lunettes_aviator', 'Lunettes aviator dorées', 'AVIATOR', 0xD4AF37, 0x2C3A32, 0xF2F2EE),
     ('lunettes_wayfarer', 'Lunettes noires Ray-Band', 'WAYFARER', 0x111114, 0x0A0A0C, 0x55555C),
@@ -38,11 +39,6 @@ ITEMS = [
     ('fedora_marron', 'Fedora marron', 'FEDORA', 0x6B4423, 0x2A1A0E, 0x8E6238),
     ('panama', 'Panama', 'FEDORA', 0xE6D8A8, 0x1A1A1D, 0xF4EBCB),
     ('chapeau_cowboy', 'Chapeau de cowboy', 'COWBOY', 0x7A4A22, 0xC9A24A, 0x9C6A38),
-    ('casquette_inverse_noire', "Casquette à l'envers noire", 'BACKCAP', 0x141416, 0xC8202A, 0xEDEDE6),
-    ('casquette_inverse_rouge', "Casquette à l'envers rouge", 'BACKCAP', 0xB3202A, 0x141416, 0xEDEDE6),
-    ('casquette_inverse_marine', "Casquette à l'envers bleu marine", 'BACKCAP', 0x1B2A55, 0xD4AF37, 0xEDEDE6),
-    ('casquette_inverse_blanche', "Casquette à l'envers blanche", 'BACKCAP', 0xEDEDE6, 0x2E6FD0, 0x141416),
-    ('casquette_inverse_kaki', "Casquette à l'envers kaki", 'BACKCAP', 0x4B5A3A, 0x141416, 0xC9A24A),
     ('echarpe_grise', 'Écharpe en laine grise', 'SCARF', 0x7D8086, 0x5A5D62, 0xE0E0E0),
     ('echarpe_rouge', 'Foulard en soie rouge', 'SCARF', 0xB3202A, 0x7A1219, 0xD4AF37),
 ]

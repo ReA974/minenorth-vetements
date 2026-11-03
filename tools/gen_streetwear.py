@@ -405,13 +405,44 @@ def sym(boxes):
     return out
 
 
+def cap_boxes(inverse=False):
+    """Casquette à 6 pans, d'après la « boss cap » de ZeroContact : calotte bombée à plateau, panneau avant structuré, coutures et œillets,
+    visière incurvée (bords plus bas que le milieu) et inclinée vers le bas, bouton, ouverture et sangle à pression derrière.
+    inverse : portée à l'envers (visière dans la nuque, panneau avant derrière) ; l'écusson reste devant, comme avant."""
+    b = [('head', -4.62, -8.3, -4.62, 4.62, -5.45, 4.62, 'main'),                        # calotte
+         ('head', -4.3, -8.75, -4.3, 4.3, -8.3, 4.3, 'main'),                            # arrondi
+         ('head', -3.4, -9.05, -3.4, 3.4, -8.75, 3.4, 'main'),                           # plateau
+         ('head', -0.45, -9.35, -0.45, 0.45, -9.05, 0.45, 'dark'),                       # bouton
+         ('head', -4.68, -5.75, -4.68, 4.68, -5.3, 4.68, 'dark'),                        # bandeau
+         ('head', -2.6, -8.1, -4.92, 2.6, -5.35, -4.62, 'main'),                         # panneau avant structuré
+         ('head', -3.5, -7.7, -4.8, 3.5, -5.35, -4.62, 'main'),
+         ('head', -1.9, -8.45, -4.48, 1.9, -8.3, -4.3, 'main')]
+    for z in (-1.55, 1.55):                                                           # coutures des pans (côtés)
+        b += [('head', -4.66, -8.3, z - .07, -4.62, -5.75, z + .07, 'dark'), ('head', 4.62, -8.3, z - .07, 4.66, -5.75, z + .07, 'dark')]
+    for x in (-1.55, 1.55):                                                           # coutures du dessus
+        b.append(('head', x - .07, -8.79, -4.3, x + .07, -8.75, 4.3, 'dark'))
+    for (x, z) in ((-4.68, -2.8), (4.62, -2.8), (-4.68, 2.8), (4.62, 2.8)):           # œillets d'aération
+        b.append(('head', x, -7.7, z - .2, x + .06, -7.3, z + .2, 'dark'))
+    # visière : milieu, côtés plus bas (courbure), bouts plus bas encore (inclinaison)
+    b += [('head', -1.7, -5.55, -6.4, 1.7, -5.1, -4.7, 'main'), ('head', -1.6, -5.3, -8.1, 1.6, -4.85, -6.4, 'main'),
+          ('head', -3.2, -5.45, -6.4, -1.7, -5.0, -4.7, 'main'), ('head', 1.7, -5.45, -6.4, 3.2, -5.0, -4.7, 'main'),
+          ('head', -3.0, -5.2, -7.7, -1.6, -4.75, -6.4, 'main'), ('head', 1.6, -5.2, -7.7, 3.0, -4.75, -6.4, 'main'),
+          ('head', -4.25, -5.3, -6.5, -3.2, -4.85, -4.7, 'main'), ('head', 3.2, -5.3, -6.5, 4.25, -4.85, -4.7, 'main'),
+          ('head', -3.8, -5.05, -7.1, -3.0, -4.65, -6.5, 'main'), ('head', 3.0, -5.05, -7.1, 3.8, -4.65, -6.5, 'main'),
+          ('head', -1.5, -4.85, -7.9, 1.5, -4.78, -4.75, 'dark'),                        # dessous de visière
+          ('head', -1.5, -5.37, -8.0, 1.5, -5.3, -6.45, 'dark')]                         # piqûres du dessus
+    if not inverse:                                                                   # ouverture et sangle à pression (arrière)
+        b += [('head', -1.7, -6.5, 4.62, 1.7, -5.75, 4.7, 'black'), ('head', -1.9, -5.75, 4.6, 1.9, -5.3, 4.85, 'strap'),
+              ('head', -0.35, -5.85, 4.85, 0.35, -5.25, 4.95, 'metal')]
+    else:
+        b = [(p, x0, y0, -z1, x1, y1, -z0, sw) for (p, x0, y0, z0, x1, y1, z1, sw) in b]
+    lz = -4.62 if inverse else -4.92                                                  # écusson brodé (devant)
+    b += [('head', -1.3, -7.6, lz - .06, 1.3, -6.0, lz, 'light'), ('head', -0.6, -7.15, lz - .1, 0.6, -6.45, lz - .06, 'accent')]
+    return b
+
+
 def shape_cap(slim):
-    return [('head', -4.55, -8.6, -4.55, 4.55, -6.0, 4.55, 'main'), ('head', -4.05, -9.2, -4.05, 4.05, -8.6, 4.05, 'main'),
-            ('head', -2.4, -9.6, -2.4, 2.4, -9.2, 2.4, 'main'), ('head', -0.5, -10.0, -0.5, 0.5, -9.6, 0.5, 'dark'),
-            ('head', -4.62, -6.5, -4.62, 4.62, -5.9, 4.62, 'dark'), ('head', -3.6, -6.4, -7.0, 3.6, -5.9, -4.5, 'main'),
-            ('head', -3.2, -6.1, -7.6, 3.2, -5.7, -7.0, 'main'), ('head', -3.5, -5.9, -6.9, 3.5, -5.8, -4.6, 'dark'),
-            ('head', -1.3, -8.3, -4.7, 1.3, -6.7, -4.55, 'light'), ('head', -0.6, -7.9, -4.76, 0.6, -7.1, -4.7, 'accent'),
-            ('head', -1.8, -6.6, 4.5, 1.8, -5.9, 5.0, 'strap'), ('head', -0.4, -6.7, 4.95, 0.4, -6.0, 5.1, 'metal')]
+    return cap_boxes()
 
 
 def shape_beanie(slim):
@@ -624,7 +655,7 @@ def shape_cargo(slim):
                 ('right_leg', -2.6, 4.0, -0.2, -2.55, 4.3, 0.2, 'metal')])
 
 
-SHAPES = {'CAP': shape_cap, 'BEANIE': shape_beanie, 'BUCKET': shape_bucket, 'ROUND': shape_round, 'SHIELD': shape_shield,
+SHAPES = {'CAP': shape_cap, 'CAP_INV': lambda s: cap_boxes(True), 'BEANIE': shape_beanie, 'BUCKET': shape_bucket, 'ROUND': shape_round, 'SHIELD': shape_shield,
           'CUBAN': shape_cuban, 'CROSS': shape_cross, 'PEARLS': shape_pearls, 'SCARF2': shape_scarf,
           'WATCH': shape_watch, 'WATCH_SPORT': lambda s: shape_watch(s, True), 'BRACELET': shape_bracelet, 'GLOVES': shape_gloves,
           'BACKPACK': shape_backpack, 'FANNY': shape_fanny, 'SACOCHE': shape_sacoche, 'DUFFEL': shape_duffel, 'HIKING': shape_hiking,
@@ -681,6 +712,12 @@ HATS = [
     C('casquette_rouge', 'Casquette rouge', 'Cap (red)', 'hat', 'CAP', main=0xB01B24, light=WHITE, accent=0xB01B24),
     C('casquette_marine', 'Casquette bleu marine', 'Cap (navy)', 'hat', 'CAP', main=0x1A2A50, light=WHITE, accent=0x1A2A50),
     C('casquette_beige', 'Casquette beige', 'Cap (beige)', 'hat', 'CAP', main=0xCDB892, light=0x3A2E22, accent=0xCDB892),
+    # à l'envers (anciennement dans gen_acc.py) : même casquette, visière dans la nuque ; écusson clair à logo coloré
+    C('casquette_inverse_noire', "Casquette à l'envers noire", "Casquette à l'envers noire", 'hat', 'CAP_INV', main=0x141416, light=0xEDEDE6, accent=0xC8202A),
+    C('casquette_inverse_rouge', "Casquette à l'envers rouge", "Casquette à l'envers rouge", 'hat', 'CAP_INV', main=0xB3202A, light=0xEDEDE6, accent=0x141416),
+    C('casquette_inverse_marine', "Casquette à l'envers bleu marine", "Casquette à l'envers bleu marine", 'hat', 'CAP_INV', main=0x1B2A55, light=0xEDEDE6, accent=0xD4AF37),
+    C('casquette_inverse_blanche', "Casquette à l'envers blanche", "Casquette à l'envers blanche", 'hat', 'CAP_INV', main=0xEDEDE6, light=0x141416, accent=0x2E6FD0),
+    C('casquette_inverse_kaki', "Casquette à l'envers kaki", "Casquette à l'envers kaki", 'hat', 'CAP_INV', main=0x4B5A3A, light=0xC9A24A, accent=0x141416),
     C('bonnet_noir', 'Bonnet noir', 'Beanie (black)', 'hat', 'BEANIE', main=0x1C1C20, accent=0xE07A1E, light=0x1C1C20),
     C('bonnet_gris', 'Bonnet gris chiné', 'Beanie (heather grey)', 'hat', 'BEANIE', main=0x8E9196, accent=0x1C1C20, light=WHITE),
     C('bonnet_rouge', 'Bonnet rouge', 'Beanie (red)', 'hat', 'BEANIE', main=0xA81C24, accent=0x1C1C20, light=WHITE),
