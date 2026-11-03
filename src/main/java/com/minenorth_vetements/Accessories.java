@@ -45,11 +45,19 @@ public final class Accessories {
     /** Objets qui se portent comme accessoire (et non dans l'emplacement casque). */
     public static boolean isAccessory(String outfitId) { return AccessoryData.BY_ID.containsKey(outfitId); }
 
+    /**
+     * Objets d'autres mods qui se portent dans un emplacement d'accessoire. Ils sont dessinés avec l'affichage « head » de leur modèle
+     * d'item, centré sur le torse (voir client.ClothesExtrasLayer). Le mod d'origine lit l'emplacement dans les données du joueur.
+     */
+    public static final java.util.Map<String, AccSlot> EXTERNAL = java.util.Map.of(
+            "minenorthsecours:bouteille_ari", AccSlot.DOS);   // bouteille d'air de l'ARI des pompiers
+
     /** Emplacement d'un objet accessoire, null si ce n'en est pas un. */
     public static AccSlot slotOf(ItemStack st) {
         if (st.isEmpty()) return null;
         ResourceLocation key = ForgeRegistries.ITEMS.getKey(st.getItem());
-        if (key == null || !key.getNamespace().equals(MineNorthVetements.MODID)) return null;
+        if (key == null) return null;
+        if (!key.getNamespace().equals(MineNorthVetements.MODID)) return EXTERNAL.get(key.toString());
         AccessoryData.Acc a = AccessoryData.BY_ID.get(key.getPath().replace("_helmet", ""));
         return a == null ? null : a.slot();
     }

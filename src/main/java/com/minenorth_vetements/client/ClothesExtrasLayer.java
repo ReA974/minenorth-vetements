@@ -1,6 +1,10 @@
 package com.minenorth_vetements.client;
 
+import com.minenorth_vetements.Accessories;
 import com.minenorth_vetements.ClothesItem;
+import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemDisplayContext;
 import com.minenorth_vetements.MineNorthVetements;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -90,7 +94,10 @@ public class ClothesExtrasLayer extends RenderLayer<AbstractClientPlayer, Player
         float delta = Math.max(chestInflation(player), 0.25f) + 0.05f - SlimArmor.CHEST;   // 0,25 = couche veste / manches du skin
         for (ItemStack st : worn) {
             String id = accessoryId(st);
-            if (id == null) continue;
+            if (id == null) {
+                if (st != null && !st.isEmpty() && Accessories.slotOf(st) != null) renderExternal(ps, buffers, light, player, model, st);
+                continue;
+            }
             ResourceLocation tex = new ResourceLocation(MineNorthVetements.MODID, "textures/models/armor/" + id + "_layer_1.png");
             VertexConsumer vc = buffers.getBuffer(RenderType.armorCutoutNoCull(tex));
             Map<String, ModelPart> gen = Reliefs.parts(id, slim, delta);
@@ -108,6 +115,22 @@ public class ClothesExtrasLayer extends RenderLayer<AbstractClientPlayer, Player
                 draw(ps, vc, light, model, ClothesExtras.parts(EquipmentSlot.HEAD, style, false));
             }
         }
+    }
+
+    /**
+     * Accessoire d'un autre mod ({@link Accessories#EXTERNAL}) : son modèle d'item, affichage « head », suit le torse. Même repère que les
+     * objets portés sur la tête en vanilla (échelle 0,625), mais centré sur le torse : centre du modèle (8, 8, 8) = milieu du torse.
+     */
+    private static void renderExternal(PoseStack ps, MultiBufferSource buffers, int light, AbstractClientPlayer player,
+                                       PlayerModel<AbstractClientPlayer> model, ItemStack st) {
+        ps.pushPose();
+        model.body.translateAndRotate(ps);
+        ps.translate(0.0F, 0.375F, 0.0F);   // du cou au milieu du torse (6 px)
+        ps.mulPose(Axis.YP.rotationDegrees(180.0F));
+        ps.scale(0.625F, -0.625F, -0.625F);
+        Minecraft.getInstance().getItemRenderer().renderStatic(player, st, ItemDisplayContext.HEAD, false, ps, buffers,
+                player.level(), light, OverlayTexture.NO_OVERLAY, player.getId());
+        ps.popPose();
     }
 
     private static void draw(PoseStack ps, VertexConsumer vc, int light, PlayerModel<AbstractClientPlayer> model, Map<String, ModelPart> parts) {
