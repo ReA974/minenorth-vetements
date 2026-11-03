@@ -1,7 +1,7 @@
 # MineNorth Vêtements
 
 Mod Forge 1.20.1 (`minenorth_vetements`) : vêtements de marque (fausses marques inspirées) pour le roleplay MineNorthRP.
-Les objets vont dans l'onglet « Animaux & Vêtements » (mod `minenorth-pets`), sinon dans l'onglet commun « MineNorth ».
+Les objets ont leur propre onglet créatif « Vêtements MineNorth » (séparé de l'onglet « Animaux » du mod `minenorth-pets` depuis le 03/11).
 
 ## Compilation
 `./gradlew build` (JDK 17 : `JAVA_HOME=~/.jdks/ms-17.0.20.1`, Gradle échoue sous Java 27) → `build/libs/minenorth-vetements-1.0.0.jar`.

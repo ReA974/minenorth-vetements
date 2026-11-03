@@ -28,8 +28,17 @@ public class MineNorthVetements {
             () -> new net.minecraft.world.inventory.MenuType<>(AccMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS));
     private static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     private static final List<RegistryObject<Item>> ALL = new ArrayList<>();
-    /** Objets affichés dans l'onglet créatif commun « MineNorth ». */
+    /** Objets affichés dans l'onglet créatif « Vêtements MineNorth ». */
     public static final CreativeModeTab.DisplayItemsGenerator TAB_ITEMS = (params, out) -> ALL.forEach(r -> out.accept(r.get()));
+    /** Onglet créatif propre au mod (séparé de l'onglet des animaux). */
+    public static final RegistryObject<CreativeModeTab> TAB = TABS.register("vetements", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.minenorth_vetements"))
+            .icon(() -> {
+                Item cap = ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation(MODID, "casquette_marine_helmet"));
+                return cap == null || cap == net.minecraft.world.item.Items.AIR ? new ItemStack(ALL.get(0).get()) : new ItemStack(cap);
+            })
+            .displayItems(TAB_ITEMS)
+            .build());
 
     public MineNorthVetements() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -43,6 +52,7 @@ public class MineNorthVetements {
         }
         for (String id : AccessoryData.NEW) addAccessory(id, AccessoryData.BY_ID.get(id).slot());   // chaînes, montres, gants, sacs...
         ITEMS.register(bus);
+        TABS.register(bus);
         MENUS.register(bus);
         AccNet.register();
         Accessories.provideMask();
