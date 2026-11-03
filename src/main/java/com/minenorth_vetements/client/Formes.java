@@ -19,6 +19,10 @@ final class Formes {
         SHAPE_OF.put("banane_guchi", "FANNY");
         SHAPE_OF.put("banane_nayk", "FANNY");
         SHAPE_OF.put("banane_noire", "FANNY");
+        SHAPE_OF.put("blouson_police_commissaire", "BLOUSON_PN_COMMISSAIRE");
+        SHAPE_OF.put("blouson_police_officier", "BLOUSON_PN_OFFICIER");
+        SHAPE_OF.put("blouson_police_sous_officier", "BLOUSON_PN_SOUS_OFFICIER");
+        SHAPE_OF.put("blouson_raid", "BLOUSON_RAID");
         SHAPE_OF.put("bob_beige", "BUCKET");
         SHAPE_OF.put("bob_blanc", "BUCKET");
         SHAPE_OF.put("bob_kaki", "BUCKET");
@@ -41,6 +45,7 @@ final class Formes {
         SHAPE_OF.put("casquette_blanche", "CAP");
         SHAPE_OF.put("casquette_marine", "CAP");
         SHAPE_OF.put("casquette_noire", "CAP");
+        SHAPE_OF.put("casquette_police", "CAP");
         SHAPE_OF.put("casquette_pompier", "CAP");
         SHAPE_OF.put("casquette_rouge", "CAP");
         SHAPE_OF.put("casquette_samu", "CAP");
@@ -75,11 +80,17 @@ final class Formes {
         SHAPE_OF.put("montre_or", "WATCH");
         SHAPE_OF.put("montre_sport", "WATCH_SPORT");
         SHAPE_OF.put("montre_vip", "WATCH");
+        SHAPE_OF.put("pantalon_police", "CARGO");
         SHAPE_OF.put("pantalon_pompier", "CARGO");
+        SHAPE_OF.put("pantalon_raid", "CARGO");
         SHAPE_OF.put("pantalon_samu", "CARGO");
+        SHAPE_OF.put("parka_police", "PARKA");
         SHAPE_OF.put("parka_pompier", "PARKA");
         SHAPE_OF.put("perfecto_marron", "PERFECTO");
         SHAPE_OF.put("perfecto_noir", "PERFECTO");
+        SHAPE_OF.put("polo_police_commissaire", "POLO_PN_COMMISSAIRE");
+        SHAPE_OF.put("polo_police_officier", "POLO_PN_OFFICIER");
+        SHAPE_OF.put("polo_police_sous_officier", "POLO_PN_SOUS_OFFICIER");
         SHAPE_OF.put("polo_pompier", "POLO2");
         SHAPE_OF.put("polo_samu", "POLO2");
         SHAPE_OF.put("sac_dos_kaki", "BACKPACK");
@@ -129,6 +140,53 @@ final class Formes {
             {0, -4.72f, -6.9f, -4.72f, 4.72f, -5.2f, 4.72f, 1},
             {0, -1.1f, -6.6f, -4.86f, 1.1f, -5.5f, -4.72f, 3},
             {0, -0.6f, -6.3f, -4.9f, 0.6f, -5.8f, -4.86f, 2},
+        });
+        SHAPES.put("BLOUSON_PN_COMMISSAIRE", new float[][]{
+            {1, -4.5f, -0.9f, -2.5f, 4.5f, 0.6f, 2.5f, 12},
+            {1, 1.6f, -0.36f, -1f, 3.9f, 0f, 1f, 1},
+            {1, 3.55f, -0.42f, -0.35f, 3.9f, -0.33f, 0.35f, 5},
+            {1, -3.9f, -0.36f, -1f, -1.6f, 0f, 1f, 1},
+            {1, -3.9f, -0.42f, -0.35f, -3.55f, -0.33f, 0.35f, 5},
+            {1, 2f, -0.44f, -1.04f, 2.28f, -0.34f, 1.04f, 4},
+            {1, -2.28f, -0.44f, -1.04f, -2f, -0.34f, 1.04f, 4},
+            {1, 2.48f, -0.44f, -1.04f, 2.76f, -0.34f, 1.04f, 4},
+            {1, -2.76f, -0.44f, -1.04f, -2.48f, -0.34f, 1.04f, 4},
+            {1, 2.96f, -0.44f, -1.04f, 3.24f, -0.34f, 1.04f, 4},
+            {1, -3.24f, -0.44f, -1.04f, -2.96f, -0.34f, 1.04f, 4},
+            {1, -0.75f, 1.5f, -2.45f, 0.75f, 3.9f, -2.3f, 1},
+            {1, -0.6f, 2f, -2.52f, 0.6f, 2.28f, -2.45f, 4},
+            {1, -0.6f, 2.55f, -2.52f, 0.6f, 2.83f, -2.45f, 4},
+            {1, -0.6f, 3.1f, -2.52f, 0.6f, 3.38f, -2.45f, 4},
+        });
+        SHAPES.put("BLOUSON_PN_OFFICIER", new float[][]{
+            {1, -4.5f, -0.9f, -2.5f, 4.5f, 0.6f, 2.5f, 12},
+            {1, 1.6f, -0.36f, -1f, 3.9f, 0f, 1f, 1},
+            {1, 3.55f, -0.42f, -0.35f, 3.9f, -0.33f, 0.35f, 5},
+            {1, -3.9f, -0.36f, -1f, -1.6f, 0f, 1f, 1},
+            {1, -3.9f, -0.42f, -0.35f, -3.55f, -0.33f, 0.35f, 5},
+            {1, 2f, -0.44f, -1.04f, 2.28f, -0.34f, 1.04f, 4},
+            {1, -2.28f, -0.44f, -1.04f, -2f, -0.34f, 1.04f, 4},
+            {1, 2.48f, -0.44f, -1.04f, 2.76f, -0.34f, 1.04f, 4},
+            {1, -2.76f, -0.44f, -1.04f, -2.48f, -0.34f, 1.04f, 4},
+            {1, -0.75f, 1.5f, -2.45f, 0.75f, 3.9f, -2.3f, 1},
+            {1, -0.6f, 2f, -2.52f, 0.6f, 2.28f, -2.45f, 4},
+            {1, -0.6f, 2.55f, -2.52f, 0.6f, 2.83f, -2.45f, 4},
+        });
+        SHAPES.put("BLOUSON_PN_SOUS_OFFICIER", new float[][]{
+            {1, -4.5f, -0.9f, -2.5f, 4.5f, 0.6f, 2.5f, 12},
+            {1, 1.6f, -0.36f, -1f, 3.9f, 0f, 1f, 1},
+            {1, 3.55f, -0.42f, -0.35f, 3.9f, -0.33f, 0.35f, 5},
+            {1, -3.9f, -0.36f, -1f, -1.6f, 0f, 1f, 1},
+            {1, -3.9f, -0.42f, -0.35f, -3.55f, -0.33f, 0.35f, 5},
+            {1, 2f, -0.44f, -1.04f, 2.28f, -0.34f, 1.04f, 4},
+            {1, -2.28f, -0.44f, -1.04f, -2f, -0.34f, 1.04f, 4},
+            {1, -0.75f, 1.5f, -2.45f, 0.75f, 3.9f, -2.3f, 1},
+            {1, -0.6f, 2f, -2.52f, 0.6f, 2.28f, -2.45f, 4},
+        });
+        SHAPES.put("BLOUSON_RAID", new float[][]{
+            {1, -4.5f, -0.9f, -2.5f, 4.5f, 0.6f, 2.5f, 12},
+            {1, 1.6f, -0.36f, -1f, 3.9f, 0f, 1f, 1},
+            {1, -3.9f, -0.36f, -1f, -1.6f, 0f, 1f, 1},
         });
         SHAPES.put("BOMBER", new float[][]{
             {1, -4.48f, -0.5f, -2.48f, 4.48f, 0.7f, 2.48f, 1},
@@ -402,6 +460,60 @@ final class Formes {
             {1, 2.2f, -0.6f, -2.4f, 3f, 0.4f, 1.5f, 6},
             {1, -2.2f, -0.3f, -2.62f, -0.25f, 1.3f, -2.3f, 6},
             {1, -3f, -0.6f, -2.4f, -2.2f, 0.4f, 1.5f, 6},
+        });
+        SHAPES.put("POLO_PN_COMMISSAIRE", new float[][]{
+            {1, -3f, -0.6f, 1.5f, 3f, 0.4f, 2.62f, 6},
+            {1, 0.25f, -0.3f, -2.62f, 2.2f, 1.3f, -2.3f, 6},
+            {1, 2.2f, -0.6f, -2.4f, 3f, 0.4f, 1.5f, 6},
+            {1, -2.2f, -0.3f, -2.62f, -0.25f, 1.3f, -2.3f, 6},
+            {1, -3f, -0.6f, -2.4f, -2.2f, 0.4f, 1.5f, 6},
+            {1, 1.6f, -0.36f, -1f, 3.9f, 0f, 1f, 1},
+            {1, 3.55f, -0.42f, -0.35f, 3.9f, -0.33f, 0.35f, 5},
+            {1, -3.9f, -0.36f, -1f, -1.6f, 0f, 1f, 1},
+            {1, -3.9f, -0.42f, -0.35f, -3.55f, -0.33f, 0.35f, 5},
+            {1, 2f, -0.44f, -1.04f, 2.28f, -0.34f, 1.04f, 4},
+            {1, -2.28f, -0.44f, -1.04f, -2f, -0.34f, 1.04f, 4},
+            {1, 2.48f, -0.44f, -1.04f, 2.76f, -0.34f, 1.04f, 4},
+            {1, -2.76f, -0.44f, -1.04f, -2.48f, -0.34f, 1.04f, 4},
+            {1, 2.96f, -0.44f, -1.04f, 3.24f, -0.34f, 1.04f, 4},
+            {1, -3.24f, -0.44f, -1.04f, -2.96f, -0.34f, 1.04f, 4},
+            {1, -0.75f, 1.5f, -2.45f, 0.75f, 3.9f, -2.3f, 1},
+            {1, -0.6f, 2f, -2.52f, 0.6f, 2.28f, -2.45f, 4},
+            {1, -0.6f, 2.55f, -2.52f, 0.6f, 2.83f, -2.45f, 4},
+            {1, -0.6f, 3.1f, -2.52f, 0.6f, 3.38f, -2.45f, 4},
+        });
+        SHAPES.put("POLO_PN_OFFICIER", new float[][]{
+            {1, -3f, -0.6f, 1.5f, 3f, 0.4f, 2.62f, 6},
+            {1, 0.25f, -0.3f, -2.62f, 2.2f, 1.3f, -2.3f, 6},
+            {1, 2.2f, -0.6f, -2.4f, 3f, 0.4f, 1.5f, 6},
+            {1, -2.2f, -0.3f, -2.62f, -0.25f, 1.3f, -2.3f, 6},
+            {1, -3f, -0.6f, -2.4f, -2.2f, 0.4f, 1.5f, 6},
+            {1, 1.6f, -0.36f, -1f, 3.9f, 0f, 1f, 1},
+            {1, 3.55f, -0.42f, -0.35f, 3.9f, -0.33f, 0.35f, 5},
+            {1, -3.9f, -0.36f, -1f, -1.6f, 0f, 1f, 1},
+            {1, -3.9f, -0.42f, -0.35f, -3.55f, -0.33f, 0.35f, 5},
+            {1, 2f, -0.44f, -1.04f, 2.28f, -0.34f, 1.04f, 4},
+            {1, -2.28f, -0.44f, -1.04f, -2f, -0.34f, 1.04f, 4},
+            {1, 2.48f, -0.44f, -1.04f, 2.76f, -0.34f, 1.04f, 4},
+            {1, -2.76f, -0.44f, -1.04f, -2.48f, -0.34f, 1.04f, 4},
+            {1, -0.75f, 1.5f, -2.45f, 0.75f, 3.9f, -2.3f, 1},
+            {1, -0.6f, 2f, -2.52f, 0.6f, 2.28f, -2.45f, 4},
+            {1, -0.6f, 2.55f, -2.52f, 0.6f, 2.83f, -2.45f, 4},
+        });
+        SHAPES.put("POLO_PN_SOUS_OFFICIER", new float[][]{
+            {1, -3f, -0.6f, 1.5f, 3f, 0.4f, 2.62f, 6},
+            {1, 0.25f, -0.3f, -2.62f, 2.2f, 1.3f, -2.3f, 6},
+            {1, 2.2f, -0.6f, -2.4f, 3f, 0.4f, 1.5f, 6},
+            {1, -2.2f, -0.3f, -2.62f, -0.25f, 1.3f, -2.3f, 6},
+            {1, -3f, -0.6f, -2.4f, -2.2f, 0.4f, 1.5f, 6},
+            {1, 1.6f, -0.36f, -1f, 3.9f, 0f, 1f, 1},
+            {1, 3.55f, -0.42f, -0.35f, 3.9f, -0.33f, 0.35f, 5},
+            {1, -3.9f, -0.36f, -1f, -1.6f, 0f, 1f, 1},
+            {1, -3.9f, -0.42f, -0.35f, -3.55f, -0.33f, 0.35f, 5},
+            {1, 2f, -0.44f, -1.04f, 2.28f, -0.34f, 1.04f, 4},
+            {1, -2.28f, -0.44f, -1.04f, -2f, -0.34f, 1.04f, 4},
+            {1, -0.75f, 1.5f, -2.45f, 0.75f, 3.9f, -2.3f, 1},
+            {1, -0.6f, 2f, -2.52f, 0.6f, 2.28f, -2.45f, 4},
         });
         SHAPES.put("PUFFER2", new float[][]{
             {1, -4.85f, -0.9f, -2.85f, 4.85f, 0.9f, 2.85f, 12},

@@ -208,5 +208,16 @@
   "item.minenorth_vetements.casque_f1_blanc_helmet": "Casque F1 blanc",
   "item.minenorth_vetements.casquette_pompier_helmet": "Casquette pompier",
   "item.minenorth_vetements.casquette_samu_helmet": "Casquette SAMU",
-  "item.minenorth_vetements.gants_pompier": "Gants d'intervention"
+  "item.minenorth_vetements.gants_pompier": "Gants d'intervention",
+  "item.minenorth_vetements.polo_police_sous_officier_chestplate": "Polo Police - Sous-officier",
+  "item.minenorth_vetements.blouson_police_sous_officier_chestplate": "Blouson d'intervention Police - Sous-officier",
+  "item.minenorth_vetements.polo_police_officier_chestplate": "Polo Police - Officier",
+  "item.minenorth_vetements.blouson_police_officier_chestplate": "Blouson d'intervention Police - Officier",
+  "item.minenorth_vetements.polo_police_commissaire_chestplate": "Polo Police - Commissaire",
+  "item.minenorth_vetements.blouson_police_commissaire_chestplate": "Blouson d'intervention Police - Commissaire",
+  "item.minenorth_vetements.parka_police_chestplate": "Parka Police",
+  "item.minenorth_vetements.pantalon_police_leggings": "Pantalon Police",
+  "item.minenorth_vetements.casquette_police_helmet": "Casquette Police",
+  "item.minenorth_vetements.blouson_raid_chestplate": "Blouson d'intervention RAID",
+  "item.minenorth_vetements.pantalon_raid_leggings": "Pantalon RAID"
 }

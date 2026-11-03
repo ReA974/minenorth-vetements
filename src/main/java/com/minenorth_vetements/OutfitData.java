@@ -126,6 +126,17 @@ final class OutfitData {
         new Outfit("casque_f1_blanc", "Casque F1 blanc", true, false, false, false),
         new Outfit("casquette_pompier", "Casquette pompier", true, false, false, false),
         new Outfit("casquette_samu", "Casquette SAMU", true, false, false, false),
+        new Outfit("polo_police_sous_officier", "Polo Police - Sous-officier", false, true, false, false),
+        new Outfit("blouson_police_sous_officier", "Blouson d'intervention Police - Sous-officier", false, true, false, false),
+        new Outfit("polo_police_officier", "Polo Police - Officier", false, true, false, false),
+        new Outfit("blouson_police_officier", "Blouson d'intervention Police - Officier", false, true, false, false),
+        new Outfit("polo_police_commissaire", "Polo Police - Commissaire", false, true, false, false),
+        new Outfit("blouson_police_commissaire", "Blouson d'intervention Police - Commissaire", false, true, false, false),
+        new Outfit("parka_police", "Parka Police", false, true, false, false),
+        new Outfit("pantalon_police", "Pantalon Police", false, false, true, false),
+        new Outfit("casquette_police", "Casquette Police", true, false, false, false),
+        new Outfit("blouson_raid", "Blouson d'intervention RAID", false, true, false, false),
+        new Outfit("pantalon_raid", "Pantalon RAID", false, false, true, false),
     };
 
     private OutfitData() {}

@@ -27,6 +27,14 @@ préfixe VIP caché) ; le TAB garde le vrai nom. Dépend de MineNorth API 1.2.0.
 - `fix_pantalons.py` : nettoie les calques jambes (rien au-dessus de la taille).
 - `apercu.py <skin> <slim 0|1> <sortie.png> [tête] [haut] [jambes] [pieds] [acc,...]` : aperçu 3D hors jeu.
 
+## Tenues de Police Nationale
+Générées par `tools/gen_streetwear.py` (section « tenues de Police Nationale », liste `POLICE`), bleu nuit `NAVY_PN`.
+Par grade du mod Police (Sous-officier, Officier, Commissaire) : `polo_police_<grade>` et `blouson_police_<grade>` ; communs : `parka_police`,
+`pantalon_police`, `casquette_police`, RAID : `blouson_raid` (noir, RAID dans le dos) et `pantalon_raid` (avec `chaussures_intervention` et `gants_pompier` « Gants d'intervention »).
+Grade lisible en relief : patte de poitrine + épaulettes (formes `POLO_PN_*` / `BLOUSON_PN_*`, fonction `epaulettes`) : 1 galon argent,
+2 galons argent, 3 galons or. Logo POLICE NATIONALE (poitrine et manches) détouré depuis `tools/logo_pn.png` (repris du gilet PN de
+ZeroContact), POLICE dans le dos. Brassard BAC, casques balistiques et gilets pare-balles PN : dans ZeroContact.
+
 ## Licence
 **Tous droits réservés - MineNorthRP.** Voir [LICENSE](LICENSE).
 

@@ -139,7 +139,7 @@ FONT = {'E': ["XXX", "X..", "XX.", "X..", "XXX"], 'S': [".XX", "X..", ".X.", "..
         'A': [".X.", "X.X", "XXX", "X.X", "X.X"], 'P': ["XX.", "X.X", "XX.", "X..", "X.."], 'H': ["X.X", "X.X", "XXX", "X.X", "X.X"],
         'M': ["X...X", "XX.XX", "X.X.X", "X...X", "X...X"], 'O': [".X.", "X.X", "X.X", "X.X", ".X."], 'C': [".XX", "X..", "X..", "X..", ".XX"],
         'U': ["X.X", "X.X", "X.X", "X.X", "XXX"], 'R': ["XX.", "X.X", "XX.", "X.X", "X.X"], ' ': ["..", "..", "..", "..", ".."],
-        'B': ["XX.", "X.X", "XX.", "X.X", "XX."]}
+        'B': ["XX.", "X.X", "XX.", "X.X", "XX."], 'D': ["XX.", "X.X", "X.X", "X.X", "XX."]}
 
 
 # lettrage serré (dos des tenues : les bras cachent ~4 px de chaque côté du dos) : M sur 4 colonnes
@@ -808,7 +808,8 @@ def paint_parka(o, t):
     for k in SLEEVES:
         x0, y0, x1, y1 = ARM[k]
         t.fill((x0, 246, x1, 256), sh(m, .5), noise=.03); t.ribs((x0, 246, x1, 256), .78)
-    band(t, TORSO, BODY, 196, 10); band(t, TORSO, BODY, 236, 10); band(t, SLEEVES, ARM, 206, 10)
+    hv = o.get('hivis', HIVIS)
+    band(t, TORSO, BODY, 196, 10, hv); band(t, TORSO, BODY, 236, 10, hv); band(t, SLEEVES, ARM, 206, 10, hv)
 
     def det(d):
         e, red = sh(m, .58), rgb(o.get('second', 0xC62828))
@@ -866,7 +867,7 @@ def paint_polo(o, t):
             d.polygon([(212, 174), (214, 179), (213, 183), (210, 183), (210, 179)], fill=rgb(0xF2B21E))
     draw_on(t, det)
     if o.get('emblème') == 'texte':
-        text(t, 204, 184, o['dos'], o.get('emblème_col', o.get('dos_col', WHITE)), 1)          # sous l'empiècement
+        text(t, o.get('emblème_x', 204), 184, o['dos'], o.get('emblème_col', o.get('dos_col', WHITE)), 1)          # sous l'empiècement
     back_text(t, o, o.get('dos_y', 182))
 
 
@@ -1085,6 +1086,8 @@ def icon_secours(o):
                 c = sh(m, .6) if o.get('icon_haut') is None else rgb(0x2A2A2E)
             if o['sil'] == 'polo' and o.get('second') is not None and (y <= 2 or (x in (7, 8) and y <= 4)):
                 c = rgb(o['second'])
+            if o.get('icon_galon') is not None and y == 2 and x in (3, 4, 11, 12):
+                c = rgb(o['icon_galon'])
             if o['sil'] in ('bottes', 'chaussures') and y >= 12:
                 c = rgb(0x2E2E32)
             im.putpixel((x, y), c + (255,))
@@ -1141,6 +1144,127 @@ HATS += [
 ]
 ACCS += [
     C('gants_pompier', "Gants d'intervention", "Gants d'intervention", 'MAINS', 'GLOVES', main=0x232326, dark=0x3A3A3E, light=HIVIS),
+]
+
+# ---------------------------------------------------------------- tenues de Police Nationale (03/11)
+# Grades du mod minenorth-police : Sous-officier, Officier, Commissaire. Le grade se lit sur la patte de poitrine et les épaulettes (galons en relief) :
+# sous-officier 1 galon argent, officier 2 galons argent, commissaire 3 galons or. Le brassard orange POLICE (BAC, en civil) est dans ZeroContact.
+# Créations originales : aucun insigne officiel, seulement le mot POLICE.
+
+NAVY_PN, RAID_NOIR = 0x1A1F3C, 0x1C1C1F
+GRADES_PN = [('sous_officier', 'Sous-officier', 1, SILVER), ('officier', 'Officier', 2, SILVER), ('commissaire', 'Commissaire', 3, GOLD)]
+
+
+def epaulettes(n, base=None):
+    """Pattes d'épaules + n galons (pastille metal) ; base : forme à compléter (col, capuche...)."""
+    b = list(base or [])
+    b += sym([('body', 1.6, -0.36, -1.0, 3.9, 0.0, 1.0, 'dark'), ('body', 3.55, -0.42, -0.35, 3.9, -0.33, 0.35, 'metal_dark')])   # patte + bouton
+    for k in range(n):
+        x = 2.0 + k * 0.48
+        b += sym([('body', x, -0.44, -1.04, x + 0.28, -0.34, 1.04, 'metal')])
+    b.append(('body', -0.75, 1.5, -2.45, 0.75, 3.9, -2.3, 'dark'))                     # patte de poitrine (grade visible de face)
+    for k in range(n):
+        y = 2.0 + k * 0.55
+        b.append(('body', -0.6, y, -2.52, 0.6, y + 0.28, -2.45, 'metal'))
+    return b
+
+
+def paint_blouson_police(o, t):
+    """Blouson d'intervention : softshell bleu nuit, épaules renforcées, fermeture, POLICE poitrine et dos, liserés réfléchissants aux manches."""
+    m = o['main']
+    for r in faces(BODY) + faces(ARM):
+        t.fill(r, m, noise=.02, grad=(1.04, .86), sheen=.09)
+    t.fill(BODY['top'], sh(m, .85)); t.fill(ARM['top'], sh(m, .85)); t.fill(ARM['bot'], sh(m, .6))
+    for k in TORSO:
+        x0, y0, x1, y1 = BODY[k]
+        t.fill((x0, 160, x1, 176), sh(m, .82), noise=.02, sheen=.06)               # empiècement d'épaules
+        t.fill((x0, 248, x1, 256), sh(m, .7)); t.ribs((x0, 248, x1, 256), .84)      # bas élastiqué
+    for k in SLEEVES:
+        x0, y0, x1, y1 = ARM[k]
+        t.fill((x0, 160, x1, 180), sh(m, .82), noise=.02)
+        t.fill((x0, 248, x1, 256), sh(m, .6)); t.ribs((x0, 248, x1, 256), .8)
+    band(t, SLEEVES, ARM, 232, 4, hivis=None)
+    t.rect((191, 160, 193, 248), sh(m, .5)); t.rect((190, 182, 194, 190), SILVER)   # fermeture éclair et tirette
+
+    def det(d):
+        e = sh(m, .55)
+        for (x0, x1) in ((128, 160), (160, 224), (224, 256), (256, 320)):
+            d.line([(x0, 176), (x1, 176)], fill=e)
+        d.line([(166, 214), (176, 232)], fill=e, width=2); d.line([(218, 214), (208, 232)], fill=e, width=2)   # poches zippées
+        d.rounded_rectangle((165, 190, 183, 197), radius=3, fill=rgb(0x26262A))                             # bande nominative
+        d.line([(167, 193), (181, 193)], fill=rgb(REFL))
+    draw_on(t, det)
+    back_text(t, o, 196, 2)
+
+
+
+def detoure(lg):
+    """Logo PN sans son fond blanc : blanc -> transparent, lettrage noir -> blanc brodé (lisible sur le bleu nuit), bleu éclairci, rouge gardé."""
+    import colorsys
+    out = Image.new('RGBA', lg.size)
+    for y in range(lg.height):
+        for x in range(lg.width):
+            r, g, b, a = lg.getpixel((x, y))
+            hh, ll, ss = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+            if ss > .35 and .15 < ll < .9:                         # bleu / rouge du ruban tricolore
+                if .5 < hh < .75:
+                    r, g, b = [int(v * 255) for v in colorsys.hls_to_rgb(hh, max(ll, .55), ss)]
+                out.putpixel((x, y), (r, g, b, a))
+            else:                                                   # gris / noir = lettrage, blanc = fond
+                k = 1 - ll
+                if k > .12:
+                    out.putpixel((x, y), (240, 240, 236, int(a * min(1, k * 1.6))))
+    return out
+
+def logo_pn(t, x, y, w):
+    """Logo POLICE NATIONALE détouré (repris de la texture du gilet PN de ZeroContact, tools/logo_pn.png), w pixels de large."""
+    lg = detoure(Image.open('tools/logo_pn.png').convert('RGBA'))
+    lg = lg.resize((w, round(lg.height * w / lg.width)), Image.LANCZOS)
+    lg.putalpha(lg.getchannel('A').point(lambda a: 255 if a > 60 else 0))       # bords francs (broderie), pas de voile gris
+    im = t.img()
+    im.alpha_composite(lg, (x, y))
+    t.a = np.array(im, np.float32)
+
+
+def paint_pn(paint):
+    """Tenue police : la peinture de base, plus l'écusson PN sur la poitrine (côté cœur) et sur les deux manches."""
+    def f(o, t):
+        paint(o, t)
+        logo_pn(t, 197, 177 if o['sil'] == 'polo' else 181, 26)
+        logo_pn(t, 322, 166, 28)
+    return f
+
+
+def P(id, fr, piece, shape, paint, sil, **p):
+    return S(id, fr, piece, shape, paint, sil, main=NAVY_PN, **p)
+
+
+POLICE = []
+for g, gfr, n, col in GRADES_PN:
+    POLICE += [
+        P('polo_police_' + g, 'Polo Police - ' + gfr, 'chestplate', 'POLO_PN_' + g.upper(), paint_pn(paint_polo), 'polo', second=sh(NAVY_PN, .75),
+          dos='POLICE', dos_col=WHITE, metal=col, metal_dark=sh(col, .6), dark=sh(NAVY_PN, .8),
+          icon_galon=col),
+        P('blouson_police_' + g, "Blouson d'intervention Police - " + gfr, 'chestplate', 'BLOUSON_PN_' + g.upper(), paint_pn(paint_blouson_police), 'veste',
+          dos='POLICE', dos_col=WHITE, metal=col, metal_dark=sh(col, .6), dark=sh(NAVY_PN, .78), main_hi=sh(NAVY_PN, 1.15),
+          icon_galon=col, icon_bandes=(10,), icon_bande=REFL),
+    ]
+    SHAPES['POLO_PN_' + g.upper()] = (lambda n: lambda slim: epaulettes(n, shape_polo(slim)))(n)
+    SHAPES['BLOUSON_PN_' + g.upper()] = (lambda n: lambda slim: epaulettes(n, [ring(-0.9, 0.6, .5, 'main_hi')]))(n)
+POLICE += [
+    P('parka_police', 'Parka Police', 'chestplate', 'PARKA', paint_pn(paint_parka), 'veste', accent=REFL, light=REFL, second=0x2B5FC8, hivis=None,
+      dos='POLICE', icon_bandes=(6, 10), icon_bande=REFL),
+    P('pantalon_police', 'Pantalon Police', 'leggings', 'CARGO', paint_caserne_pants, 'pants', pants='cargo', liserés=()),
+    # RAID (unité d'intervention) : tenue noire, logo PN, RAID dans le dos ; casque et gilet RAID dans ZeroContact
+    S('blouson_raid', "Blouson d'intervention RAID", 'chestplate', 'BLOUSON_RAID', paint_pn(paint_blouson_police), 'veste', main=RAID_NOIR,
+      dos='RAID', dos_scale=3, dos_col=WHITE, dark=sh(RAID_NOIR, .7), main_hi=sh(RAID_NOIR, 1.25), metal=SILVER_D, metal_dark=SILVER_D,
+      icon_bandes=(10,), icon_bande=REFL),
+    S('pantalon_raid', 'Pantalon RAID', 'leggings', 'CARGO', paint_caserne_pants, 'pants', main=RAID_NOIR, pants='cargo', liserés=()),
+]
+SHAPES['BLOUSON_RAID'] = lambda slim: [ring(-0.9, 0.6, .5, 'main_hi')] + sym([('body', 1.6, -0.36, -1.0, 3.9, 0.0, 1.0, 'dark')])
+CLOTHES += POLICE
+HATS += [
+    C('casquette_police', 'Casquette Police', 'Casquette Police', 'hat', 'CAP', main=NAVY_PN, light=WHITE, accent=0x2B5FC8),
 ]
 
 PUFFY = [o['id'] for o in CLOTHES if o['kind'] == 'puffer']
