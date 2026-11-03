@@ -1,5 +1,5 @@
 """Tenues RP (costards, smoking, robes, bikinis, maillots) : textures d'armure 512x256 (art 64x32 x8 + pastilles), icones, modeles, lang, OutfitData.
-Usage : python tools/gen_rp.py   (depuis la racine du mod). Ajoute les tenues a OutfitData.java et aux fichiers de langue sans toucher aux autres."""
+Usage : python tools/gen_rp.py   (depuis la racine du mod), puis python tools/gen_streetwear.py (repeint les chaussures). Ajoute les tenues a OutfitData.java et aux fichiers de langue sans toucher aux autres."""
 import json
 from PIL import Image
 

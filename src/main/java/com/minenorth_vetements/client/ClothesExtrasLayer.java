@@ -51,7 +51,8 @@ public class ClothesExtrasLayer extends RenderLayer<AbstractClientPlayer, Player
             ResourceLocation tex = new ResourceLocation(MineNorthVetements.MODID,
                     "textures/models/armor/" + id + "_layer_" + (slot == EquipmentSlot.LEGS ? 2 : 1) + ".png");
             float lift = bala && slot == EquipmentSlot.HEAD ? SlimArmor.HAT_LIFT : 0;   // chapeau par-dessus la cagoule, pas dedans
-            Map<String, ModelPart> gen = Reliefs.parts(id, slim, 0, lift);
+            // chaussures : forme « <id>_boots » (la même tenue peut avoir un haut ou une casquette en relief)
+            Map<String, ModelPart> gen = Reliefs.parts(slot == EquipmentSlot.FEET ? id + "_boots" : id, slim, 0, lift);
             if (gen != null) {
                 draw(ps, buffers.getBuffer(RenderType.armorCutoutNoCull(tex)), light, model, gen);
                 continue;

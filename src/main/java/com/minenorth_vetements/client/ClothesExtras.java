@@ -299,23 +299,7 @@ final class ClothesExtras {
                 both(l, "body", -4.9f, 6.5f, -3.1f, -2.6f, 9.0f, -2.7f, PD);                   // poches avant
                 both(l, "body", 2.6f, 6.5f, -3.1f, 4.9f, 9.0f, -2.7f, PD);
             }
-            case FEET -> {
-                if (style == Style.SUIT) {
-                    pair(l, "right_leg", "left_leg", -3.1f, 11.7f, -3.7f, 3.1f, 12.5f, 3.2f, O);   // semelle fine
-                    pair(l, "right_leg", "left_leg", -3.0f, 10.2f, -3.8f, 3.0f, 11.8f, -1.5f, S);   // bout verni
-                    break;
-                }
-                if (style == Style.GOWN || style == Style.MINI) {
-                    pair(l, "right_leg", "left_leg", -1.4f, 10.6f, 1.6f, 1.4f, 13.4f, 3.0f, S);     // talon aiguille
-                    pair(l, "right_leg", "left_leg", -3.0f, 11.7f, -3.5f, 3.0f, 12.3f, 1.2f, O);    // semelle
-                    break;
-                }
-                pair(l, "right_leg", "left_leg", -3.4f, 11.6f, -3.9f, 3.4f, 13.2f, 3.5f, O);   // semelle épaisse
-                pair(l, "right_leg", "left_leg", -3.2f, 9.4f, -4.3f, 3.2f, 11.8f, -1.0f, S);   // bout de la chaussure
-                pair(l, "right_leg", "left_leg", -3.2f, 8.6f, 2.4f, 3.2f, 12.0f, 3.7f, S);     // talon
-                pair(l, "right_leg", "left_leg", -1.6f, 8.2f, -3.5f, 1.6f, 10.2f, -2.6f, O);   // languette / lacets
-                pair(l, "right_leg", "left_leg", -3.4f, 7.6f, -3.4f, 3.4f, 8.9f, 3.4f, SD);    // col de la chaussure
-            }
+            // chaussures : relief généré (Formes, forme « <id>_boots »), voir tools/gen_streetwear.py
             default -> { }
         }
         return l;

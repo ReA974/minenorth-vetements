@@ -26,6 +26,31 @@ préfixe VIP caché) ; le TAB garde le vrai nom. Dépend de MineNorth API 1.2.0.
 - `gen_streetwear.py` : doudounes, sweats, vestes, manteaux, pantalons, couvre-chefs et accessoires (textures, modèles, `Formes.java`, `AccessoryData.java`, langues).
 - `fix_pantalons.py` : nettoie les calques jambes (rien au-dessus de la taille).
 - `apercu.py <skin> <slim 0|1> <sortie.png> [tête] [haut] [jambes] [pieds] [acc,...]` : aperçu 3D hors jeu.
+- Ordre de génération : `Gen.java`, `gen_rp.py` et `gen_acc.py` (anciennes tenues) **avant** `gen_streetwear.py`, qui repeint les chaussures
+  de ces tenues (bas des jambes du calque 1) et écrit `Formes.java` (formes réparties en méthodes : limite Java de 64 Ko par méthode).
+  Attention : `Gen.java` réécrit les fichiers de langue en entier, ne le relancer qu'en connaissance de cause.
+
+## Chaussures
+Toutes les paires `*_boots` (03/11) : tige peinte en 512 × 256 sur le bas des jambes (cuir, vernis, daim, toile, maille, nubuck, caoutchouc,
+monogramme ; empiècements, piqûres, lacets croisés, œillets, logos) et relief généré : semelle, bout arrondi, talon (aiguille pour les escarpins),
+languette, lacets, œillets / crochets, col rembourré, tige des bottes et rangers. Relief sous la forme `<id>_boots` (`ClothesExtrasLayer` la
+cherche pour l'emplacement pieds, une tenue peut aussi avoir un haut ou une casquette en relief) ; pastilles 16 à 31 (lignes 2 et 3 de la
+palette), à part de celles du haut. Paire en 3D dans l'inventaire (`<id>_boots_acc`). Types (`PROFIL` dans `gen_streetwear.py`) : basket,
+runner, montante, toile, chunky, securite, derby, mocassin, chelsea, santiag, escarpin, sandale, tong, claquette, sabot, botte, rangers,
+chantier, apres_ski, fourree. Anciennes tenues : liste `SHOES_TENUES` ; chaussures vendues seules : liste `CHAUSSURES`.
+Aperçus : `apercu-chaussures-avant.png`, `apercu-chaussures-apres.png`, `apercu-chaussures-zoom.png`.
+
+## Garde-robe RP (03/11)
+Liste `GARDEROBE` (+ chapeaux) de `gen_streetwear.py`, aperçu `apercu-garde-robe.png` :
+- travail : gilet de chantier, pantalon à genouillères, casques de chantier, veste / pantalon de mécanicien, veste / pantalon pied-de-poule /
+  toque de cuisinier, chemise et gilet / tablier de serveur, veste et casquette de livreur ;
+- sport : maillots de foot et de basket, shorts, brassière, legging ;
+- soirée : costumes Miami rose et bleu ciel (veste + pantalon), chemises hawaïennes, chemise blanche, robe bustier et jupe à paillettes,
+  robe et jupe moulantes ;
+- bain : maillot une pièce, short flamants roses ; hiver : parkas à capuche fourrée, chapka ;
+- femme : crop tops, top à bretelles, jupe plissée, mini-jupe en cuir, jean mom, short en jean ;
+- basiques : t-shirts, marinière, débardeur côtelé, chemise à carreaux, bermuda cargo.
+Vente : pack `boutiques-minenorth` de `minenorth_shops` ; les tenues pompiers, SAMU, police et RAID n'y sont jamais.
 
 ## Tenues de Police Nationale
 Générées par `tools/gen_streetwear.py` (section « tenues de Police Nationale », liste `POLICE`), bleu nuit `NAVY_PN`.

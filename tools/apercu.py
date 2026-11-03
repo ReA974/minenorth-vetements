@@ -141,8 +141,8 @@ def build(skin, slim, head, chest, legs, feet, accs):
             P['right_leg'].append(((-2, 0, -2, 4, 12, 4, 0, 16, g), *A))
             P['left_leg'].append(((-2, 0, -2, 4, 12, 4, 0, 16, g, True), *A))
 
-    def relief(id, delta, hdelta=0):
-        sh = F['shape_of'].get(id)
+    def relief(id, delta, hdelta=0, key=None):
+        sh = F['shape_of'].get(key or id)
         if not sh:
             return
         boxes = F['formes'].get(sh + '/slim') if slim and (sh + '/slim') in F['formes'] else F['formes'][sh]
@@ -173,7 +173,7 @@ def build(skin, slim, head, chest, legs, feet, accs):
     if legs:
         armor(legs, 2, .27, ['body', 'legs']); relief(legs, 0)
     if feet:
-        armor(feet, 1, .32, ['legs']); relief(feet, 0)
+        armor(feet, 1, .32, ['legs']); relief(feet, 0, key=feet + '_boots')   # chaussures : forme « <id>_boots »
     infl = (.6 if puffy else .3) if chest else 0
     for a in accs:
         if a.startswith('cagoule'):

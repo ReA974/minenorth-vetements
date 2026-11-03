@@ -50,7 +50,9 @@ def palette(p):
              white=WHITE, black=BLACK, lens=0x15181C, lens_hi=0x7A8A9A, main_hi=sh(m, 1.12), skin=0xC69C7A, extra=m)
     d.update(p)
     d.setdefault('accent_dark', sh(d['accent'], .7))
-    return [rgb(d[k]) for k in SW]
+    if 'shoe' in p:                                       # chaussures : pastilles 16 à 31
+        d.update(shoe_palette(p['shoe']))
+    return [rgb(d[k]) for k in (SW if 'shoe' in p else SW[:16])]
 
 
 # ---------------------------------------------------------------- faces de l'UV (512 x 256)
@@ -954,31 +956,6 @@ def paint_caserne_pants(o, t):
         band(t, LEGS4, LEG, y, 4, hivis=None)
 
 
-def paint_boots(o, t):
-    """Bottes de feu (hautes, bande réfléchissante) ou chaussures d'intervention (basses, lacets) : calque 1, bas des jambes."""
-    m, low = o['main'], o.get('basses', False)
-    top = 228 if low else 212
-    for k in LEGS4:
-        x0, y0, x1, y1 = LEG[k]
-        t.fill((x0, top, x1, 256), m, noise=.03, grad=(1.12, .85), sheen=.15)
-        t.fill((x0, top, x1, top + 4), sh(m, .55), noise=.02)                          # rebord
-        t.fill((x0, 248, x1, 256), SOLE, noise=.05)                                    # semelle crantée
-        t.ribs((x0, 250, x1, 256), .7, 3)
-    t.fill((64, 128, 96, 160), SOLE, noise=.05)                                       # dessous du pied
-    t.mul((32, 238, 64, 248), 1.18)                                                   # coque de protection
-    if not low:
-        band(t, LEGS4, LEG, top + 8, 6)
-
-    def det(d):
-        if low:
-            for y in (232, 236, 240, 244):
-                d.line([(40, y), (56, y + 2)], fill=rgb(0x3A3A40)); d.line([(56, y), (40, y + 2)], fill=rgb(0x3A3A40))   # lacets
-        else:
-            d.rectangle((44, top + 2, 52, top + 6), fill=rgb(0x2A2A2E))                # tirant
-            d.line([(16, top + 4), (16, 248)], fill=sh(m, 1.4))                       # reflet du cuir
-    draw_on(t, det)
-
-
 # ---- formes 3D
 
 def shape_veste_feu(slim):
@@ -1019,12 +996,6 @@ def shape_surpantalon(slim):
                 ('right_leg', -2.6, 0.4, -1.6, -2.2, 1.1, 1.6, 'dark')])
 
 
-def shape_bottes(slim, low=False):
-    top = 9.2 if low else 6.4
-    return sym([('right_leg', -2.42, 11.6, -2.95, 2.42, 12.4, 2.42, 'black'), ('right_leg', -2.38, 9.9, -2.8, 2.38, 11.6, -2.3, 'main_hi'),
-                ('right_leg', -2.46, top, -2.46, 2.46, top + 0.6, 2.46, 'dark')])
-
-
 def shape_f1(slim):
     """Casque de pompier type F1 : calotte bombée, crête, jonc, visière dorée relevée, couvre-nuque, lampe sur le côté, jugulaire."""
     b = [('head', -4.7, -8.2, -4.7, 4.7, -4.7, 4.7, 'main'), ('head', -4.3, -9.0, -4.3, 4.3, -8.2, 4.3, 'main'),
@@ -1045,7 +1016,7 @@ def shape_f1(slim):
 
 
 SHAPES.update({'VESTE_FEU': shape_veste_feu, 'PARKA': shape_parka, 'POLO2': shape_polo, 'HIVIS': shape_hivis, 'SURPANT': shape_surpantalon,
-               'BOTTES': shape_bottes, 'CHAUSSURES': lambda s: shape_bottes(s, True), 'F1': shape_f1})
+               'F1': shape_f1})
 
 
 # ---- icônes 16 x 16
@@ -1100,6 +1071,507 @@ def icon_secours(o):
     return out
 
 
+# ---------------------------------------------------------------- chaussures (03/11) : toutes les paires *_boots
+# Tige peinte sur le bas des jambes (calque 1, art 512 x 256) ; semelle, bout arrondi, talon, languette, lacets, œillets et col en relief
+# (forme « <id>_boots », cherchée par ClothesExtrasLayer pour l'emplacement pieds). Les pastilles des chaussures sont à part
+# (index 16 à 31 : lignes 2 et 3 de la palette) pour ne pas toucher à celles du haut ou de la casquette de la même tenue.
+
+SW += ['sole', 'sole_dark', 'upper', 'upper_dark', 'upper_hi', 'toe', 'lace', 'heel', 'eyelet', 'collar', 'logo', 'trim', 'tread', 'lining',
+       'strap2', 'gloss']
+SHOE0 = 16
+
+
+def shoe_palette(s):
+    u = s['upper']
+    d = dict(sole=s.get('sole', WHITE), upper=u, upper_dark=s.get('overlay', sh(u, .72)), upper_hi=sh(u, 1.18), toe=s.get('toe', u),
+             lace=s.get('lace', WHITE), heel=s.get('heel', s.get('overlay', u)), eyelet=s.get('eyelet', SILVER_D), collar=s.get('collar', sh(u, .8)),
+             logo=s.get('logo_col', WHITE), trim=s.get('trim', sh(u, .8)), lining=s.get('lining', sh(u, 1.1)), strap2=s.get('strap', u),
+             gloss=s.get('gloss', mix(u, 0xFFFFFF, .5)))
+    d['sole_dark'] = s.get('sole_dark', sh(d['sole'], .75))
+    d['tread'] = s.get('tread', sh(d['sole'], .62))
+    return d
+
+
+# Haut de la tige sur les côtés, du talon (0) au bout (1), en unités du membre (0 = hanche, 12 = sol) ; puis haut de la face avant.
+PROFIL = {
+    'basket': ([(0, 8.4), (.35, 9.1), (1, 9.5)], 8.0), 'runner': ([(0, 8.6), (.4, 9.3), (1, 9.6)], 8.2),
+    'montante': ([(0, 5.0), (.5, 5.4), (1, 5.6)], 4.8), 'toile': ([(0, 8.8), (.5, 9.4), (1, 9.6)], 8.4),
+    'chunky': ([(0, 8.2), (.4, 8.9), (1, 9.3)], 7.8), 'securite': ([(0, 7.4), (.5, 8.0), (1, 8.4)], 7.2),
+    'derby': ([(0, 9.3), (.45, 9.9), (1, 10.1)], 8.8), 'mocassin': ([(0, 9.5), (.5, 10.2), (1, 9.9)], 9.6),
+    'escarpin': ([(0, 9.9), (.4, 10.9), (.8, 10.9), (1, 10.6)], 10.6), 'sandale': ([(0, 10.6), (1, 10.6)], 10.6),
+    'tong': ([(0, 12), (1, 12)], 12), 'claquette': ([(0, 12), (.55, 12), (.6, 10.4), (1, 10.4)], 10.4),
+    'sabot': ([(0, 10.6), (.55, 10.6), (.6, 9.9), (1, 9.9)], 9.7),
+    'botte': ([(0, 2.4), (1, 2.4)], 2.4), 'rangers': ([(0, 5.2), (1, 5.6)], 5.0), 'chantier': ([(0, 5.8), (1, 6.2)], 5.6),
+    'chelsea': ([(0, 6.2), (.5, 6.8), (1, 6.4)], 6.4), 'santiag': ([(0, 3.0), (.5, 4.2), (1, 3.0)], 3.0),
+    'apres_ski': ([(0, 4.6), (1, 4.6)], 4.6), 'fourree': ([(0, 4.4), (1, 4.4)], 4.4),
+}
+BASKETS = ('basket', 'runner', 'montante', 'toile', 'chunky', 'securite')
+LACEES = BASKETS + ('derby', 'rangers', 'chantier')
+SEMELLE = {'chunky': 10.5, 'runner': 10.9, 'securite': 10.9, 'derby': 11.6, 'mocassin': 11.6, 'chelsea': 11.4, 'santiag': 11.5,
+           'escarpin': 11.9, 'sandale': 11.9, 'tong': 11.9, 'claquette': 11.6, 'sabot': 11.5, 'apres_ski': 10.6, 'fourree': 11.4}
+MATIERE = {'cuir': dict(noise=.03, sheen=.14), 'vernis': dict(noise=.01, sheen=.55, grad=(1.18, .8)), 'daim': dict(noise=.08, heather=.06),
+           'toile': dict(noise=.03, twill=.06), 'maille': dict(noise=.04, heather=.07), 'nubuck': dict(noise=.07, heather=.05),
+           'caoutchouc': dict(noise=.015, sheen=.3), 'nylon': dict(noise=.02, twill=.02, sheen=.12), 'monogramme': dict(noise=.03, twill=.03)}
+
+
+def shoe_top(kind, s):
+    pts = PROFIL[kind][0]
+    for (s0, y0), (s1, y1) in zip(pts, pts[1:]):
+        if s <= s1:
+            return y0 + (y1 - y0) * (s - s0) / max(1e-6, s1 - s0)
+    return pts[-1][1]
+
+
+def Y(u):
+    return int(round(160 + 8 * u))
+
+
+def side_x(k, s):
+    """Côtés du pied : s = 0 au talon, 1 au bout (face extérieure O : le bout touche la face avant, à droite ; intérieure I : à gauche)."""
+    x0 = LEG[k][0]
+    return x0 + s * 32 if k == 'O' else x0 + (1 - s) * 32
+
+
+def side_poly(d, pts, fill=None, outline=None, faces_=('O', 'I')):
+    """Polygone en coordonnées du pied (s, unité) sur les deux côtés."""
+    for k in faces_:
+        d.polygon([(side_x(k, s), Y(u)) for (s, u) in pts], fill=fill, outline=outline)
+
+
+def side_line(d, pts, fill, width=1, dots=False, faces_=('O', 'I')):
+    for k in faces_:
+        p = [(side_x(k, s), Y(u)) for (s, u) in pts]
+        if dots:                                                              # piqûres : points espacés
+            for (xa, ya), (xb, yb) in zip(p, p[1:]):
+                n = max(1, int(max(abs(xb - xa), abs(yb - ya)) / 3))
+                for i in range(n + 1):
+                    d.point((xa + (xb - xa) * i / n, ya + (yb - ya) * i / n), fill=fill)
+        else:
+            d.line(p, fill=fill, width=width)
+
+
+def mat_fill(t, r, c, mat):
+    p = dict(grad=(1.08, .9))
+    p.update(MATIERE[mat])
+    t.fill(r, c, **p)
+    x0, y0, x1, y1 = r
+    if mat == 'maille':                                                       # mailles : rangs horizontaux
+        for y in range(y0, y1, 3):
+            t.mul((x0, y, x1, y + 1), .86)
+
+
+def paint_shoe_tex(t, s):
+    kind, m, mat = s['kind'], s['upper'], s.get('matiere', 'cuir')
+    P = shoe_palette(s)
+    ftop = PROFIL[kind][1]
+    semelle = SEMELLE.get(kind, 11.2)
+    t.clear((0, 128, 128, 256))
+    # ---- tige : matière, découpée selon le profil
+    for k in LEGS4:
+        x0, _, x1, _ = LEG[k]
+        if k in ('O', 'I'):
+            tops = [shoe_top(kind, ((x - x0) + .5) / 32 if k == 'O' else 1 - ((x - x0) + .5) / 32) for x in range(x0, x1)]
+        else:
+            tops = [ftop if k == 'F' else shoe_top(kind, 0)] * 32
+        y_min = Y(min(tops))
+        if y_min >= 256:
+            continue
+        mat_fill(t, (x0, y_min, x1, 256), m, mat)
+        for i, x in enumerate(range(x0, x1)):
+            t.clear((x, y_min, x + 1, Y(tops[i])))
+            if kind not in ('tong', 'claquette', 'sandale', 'sabot'):
+                t.mul((x, Y(tops[i]), x + 1, Y(tops[i]) + 3), .74)             # bord du col (rembourrage / tranche)
+    t.fill((64, 128, 96, 160), P['tread'], noise=.05)                          # dessous du pied : semelle crantée
+    for y in range(130, 160, 4):
+        t.mul((64, y, 96, y + 2), .72)
+    if kind == 'monogramme' or mat == 'monogramme':
+        mono = rgb(s.get('logo_col', 0xC9A24A))
+        for k in LEGS4:
+            x0 = LEG[k][0]
+            for yy in range(Y(ftop) + 4, 256, 9):
+                for xx in range(x0 + 2 + (yy // 9 % 2) * 4, x0 + 32, 8):
+                    t.rect((xx, yy, xx + 1, yy + 3), mono); t.rect((xx - 1, yy + 1, xx + 2, yy + 2), mono)
+
+    up, dk, hi, sole = rgb(m), rgb(P['upper_dark']), rgb(P['upper_hi']), rgb(P['sole'])
+    lace, eye, logo, trim, lin = rgb(P['lace']), rgb(P['eyelet']), rgb(P['logo']), rgb(P['trim']), rgb(P['lining'])
+    thread = rgb(s.get('fil', sh(m, 1.45) if sum(rgb(m)) < 330 else sh(m, .7)))
+
+    def det(d):
+        # ---- baskets : empiècements, piqûres, languette, lacets croisés, logo, semelle intermédiaire
+        if kind in BASKETS:
+            ov = rgb(P['upper_dark'])
+            t0 = shoe_top(kind, .72)
+            side_poly(d, [(.68, t0 + .5), (1, t0 + .4), (1, semelle), (.62, semelle)], fill=ov)                  # bout rapporté
+            side_line(d, [(.68, t0 + .7), (.64, semelle - .2)], thread, dots=True)
+            h0 = shoe_top(kind, 0)
+            side_poly(d, [(0, h0 + .4), (.26, h0 + 1.2), (.32, semelle), (0, semelle)], fill=rgb(P['heel']))     # contrefort
+            side_line(d, [(.27, h0 + 1.4), (.31, semelle - .2)], thread, dots=True)
+            side_line(d, [(0, h0 + .45), (.5, shoe_top(kind, .5) + .45), (1, shoe_top(kind, 1) + .45)], thread, dots=True)
+            if kind == 'montante':
+                side_poly(d, [(0, 5.3), (.4, 5.7), (.45, 7.6), (0, 7.4)], fill=rgb(P['collar']))                # col contrasté
+            for (x, w) in ((32, 8), (56, 8)):                                                                   # passants d'œillets
+                d.rectangle((x, Y(ftop), x + w - 1, Y(9.8)), fill=ov)
+            d.rectangle((40, Y(ftop) - 2, 55, Y(9.8)), fill=lin)                                               # languette
+            y, n = Y(ftop) + 3, 0
+            while y < Y(9.6):
+                d.ellipse((35, y - 1, 37, y + 1), fill=eye); d.ellipse((58, y - 1, 60, y + 1), fill=eye)
+                d.line([(37, y), (58, y + 4)], fill=lace, width=2); d.line([(58, y), (37, y + 4)], fill=sh(lace, .82), width=2)
+                y += 6; n += 1
+            if kind == 'toile':
+                for k in LEGS4:
+                    x0 = LEG[k][0]
+                    d.rectangle((x0, Y(semelle) + 3, x0 + 31, Y(semelle) + 4), fill=rgb(s.get('liseré', 0x1A1A1D)))
+            if kind == 'securite':
+                side_line(d, [(0, 8.3), (1, 9.1)], rgb(HIVIS), width=3)
+            logo_kind = s.get('logo')
+            if logo_kind == 'swoosh':
+                side_poly(d, [(.9, 10.1), (.78, 10.75), (.5, 10.55), (.12, 9.0), (.45, 10.0), (.72, 10.3)], fill=logo)
+            elif logo_kind == 'bandes':
+                for i in range(3):
+                    a = .36 + i * .11
+                    side_poly(d, [(a, shoe_top(kind, a) + .5), (a + .06, shoe_top(kind, a) + .5), (a + .13, semelle), (a + .07, semelle)], fill=logo)
+            elif logo_kind == 'formstrip':
+                side_poly(d, [(.82, 10.6), (.62, 10.7), (.12, 9.2), (.12, 9.7), (.6, 10.3), (.82, 10.2)], fill=logo)
+            elif logo_kind == 'web':
+                side_poly(d, [(.15, 9.7), (.78, 9.9), (.78, 10.8), (.15, 10.6)], fill=rgb(0x1E6B3A))
+                side_poly(d, [(.15, 9.95), (.78, 10.15), (.78, 10.5), (.15, 10.35)], fill=rgb(0xB01B24))
+            elif logo_kind == 'jump':
+                side_poly(d, [(.42, 5.9), (.62, 5.6), (.6, 6.6), (.44, 6.7)], fill=logo)
+                side_poly(d, [(.88, 10.0), (.75, 10.6), (.5, 10.4), (.15, 8.5), (.47, 9.8), (.7, 10.2)], fill=rgb(0x141416))
+            elif logo_kind == 'tab':
+                d.rectangle((100, Y(semelle) - 9, 104, Y(semelle) - 3), fill=rgb(0xC8202A))
+            elif logo_kind == 'n':
+                side_poly(d, [(.35, 9.4), (.42, 9.4), (.55, 10.3), (.55, 9.4), (.62, 9.4), (.62, 10.9), (.55, 10.9), (.42, 10.0), (.42, 10.9), (.35, 10.9)], fill=logo)
+            d.rectangle((108, Y(shoe_top(kind, 0)) - 2, 115, Y(shoe_top(kind, 0)) + 9), fill=trim)          # tirant de talon
+            for k in LEGS4:                                                                                       # semelle intermédiaire
+                x0 = LEG[k][0]
+                d.rectangle((x0, Y(semelle), x0 + 31, 255), fill=sole)
+                d.line([(x0, Y(semelle) + 1), (x0 + 31, Y(semelle) + 1)], fill=sh(sole, .82))
+            if kind == 'chunky':
+                side_poly(d, [(0, semelle), (.5, semelle + .25), (1, semelle), (1, semelle + .6), (0, semelle + .7)], fill=rgb(s.get('second', 0xB01B24)))
+        # ---- chaussures de ville : piqûre de trépointe, bout rapporté, lacets ou mors, reflet du cuir
+        if kind in ('derby', 'mocassin', 'chelsea', 'santiag', 'escarpin'):
+            for k in LEGS4:
+                x0 = LEG[k][0]
+                d.rectangle((x0, Y(semelle), x0 + 31, 255), fill=sole)
+                if kind != 'escarpin':
+                    for x in range(x0, x0 + 32, 3):
+                        d.point((x + 1, Y(semelle) - 2), fill=thread)
+            if kind != 'escarpin':
+                side_line(d, [(.55, shoe_top(kind, .55) + .3), (.6, semelle - .2)], dk)                        # couture du quartier
+            if s.get('richelieu'):
+                side_line(d, [(.8, shoe_top(kind, .8) + .2), (.76, semelle - .1)], dk, width=2)
+                d.line([(32, Y(10.6)), (63, Y(10.6))], fill=dk, width=2)
+                if s.get('fleuri'):                                                                               # perforations (brogue)
+                    for k in ('O', 'I'):
+                        for i in range(6):
+                            d.point((side_x(k, .73 - i * .002) + (1 if k == 'O' else -1) * 0, Y(10.0 + i * .26)), fill=sh(m, .45))
+                    for x in range(34, 63, 3):
+                        d.point((x, Y(10.4)), fill=sh(m, .45))
+            if kind == 'derby':
+                d.rectangle((38, Y(ftop), 57, Y(10.0)), fill=dk)
+                for y in (Y(9.0), Y(9.45), Y(9.9)):
+                    d.line([(39, y), (56, y)], fill=lace, width=2)
+                    d.point((38, y), fill=eye); d.point((57, y), fill=eye)
+            if kind == 'mocassin':
+                d.arc((36, Y(9.7), 59, Y(11.6)), 180, 360, fill=thread)                                           # plateau cousu
+                d.line([(36, Y(10.65)), (36, Y(11.6))], fill=thread); d.line([(59, Y(10.65)), (59, Y(11.6))], fill=thread)
+                if s.get('mors', True):
+                    d.rectangle((38, Y(9.75), 57, Y(9.75) + 2), fill=rgb(s.get('metal', GOLD)))
+            if kind == 'chelsea':
+                for k in ('O', 'I'):                                                                              # élastique latéral
+                    xs = sorted([side_x(k, .32), side_x(k, .52)])
+                    d.polygon([(xs[0], Y(6.4)), (xs[1], Y(6.5)), ((xs[0] + xs[1]) / 2, Y(9.4))], fill=sh(m, .45))
+                d.rectangle((108, Y(6.2) - 8, 115, Y(6.2) + 2), fill=sh(m, .6))                                  # tirette
+            if kind == 'santiag':
+                for (a, b) in ((3.6, 5.2), (4.4, 6.2), (5.2, 7.2)):                                               # surpiqûres décoratives
+                    side_line(d, [(.2, a), (.5, b), (.8, a)], thread)
+                side_poly(d, [(0, 7.0), (.25, 7.6), (.3, semelle), (0, semelle)], fill=dk)
+            if kind == 'escarpin' and s.get('bride'):
+                for k in LEGS4:
+                    x0 = LEG[k][0]
+                    d.rectangle((x0, Y(9.3), x0 + 31, Y(9.7)), fill=rgb(P['strap2']))
+            for k in ('O', 'I'):                                                                                  # reflet
+                x = side_x(k, .72)
+                d.line([(x, Y(shoe_top(kind, .72)) + 4), (x, Y(semelle) - 4)], fill=rgb(P['gloss']))
+        # ---- bottes, rangers, boots
+        if kind in ('botte', 'rangers', 'chantier', 'apres_ski', 'fourree'):
+            top = shoe_top(kind, 0)
+            for k in LEGS4:
+                x0 = LEG[k][0]
+                d.rectangle((x0, Y(semelle), x0 + 31, 255), fill=sole)
+            if kind in ('botte', 'rangers', 'chantier'):
+                side_poly(d, [(.66, 9.2), (1, 9.0), (1, semelle), (.6, semelle)], fill=rgb(P['toe']))             # coque du bout
+                side_poly(d, [(0, 8.6), (.24, 9.0), (.3, semelle), (0, semelle)], fill=rgb(P['heel']))
+                d.line([(112, Y(top) + 2), (112, Y(semelle))], fill=dk)                                          # couture arrière
+            if kind in ('rangers', 'chantier'):
+                d.rectangle((38, Y(top) - 2, 57, Y(9.4)), fill=lin)
+                y = Y(top) + 3
+                while y < Y(9.4):
+                    hook = y < Y(top + 1.6)
+                    for x in (36, 59):
+                        if hook:
+                            d.rectangle((x - 1, y - 1, x + 1, y + 1), fill=eye)
+                        else:
+                            d.ellipse((x - 1, y - 1, x + 1, y + 1), fill=eye)
+                    d.line([(37, y), (58, y + 5)], fill=lace, width=2); d.line([(58, y), (37, y + 5)], fill=sh(lace, .8), width=2)
+                    y += 6
+            if kind == 'chantier':
+                for k in LEGS4:
+                    x0 = LEG[k][0]
+                    d.rectangle((x0, Y(top), x0 + 31, Y(top) + 7), fill=rgb(P['collar']))                         # col rembourré
+                side_line(d, [(.6, 9.3), (1, 9.1)], thread, dots=True); side_line(d, [(0, 8.7), (.25, 9.1)], thread, dots=True)
+                for k in ('O',):
+                    x, y = side_x(k, .4), Y(7.2)
+                    d.polygon([(x, y - 6), (x - 4, y + 2), (x + 4, y + 2)], fill=sh(m, .55)); d.line([(x, y + 2), (x, y + 5)], fill=sh(m, .55))
+            if kind == 'botte' and s.get('bande'):
+                band(t, LEGS4, LEG, Y(top) + 14, 6)
+            if kind == 'botte':
+                for k in ('O', 'I'):
+                    x = side_x(k, .5)
+                    d.rectangle((x - 3, Y(top), x + 3, Y(top) + 8), fill=sh(m, .6))                                # tirants
+            if kind == 'apres_ski':
+                for y in range(Y(top) + 8, Y(semelle), 7):
+                    d.line([(0, y), (127, y)], fill=sh(m, .78))                                                  # matelassage
+                for k in ('O', 'I'):
+                    x = side_x(k, .5)
+                    tw = text_w('MOUN')
+                    text(t, int(x - tw / 2), Y(7.0), 'MOUN', rgb(s.get('logo_col', 0x1A1A1D)))
+            if kind == 'fourree':
+                for k in LEGS4:
+                    x0 = LEG[k][0]
+                    d.line([(x0 + 16, Y(top) + 8), (x0 + 16, Y(semelle))], fill=sh(m, .78))
+        if kind == 'claquette':
+            d.rectangle((32, Y(10.4), 63, Y(11.6)), fill=up)
+            if s.get('logo') == 'swoosh':
+                d.polygon([(54, Y(10.7)), (50, Y(11.2)), (38, Y(11.3)), (46, Y(11.0))], fill=logo)
+            elif s.get('logo') == 'web':
+                d.rectangle((32, Y(10.75), 63, Y(11.25)), fill=rgb(0x1E6B3A)); d.rectangle((32, Y(10.9), 63, Y(11.1)), fill=rgb(0xB01B24))
+            for k in LEGS4:
+                x0 = LEG[k][0]
+                d.rectangle((x0, Y(11.6), x0 + 31, 255), fill=sole)
+        if kind == 'sabot':
+            for k in ('F', 'O', 'I'):
+                x0 = LEG[k][0]
+                for yy in (Y(10.3), Y(10.9)):
+                    for xx in range(x0 + 4 + (yy % 2) * 3, x0 + 30, 6):
+                        if k == 'F' or (k == 'O' and xx > x0 + 18) or (k == 'I' and xx < x0 + 14):
+                            d.ellipse((xx - 1, yy - 1, xx + 1, yy + 1), fill=sh(m, .55))                         # aérations
+        if kind in ('tong', 'sandale'):
+            for k in LEGS4:
+                x0 = LEG[k][0]
+                d.rectangle((x0, Y(11.9), x0 + 31, 255), fill=sole)
+            if kind == 'sandale':
+                for k in LEGS4:
+                    x0 = LEG[k][0]
+                    d.rectangle((x0, Y(9.3), x0 + 31, Y(9.7)), fill=rgb(P['strap2']))                             # bride de cheville
+                d.rectangle((32, Y(11.0), 63, Y(11.4)), fill=rgb(P['strap2']))
+    draw_on(t, det)
+    if kind == 'sandale':                                                                                         # entre les brides : la peau du skin
+        for k in LEGS4:
+            x0 = LEG[k][0]
+            t.clear((x0, Y(9.7), x0 + 32, Y(11.0) if k == 'F' else Y(11.9)))
+        t.clear((32, Y(11.4), 64, Y(11.9)))
+    if kind == 'tong':
+        t.clear((0, Y(0), 128, Y(11.9)))
+    if kind == 'claquette':
+        t.clear((96, Y(0), 128, Y(11.6)))
+
+
+# ---- volumes : pied droit, le gauche en miroir (sym)
+
+def shoe_boxes(s):
+    kind, L = s['kind'], 'right_leg'
+    semelle = SEMELLE.get(kind, 11.2)
+    b = []
+    if kind in BASKETS:
+        hi = shoe_top(kind, 0)
+        st = semelle
+        b += [(L, -2.52, st, -3.4, 2.52, 12.3, 2.62, 'sole'),                     # semelle intermédiaire
+              (L, -2.2, st + .15, -3.72, 2.2, 12.25, -3.4, 'sole'), (L, -1.5, st + .3, -3.9, 1.5, 12.2, -3.72, 'sole'),   # arrondi avant
+              (L, -2.44, 12.3, -3.6, 2.44, 12.6, 2.55, 'tread'),                   # semelle d'usure
+              (L, -2.36, 9.8, -3.25, 2.36, st, -2.2, 'toe' if kind in ('toile', 'securite') or s.get('coquille') else 'upper_dark'),   # bout
+              (L, -1.85, 10.1, -3.62, 1.85, st, -3.25, 'toe' if kind in ('toile', 'securite') or s.get('coquille') else 'upper_dark'),
+              (L, -2.15, 9.3, -2.85, 2.15, 9.8, -2.2, 'upper'),                   # cou-de-pied
+              (L, -1.2, hi - .7, -2.6, 1.2, 9.4, -2.3, 'lining'),                 # languette, qui dépasse du col
+              (L, -2.1, 9.2, 2.3, 2.1, st, 2.66, 'heel'),                        # contrefort
+              (L, -0.45, hi - .9, 2.3, 0.45, hi + .3, 2.56, 'trim'),             # tirant
+              (L, -2.46, hi, -1.9, 2.46, hi + .6, 2.5, 'collar')]                # col rembourré
+        y = hi + .35
+        while y < 9.2:                                                          # lacets
+            b.append((L, -1.1, y, -2.74, 1.1, y + .26, -2.6, 'lace'))
+            y += .55 if kind != 'montante' else .6
+        b += [(L, -1.55, hi + .1, -2.52, -1.15, 9.5, -2.3, 'upper_dark'), (L, 1.15, hi + .1, -2.52, 1.55, 9.5, -2.3, 'upper_dark')]   # passants
+        if kind == 'toile' or s.get('coquille'):
+            b.append((L, -1.7, 10.6, -3.66, 1.7, 10.75, -3.6, 'sole_dark'))        # bout caoutchouc strié
+        if kind == 'chunky':
+            b += [(L, -2.62, st + .3, -3.0, 2.62, st + .9, 2.4, 'trim')]          # couche de semelle contrastée
+        logo = s.get('logo')
+        if logo == 'swoosh':
+            b += [(L, -2.47, 10.3, -1.9, -2.34, 10.65, -0.9, 'logo'), (L, -2.47, 9.95, -0.9, -2.34, 10.4, 0.6, 'logo'),
+                  (L, -2.47, 9.4, 0.6, -2.34, 10.0, 1.7, 'logo'), (L, -2.47, 9.9, -2.25, -2.34, 10.3, -1.9, 'logo')]
+        elif logo == 'bandes':
+            for i in range(3):
+                z = -0.9 + i * .55
+                b.append((L, -2.47, 9.3 - i * .1, z, -2.34, st, z + .28, 'logo'))
+        elif logo == 'formstrip':
+            b += [(L, -2.47, 10.1, -1.7, -2.34, 10.5, 0.0, 'logo'), (L, -2.47, 9.5, 0.0, -2.34, 9.95, 1.8, 'logo')]
+        elif logo == 'web':
+            b += [(L, -2.48, 9.75, -1.3, -2.34, 10.6, 1.9, 'trim'), (L, -2.52, 10.0, -1.3, -2.48, 10.35, 1.9, 'logo')]
+        elif logo == 'jump':
+            b += [(L, -2.5, 5.9, -0.3, -2.44, 6.7, 1.3, 'logo'), (L, -2.47, 9.4, -1.6, -2.34, 9.9, 1.4, 'upper_dark')]
+        elif logo == 'n':
+            b += [(L, -2.47, 9.5, -0.4, -2.34, 10.9, 0.6, 'logo')]
+        if s.get('liseré_relief'):
+            b.append((L, -2.56, st + .25, -3.45, 2.56, st + .45, 2.65, 'trim'))
+    elif kind in ('derby', 'mocassin', 'chelsea', 'santiag'):
+        st = semelle
+        pointe = -4.35 if kind == 'santiag' else -4.0
+        b += [(L, -2.42, st + .1, -3.65, 2.42, 12.35, 2.5, 'sole'), (L, -1.75, st + .15, pointe, 1.75, 12.3, -3.65, 'sole'),
+              (L, -2.48, st - .12, -3.72, 2.48, st + .12, 2.56, 'sole_dark'), (L, -1.8, st - .12, pointe - .05, 1.8, st + .12, -3.65, 'sole_dark'),   # trépointe
+              (L, -2.2, 12.35, 0.6, 2.2, 12.7, 2.45, 'heel'),                                                     # talon
+              (L, -2.3, 10.3, -3.5, 2.3, st, -2.2, 'upper'), (L, -1.65, 10.6, pointe + .08, 1.65, st, -3.5, 'upper'),   # bout effilé
+              (L, -2.1, 9.7, -2.9, 2.1, 10.3, -2.2, 'upper'), (L, -2.05, 9.6, 2.3, 2.05, st, 2.5, 'upper'),
+              (L, -1.0, 10.22, -3.3, 0.2, 10.3, -2.6, 'gloss')]                                                  # reflet sur le bout
+        if s.get('richelieu'):
+            b.append((L, -2.33, 10.28, -3.02, 2.33, st + .02, -2.92, 'upper_dark'))
+        if kind == 'derby':
+            b += [(L, -0.95, 8.6, -2.44, 0.95, 9.8, -2.3, 'upper_dark')]
+            for y in (8.95, 9.4):
+                b.append((L, -0.9, y, -2.54, 0.9, y + .2, -2.42, 'lace'))
+        if kind == 'mocassin':
+            b += [(L, -1.6, 9.62, -2.98, 1.6, 9.72, -2.2, 'upper_dark')]
+            if s.get('mors', True):
+                b += [(L, -1.25, 9.45, -2.72, 1.25, 9.7, -2.45, 'trim'), (L, -1.4, 9.4, -2.75, -1.1, 9.75, -2.42, 'trim'),
+                      (L, 1.1, 9.4, -2.75, 1.4, 9.75, -2.42, 'trim')]
+        if kind == 'chelsea':
+            b += [(L, -0.5, 5.4, 2.3, 0.5, 6.9, 2.55, 'trim'), (L, -2.42, 6.2, -2.42, 2.42, 6.6, 2.42, 'collar')]
+        if kind == 'santiag':
+            b += [(L, -2.0, 12.35, 0.9, 2.0, 13.0, 2.45, 'heel'), (L, -1.2, 2.2, -2.5, 1.2, 3.0, -2.32, 'upper'),
+                  (L, -1.2, 2.2, 2.32, 1.2, 3.0, 2.5, 'upper'), (L, -2.44, 2.9, -2.44, 2.44, 3.3, 2.44, 'collar')]
+    elif kind in ('escarpin', 'sandale'):
+        b += [(L, -2.1, 12.0, -3.8, 2.1, 12.5, -0.6, 'sole'), (L, -1.2, 12.0, -4.3, 1.2, 12.45, -3.8, 'sole'),       # semelle avant
+              (L, -1.9, 11.85, -0.6, 1.9, 12.2, 1.6, 'sole'),                                                       # cambrure
+              (L, -0.75, 11.6, 1.5, 0.75, 12.15, 2.55, 'heel'), (L, -0.45, 12.15, 1.85, 0.45, 12.65, 2.4, 'heel'),  # talon aiguille
+              (L, -0.42, 12.65, 1.9, 0.42, 12.78, 2.35, 'sole_dark')]
+        if kind == 'escarpin':
+            b += [(L, -2.25, 10.9, -3.5, 2.25, 12.0, -2.2, 'upper'), (L, -1.5, 11.1, -4.05, 1.5, 12.0, -3.5, 'upper'),
+                  (L, -0.7, 11.3, -4.35, 0.7, 12.0, -4.05, 'upper'), (L, -2.1, 10.2, 2.3, 2.1, 11.6, 2.55, 'upper'),
+                  (L, -0.9, 10.82, -3.3, 0.0, 10.9, -2.6, 'gloss')]
+            if s.get('bride'):
+                b.append((L, -2.4, 9.25, -2.4, 2.4, 9.7, 2.4, 'strap2'))
+        else:
+            b += [(L, -2.4, 9.25, -2.4, 2.4, 9.7, 2.4, 'strap2'), (L, -2.3, 10.95, -3.3, 2.3, 11.45, -2.25, 'strap2'),
+                  (L, -2.1, 10.2, 2.3, 2.1, 11.6, 2.5, 'strap2'), (L, -0.3, 9.7, 2.32, 0.3, 10.2, 2.48, 'strap2'),
+                  (L, -0.4, 9.3, -2.55, 0.4, 9.75, -2.38, 'trim')]                                                   # boucle
+    elif kind in ('tong', 'claquette'):
+        ep = 11.95 if kind == 'tong' else 11.6
+        b += [(L, -2.25, ep, -3.55, 2.25, 12.55, 2.45, 'sole'), (L, -1.6, ep + .05, -3.85, 1.6, 12.5, -3.55, 'sole'),
+              (L, -2.2, ep - .1, -3.5, 2.2, ep, 2.4, 'upper' if kind == 'tong' else 'lining')]                       # semelle de propreté
+        if kind == 'tong':
+            b += [(L, -0.2, 11.2, -3.1, 0.2, 11.85, -2.85, 'strap2'), (L, -1.2, 11.3, -2.62, 1.2, 11.55, -2.32, 'strap2'),
+                  (L, -2.4, 11.4, -2.32, -2.32, 11.65, -0.8, 'strap2'), (L, 2.32, 11.4, -2.32, 2.4, 11.65, -0.8, 'strap2')]
+        else:
+            b += [(L, -2.45, 10.4, -3.0, 2.45, 11.6, -0.4, 'upper'), (L, -1.0, 10.32, -2.4, 1.0, 10.4, -1.2, 'logo')]
+    elif kind == 'sabot':
+        b += [(L, -2.6, 11.5, -3.6, 2.6, 12.55, 2.6, 'sole'), (L, -2.55, 9.6, -3.5, 2.55, 11.5, -0.9, 'upper'),
+              (L, -2.0, 9.9, -3.85, 2.0, 11.5, -3.5, 'upper'), (L, -2.42, 9.6, 0.9, 2.42, 10.2, 2.45, 'strap2'),
+              (L, -2.5, 9.5, 0.6, -2.42, 10.3, 1.4, 'trim'), (L, 2.42, 9.5, 0.6, 2.5, 10.3, 1.4, 'trim')]
+        for (x, z) in ((-1.4, -3.0), (0.0, -3.0), (1.4, -3.0), (-0.7, -2.0), (0.7, -2.0), (-1.4, -1.2), (1.4, -1.2)):
+            b.append((L, x - .25, 9.52, z - .25, x + .25, 9.6, z + .25, 'upper_dark'))                               # aérations
+    else:   # bottes, rangers, boots, après-ski, fourrées
+        top = shoe_top(kind, 0)
+        st = semelle
+        puffy = kind == 'apres_ski'
+        w = 2.85 if puffy else 2.56
+        b += [(L, -w, st, -3.35, w, 12.35, w + .1, 'sole'), (L, -w + .08, 12.35, -3.25, w - .08, 12.65, w, 'tread'),
+              (L, -1.9, st + .1, -3.62, 1.9, 12.3, -3.35, 'sole'),
+              (L, -2.42, 9.7, -3.15, 2.42, st, -2.2, 'toe'), (L, -1.85, 10.0, -3.45, 1.85, st, -3.15, 'toe'),
+              (L, -2.3, 9.1, -2.75, 2.3, 9.7, -2.2, 'upper'), (L, -2.25, 10.0, 2.3, 2.25, st, 2.62, 'heel')]
+        if kind in ('botte', 'rangers', 'chantier'):
+            b += [(L, -2.46, top, -2.46, 2.46, top + .55, 2.46, 'collar')]
+        if kind == 'botte':
+            b += [(L, -2.52, top - .2, -0.35, -2.4, top + 1.0, 0.35, 'trim'), (L, 2.4, top - .2, -0.35, 2.52, top + 1.0, 0.35, 'trim')]
+            if s.get('bande'):
+                b.append((L, -2.4, top + 1.75, -2.4, 2.4, top + 2.5, 2.4, 'logo'))
+        if kind in ('rangers', 'chantier'):
+            b.append((L, -1.15, top - .3, -2.5, 1.15, 9.5, -2.3, 'lining'))
+            y = top + .35
+            while y < 9.2:
+                b += [(L, -1.1, y, -2.7, 1.1, y + .24, -2.56, 'lace'), (L, -1.5, y - .05, -2.6, -1.15, y + .32, -2.36, 'eyelet'),
+                      (L, 1.15, y - .05, -2.6, 1.5, y + .32, -2.36, 'eyelet')]
+                y += .62
+        if kind == 'chantier':
+            b.append((L, -2.56, top, -2.1, 2.56, top + .9, 2.56, 'collar'))
+        if puffy:
+            b += [(L, -2.95, top - .3, -2.95, 2.95, top + .7, 2.95, 'collar'), (L, -2.7, 9.0, -2.7, 2.7, st, 2.7, 'upper'),
+                  (L, -0.25, top + .6, -2.98, 0.25, 9.0, -2.82, 'lace'), (L, -0.4, top + .2, -3.05, 0.4, top + .8, -2.85, 'trim')]
+        if kind == 'fourree':
+            b += [(L, -2.62, top - .3, -2.62, 2.62, top + .8, 2.62, 'lining')]
+    return sym(b)
+
+
+def shoe_item_boxes(s):
+    """Inventaire : la paire, avec la tige (peinte sur le membre en jeu) ajoutée en volume."""
+    b = shoe_boxes(s)
+    kind = s['kind']
+    if kind not in ('tong', 'claquette', 'sandale', 'sabot'):
+        top = PROFIL[kind][1]
+        b += sym([('right_leg', -2.32, top, -2.32, 2.32, SEMELLE.get(kind, 11.2), 2.32, 'upper')])
+    return b
+
+
+def shoe_cells(s, name):
+    im = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+    d = shoe_palette(s)
+    for k, key in enumerate(SW[SHOE0:]):
+        im.paste(rgb(d[key]) + (255,), ((k % 4) * 4, (k // 4) * 4, (k % 4) * 4 + 4, (k // 4) * 4 + 4))
+    im.save(R + 'textures/item/%s.png' % name)
+
+
+def paint_shoe(o, t):
+    """Peinture des chaussures vendues seules (calque 1, bas des jambes)."""
+    paint_shoe_tex(t, o['shoe'])
+
+
+def shoe_shape_name(o):
+    return 'SHOE_' + o['id'].upper()
+
+
+# Chaussures des anciennes tenues (Gen.java, gen_rp.py) : seul le bas des jambes de leur calque 1 est repeint.
+def SP(id, kind, upper, **p):
+    return dict(id=id, shoe=dict(kind=kind, upper=upper, **p))
+
+
+SHOES_TENUES = [
+    SP('nayk_noir', 'basket', 0xF2F2EE, sole=0xF6F6F2, logo='swoosh', logo_col=0x9A9DA2, lace=0xF2F2EE, overlay=0xE6E6E2),
+    SP('nayk_gris', 'basket', 0x1C1C20, sole=0xF2F2EE, logo='swoosh', logo_col=0xF2F2EE, lace=0x1C1C20, overlay=0x26262A),
+    SP('nayk_rouge', 'basket', 0xB01B24, sole=0xF2F2EE, logo='swoosh', logo_col=0xF2F2EE, lace=0xF2F2EE, overlay=0x9A1820),
+    SP('abidas_bleu', 'basket', 0xF2F2EE, sole=0xF2F2EE, logo='bandes', logo_col=0x1F3F9E, toe=0xF2F2EE, coquille=True, trim=0x1F3F9E,
+       overlay=0xF2F2EE, lace=0xF2F2EE),
+    SP('abidas_noir', 'basket', 0x1A1A1D, sole=0xF2F2EE, logo='bandes', logo_col=0xF2F2EE, toe=0xF2F2EE, coquille=True, trim=0xF2F2EE,
+       overlay=0x1A1A1D, lace=0xF2F2EE),
+    SP('pumba_rouge', 'basket', 0xA81C24, matiere='daim', sole=0xF2F2EE, logo='formstrip', logo_col=0xF2F2EE, overlay=0x98181F, lace=0xA81C24),
+    SP('pumba_blanc', 'basket', 0xF2F2EE, sole=0x1C1C20, tread=0x101012, logo='formstrip', logo_col=0x1C1C20, overlay=0xE8E8E4, lace=0xF2F2EE),
+    SP('guchi_vert', 'basket', 0xF4F2EC, sole=0xF4F2EC, logo='web', logo_col=0xB01B24, trim=0x1E6B3A, overlay=0xEDEBE4, lace=0xF4F2EC,
+       heel=0x1E6B3A),
+    SP('louis_vuiten', 'basket', 0x6B4423, matiere='monogramme', sole=0xE8DCC0, logo_col=0xC9A24A, overlay=0x4A2E18, lace=0xE8DCC0,
+       collar=0x4A2E18, trim=0xC9A24A),
+    SP('jordane_rouge', 'montante', 0xF2F2EE, sole=0xF2F2EE, tread=0xB01B24, overlay=0xB01B24, heel=0xB01B24, collar=0x141416,
+       logo='jump', logo_col=0x141416, lace=0xF2F2EE, trim=0x141416),
+    SP('levys_jean', 'toile', 0xF2F2EE, matiere='toile', sole=0xF2F2EE, toe=0xF2F2EE, logo='tab', lace=0xF2F2EE, liseré=0x2B4470,
+       overlay=0xF2F2EE),
+    SP('costard_noir', 'derby', 0x161618, sole=0x101012, richelieu=True, lace=0x101012, overlay=0x0C0C0E, gloss=0x8A8A92),
+    SP('costard_marine', 'derby', 0x7A4524, sole=0x2A1A10, richelieu=True, fleuri=True, lace=0x3A2414, overlay=0x5E3418, gloss=0xC89A6A),
+    SP('costard_blanc', 'mocassin', 0xF0EEE8, sole=0xC9B48A, metal=GOLD, trim=GOLD, overlay=0xD8D4CA, gloss=0xFFFFFF),
+    SP('costard_gris', 'derby', 0x1A1A1C, sole=0x101012, lace=0x101012, overlay=0x111113, gloss=0x8A8A92),
+    SP('smoking', 'derby', 0x0E0E10, matiere='vernis', sole=0x0A0A0C, richelieu=True, lace=0x0A0A0C, overlay=0x070708, gloss=0xD8D8E0),
+    SP('robe_soiree_rouge', 'escarpin', 0x141416, matiere='vernis', sole=0xC8101E, heel=0x141416, gloss=0xC8C8D0),
+    SP('robe_soiree_noire', 'sandale', 0xD9AE3E, matiere='vernis', sole=0x2A2420, heel=0xD9AE3E, strap=0xD9AE3E, trim=0xF2DE9A),
+    SP('robe_cocktail', 'escarpin', 0xC4C8CE, matiere='vernis', sole=0x2A2A2E, heel=0xC4C8CE, gloss=0xFFFFFF, bride=True, strap=0xC4C8CE),
+]
+
+
 def S(id, fr, piece, shape, paint, sil, **p):
     return C(id, fr, fr, 'secours', shape, piece=piece, paint=paint, sil=sil, icon=icon_secours, **p)
 
@@ -1112,7 +1584,9 @@ SECOURS = [
       second=0x2EC46A, dos='POMPIERS', dos_fond=0x2A2620, icon_bandes=(6, 11)),
     S('surpantalon_feu_marine', 'Surpantalon de feu bleu marine', 'leggings', 'SURPANT', paint_overpants, 'pants', main=NAVY_SP, icon_bandes=(10,)),
     S('surpantalon_feu_sable', 'Surpantalon de feu sable', 'leggings', 'SURPANT', paint_overpants, 'pants', main=SABLE, icon_bandes=(10,)),
-    S('bottes_feu', 'Bottes de feu', 'boots', 'BOTTES', paint_boots, 'bottes', main=0x1C1C20, icon_bandes=(5,)),
+    S('bottes_feu', 'Bottes de feu', 'boots', 'SHOE_BOTTES_FEU', paint_shoe, 'bottes', main=0x1C1C20,
+      shoe=dict(kind='botte', upper=0x1C1C20, matiere='caoutchouc', sole=0x101012, toe=0x2A2A2E, heel=0x2A2A2E, bande=True, logo_col=HIVIS,
+                collar=0x141416, trim=0x2A2A2E)),
     S('parka_pompier', 'Parka pompier', 'chestplate', 'PARKA', paint_parka, 'veste', main=NAVY_SP, accent=HIVIS, light=REFL, second=0xC62828,
       dos='POMPIERS', icon_bandes=(6, 10)),
     # pompiers : tenue de caserne
@@ -1131,7 +1605,9 @@ SECOURS = [
       liseré=0xC62828, dos='SAMU', dos_scale=3, dos_col=NAVY_SAMU, dos_y=184, emblème='texte'),
     S('pantalon_samu', 'Pantalon de secours SAMU', 'leggings', 'CARGO', paint_caserne_pants, 'pants', main=NAVY_SAMU, pants='cargo',
       liserés=(220, 230), icon_bandes=(10, 12), icon_bande=REFL),
-    S('chaussures_intervention', "Chaussures d'intervention", 'boots', 'CHAUSSURES', paint_boots, 'chaussures', main=0x1C1C20, basses=True),
+    S('chaussures_intervention', "Chaussures d'intervention", 'boots', 'SHOE_CHAUSSURES_INTERVENTION', paint_shoe, 'chaussures', main=0x1C1C20,
+      shoe=dict(kind='rangers', upper=0x161618, sole=0x101012, lace=0x1A1A1D, eyelet=0x4A4A50, toe=0x1E1E22, heel=0x1E1E22, lining=0x202024,
+                collar=0x0E0E10)),
 ]
 CLOTHES += SECOURS
 HATS += [
@@ -1267,6 +1743,902 @@ HATS += [
     C('casquette_police', 'Casquette Police', 'Casquette Police', 'hat', 'CAP', main=NAVY_PN, light=WHITE, accent=0x2B5FC8),
 ]
 
+# ---------------------------------------------------------------- garde-robe RP (03/11) : travail, sport, soirée, bain, hiver, femme, basiques
+
+FONT.update({'F': ["XXX", "X..", "XX.", "X..", "X.."], 'G': [".XX", "X..", "X.X", "X.X", ".XX"], 'V': ["X.X", "X.X", "X.X", "X.X", ".X."],
+             'K': ["X.X", "X.X", "XX.", "X.X", "X.X"], 'Y': ["X.X", "X.X", ".X.", ".X.", ".X."], 'X': ["X.X", "X.X", ".X.", "X.X", "X.X"],
+             '0': ["XXX", "X.X", "X.X", "X.X", "XXX"], '1': [".X.", "XX.", ".X.", ".X.", "XXX"], '2': ["XX.", "..X", ".X.", "X..", "XXX"],
+             '3': ["XX.", "..X", ".X.", "..X", "XX."], '4': ["X.X", "X.X", "XXX", "..X", "..X"], '5': ["XXX", "X..", "XX.", "..X", "XX."],
+             '6': [".XX", "X..", "XXX", "X.X", "XXX"], '7': ["XXX", "..X", ".X.", ".X.", ".X."], '8': ["XXX", "X.X", "XXX", "X.X", "XXX"],
+             '9': ["XXX", "X.X", "XXX", "..X", "XX."]})
+TISSU = {'coton': dict(noise=.04, grad=(1.02, .92)), 'chine': dict(noise=.03, heather=.07), 'satin': dict(noise=.01, sheen=.3),
+         'jean': dict(noise=.04, twill=.05), 'laine': dict(noise=.06), 'nylon': dict(noise=.015, sheen=.14, grad=(1.04, .9)),
+         'cuir': dict(noise=.03, sheen=.25, grad=(1.1, .85)), 'lin': dict(noise=.05, twill=.02), 'toile': dict(noise=.03, twill=.04),
+         'lycra': dict(noise=.015, sheen=.22, grad=(1.06, .88))}
+ORANGE_HV = 0xF06A1A
+
+
+def U(u):
+    """Unité du membre (0 en haut, 12 en bas) -> ligne de la texture 512 x 256 (faces latérales du torse, des bras et des jambes)."""
+    return int(round(160 + 8 * u))
+
+
+def tissu(o):
+    return dict(TISSU[o.get('tissu', 'coton')], heather=o.get('heather', TISSU[o.get('tissu', 'coton')].get('heather', 0)))
+
+
+def cut(t, poly):
+    """Découpe (transparent : la peau ou le skin dessous se voit)."""
+    mk = Image.new('L', (512, 256), 0)
+    ImageDraw.Draw(mk).polygon(poly, fill=255)
+    t.a[np.array(mk) > 0] = 0
+
+
+def fill_top(t, m, sleeve=12, crop=12, **kw):
+    """Torse (jusqu'à crop unités) et manches (longueur sleeve, 0 = sans manches)."""
+    for k in TORSO:
+        x0, _, x1, _ = BODY[k]
+        t.fill((x0, 160, x1, U(crop)), m, **kw)
+    t.fill(BODY['top'], m, **kw)
+    if sleeve:
+        for k in SLEEVES:
+            x0, _, x1, _ = ARM[k]
+            t.fill((x0, 160, x1, U(sleeve)), m, **kw)
+        t.fill(ARM['top'], m, **kw)
+        if sleeve >= 12:
+            t.fill(ARM['bot'], sh(m, .7))
+
+
+def hem(t, keys, d, y, f=.84, h=4, rib=False):
+    for k in keys:
+        x0, _, x1, _ = d[k]
+        t.mul((x0, y - h, x1, y), f)
+        if rib:
+            t.ribs((x0, y - h, x1, y), .85)
+
+
+def flowers(t, rnd, cols, leaf, n, area=(128, 160, 448, 256), size=3):
+    """Motif hawaïen : fleurs à 5 pétales et feuilles, seulement sur le tissu déjà peint."""
+    im = t.img()
+    d = ImageDraw.Draw(im)
+    x0, y0, x1, y1 = area
+    for i in range(n):
+        x, y = rnd.randrange(x0, x1), rnd.randrange(y0, y1)
+        if i % 3 == 0:
+            a = rnd.uniform(0, math.pi)
+            dx, dy = math.cos(a) * size * 2.2, math.sin(a) * size * 2.2
+            d.polygon([(x - dx, y - dy), (x - dy * .35, y + dx * .35), (x + dx, y + dy), (x + dy * .35, y - dx * .35)], fill=rgb(leaf))
+        else:
+            c = rgb(cols[i % len(cols)])
+            for p in range(5):
+                a = p * 2 * math.pi / 5
+                px_, py_ = x + math.cos(a) * size * .8, y + math.sin(a) * size * .8
+                d.ellipse((px_ - size * .6, py_ - size * .6, px_ + size * .6, py_ + size * .6), fill=c)
+            d.ellipse((x - 1, y - 1, x + 1, y + 1), fill=rgb(0xF2C230))
+    arr = np.array(im, np.float32)
+    keep = t.a[..., 3] > 0
+    t.a[keep] = arr[keep]
+
+
+def plaid(t, area, c1, c2, step=16):
+    """Chemise à carreaux (flanelle) : bandes sombres croisées et fins filets clairs."""
+    x0, y0, x1, y1 = area
+    for x in range(x0, x1, step):
+        t.mul((x, y0, x + 5, y1), .62)
+        t.a[y0:y1, x + 9:x + 10, :3] = np.clip(t.a[y0:y1, x + 9:x + 10, :3] * .4 + np.array(rgb(c2), np.float32) * .6, 0, 255)
+    for y in range(y0, y1, step):
+        t.mul((x0, y, x1, y + 5), .66)
+        t.a[y + 9:y + 10, x0:x1, :3] = np.clip(t.a[y + 9:y + 10, x0:x1, :3] * .4 + np.array(rgb(c1), np.float32) * .6, 0, 255)
+    t.a[t.a[..., 3] == 0] = 0
+
+
+def sparkles(t, area, rnd, col, n):
+    """Paillettes : points brillants et sombres."""
+    x0, y0, x1, y1 = area
+    hi, lo = np.array(rgb(mix(col, 0xFFFFFF, .7)), np.float32), np.array(rgb(sh(col, .5)), np.float32)
+    for _ in range(n):
+        x, y = rnd.randrange(x0, x1 - 1), rnd.randrange(y0, y1 - 1)
+        if t.a[y, x, 3] > 0:
+            t.a[y, x, :3] = hi if rnd.random() < .55 else lo
+            if rnd.random() < .2:
+                t.a[y, x + 1, :3] = hi
+
+
+def number(t, x, y, s, col, scale, outline=None):
+    w = text_w(s, scale)
+    if outline is not None:
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            text(t, x - w // 2 + dx, y + dy, s, outline, scale)
+    text(t, x - w // 2, y, s, col, scale)
+
+
+# ---- hauts (calque 1)
+
+def paint_tee(o, t):
+    """T-shirts, débardeurs, crop tops, tops à bretelles, brassière, maillots de sport, maillot de bain une pièce."""
+    m, kw = o['main'], tissu(o)
+    sleeve, crop, col = o.get('manches', 3.5), o.get('court', 12), o.get('col', 'rond')
+    fill_top(t, m, sleeve, crop, **kw)
+    if o.get('côtes'):
+        for k in TORSO:
+            t.ribs(BODY[k], .9)
+    if o.get('rayures') is not None:
+        for y in range(166, U(crop), 12):
+            for k in TORSO:
+                x0, _, x1, _ = BODY[k]
+                t.fill((x0, y, x1, y + 4), o['rayures'], **kw)
+    if o.get('empiècement') is not None:            # épaules / manches contrastées (maillots)
+        for k in TORSO:
+            x0, _, x1, _ = BODY[k]
+            t.fill((x0, 160, x1, 172), o['empiècement'], **kw)
+        if sleeve:
+            for k in SLEEVES:
+                x0, _, x1, _ = ARM[k]
+                t.fill((x0, 160, x1, U(sleeve)), o['empiècement'], **kw)
+            t.fill(ARM['top'], o['empiècement'])
+    hem(t, TORSO, BODY, U(crop), .86, 4, rib=crop < 12)
+    if sleeve:
+        hem(t, SLEEVES, ARM, U(sleeve), .82, 4, rib=sleeve >= 12)
+    tr = o.get('liseré')
+    if tr is not None and sleeve:
+        for k in SLEEVES:
+            x0, _, x1, _ = ARM[k]
+            t.rect((x0, U(sleeve) - 5, x1, U(sleeve) - 3), tr)
+    if tr is not None and o.get('bandes_côtés'):
+        for k in ('R', 'L'):
+            x0, _, x1, _ = BODY[k]
+            t.rect((x0 + 12, 160, x0 + 20, U(crop)), tr)
+    nk = rgb(o.get('col_col', sh(m, .7)))
+
+    def det(d):
+        if col == 'rond':
+            d.ellipse((176, 150, 208, 170), fill=nk); d.ellipse((180, 148, 204, 166), fill=sh(nk, .8))
+        elif col == 'v':
+            d.polygon([(178, 160), (206, 160), (192, 182)], fill=nk); d.polygon([(182, 160), (202, 160), (192, 176)], fill=sh(m, .55))
+        elif col == 'polo':
+            d.rectangle((186, 160, 198, 188), fill=nk)
+            for y in (168, 180):
+                d.ellipse((190, y - 2, 194, y + 2), fill=rgb(WHITE))
+        if o.get('logo') == 'swoosh':
+            d.polygon([(214, 172), (211, 177), (203, 178), (209, 175)], fill=rgb(o.get('logo_col', WHITE)))
+        if o.get('poche'):
+            d.rectangle((203, 172, 215, 186), outline=sh(m, .72))
+    draw_on(t, det)
+    if o.get('devant'):
+        s, sc = o['devant'], o.get('devant_scale', 1)
+        text(t, 192 - text_w(s, sc) // 2, o.get('devant_y', 178), s, o.get('devant_col', WHITE), sc)
+    if o.get('numero'):
+        oc = o.get('numero_contour')
+        number(t, 288, 176, o['numero'], o.get('numero_col', WHITE), 4, oc)
+        number(t, 192, 196 if o.get('devant') else 182, o['numero'], o.get('numero_col', WHITE), 2, oc)
+    back_text(t, o, o.get('dos_y', 166))
+    # découpes : encolures profondes, emmanchures, bretelles, échancrures
+    if col in ('debardeur', 'bretelles', 'bustier', 'brassiere', 'une_piece'):
+        if col == 'debardeur':
+            cut(t, [(174, 160), (210, 160), (204, 176), (192, 182), (180, 176)])
+            cut(t, [(270, 160), (306, 160), (300, 170), (276, 170)])
+        if col in ('bretelles', 'une_piece', 'brassiere'):
+            for (x0, x1, a, b) in ((160, 224, 168, 214), (256, 320, 264, 310)):
+                cut(t, [(x0, 160), (a, 160), (a, U(1.6)), (x0, U(1.6))]); cut(t, [(a + 4, 160), (b, 160), (b, U(1.6)), (a + 4, U(1.6))])
+                cut(t, [(b + 4, 160), (x1, 160), (x1, U(1.6)), (b + 4, U(1.6))])
+            cut(t, [(178, U(1.6)), (206, U(1.6)), (192, U(3.2))])
+            if col == 'brassiere':
+                cut(t, [(268, U(1.6)), (308, U(1.6)), (300, U(5)), (276, U(5))])        # dos nageur
+        if col == 'bustier':
+            for k in TORSO:
+                x0, _, x1, _ = BODY[k]
+                cut(t, [(x0, 160), (x1, 160), (x1, U(2.2)), (x0, U(2.2))])
+        for k in ('R', 'L'):
+            x0, _, x1, _ = BODY[k]
+            cut(t, [(x0, 160), (x1, 160), (x1, U(2.6)), (x0, U(2.6))])
+        cut(t, [(160, 128), (224, 128), (224, 160), (160, 160)])
+        if col == 'une_piece':                                            # échancrure haute sur les hanches
+            for (x0, x1) in ((160, 224), (256, 320)):
+                cut(t, [(x0, 256), (x0 + 22, 256), (x0, U(9.2))]); cut(t, [(x1, 256), (x1 - 22, 256), (x1, U(9.2))])
+            for k in ('R', 'L'):
+                x0, _, x1, _ = BODY[k]
+                cut(t, [(x0, U(9.4)), (x1, U(9.4)), (x1, 256), (x0, 256)])
+
+
+def paint_chemise(o, t):
+    """Chemises : blanche, hawaïenne (col ouvert), à carreaux ; manches longues, courtes ou retroussées."""
+    m, kw = o['main'], tissu(o)
+    sleeve = o.get('manches', 12)
+    fill_top(t, m, sleeve, 12, **kw)
+    rnd = random.Random(hash(o['id']) % 1000)
+    if o.get('motif') == 'hawaii':
+        flowers(t, rnd, o['fleurs'], o['feuille'], 95)
+    elif o.get('motif') == 'carreaux':
+        plaid(t, (128, 128, 448, 256), o['filet1'], o['filet2'])
+    if sleeve >= 12:
+        for k in SLEEVES:
+            x0, _, x1, _ = ARM[k]
+            t.fill((x0, 244, x1, 256), sh(m, .95), noise=.02)                          # poignets
+            t.rect((x0, 244, x1, 245), sh(m, .7))
+    elif sleeve > 4:
+        hem(t, SLEEVES, ARM, U(sleeve), .82, 7)                                       # manches retroussées
+    else:
+        hem(t, SLEEVES, ARM, U(sleeve), .86, 3)
+    hem(t, TORSO, BODY, 256, .9, 2)
+    sc = rgb(o.get('col_col', sh(m, .86)))
+
+    def det(d):
+        d.line([(192, 160), (192, 256)], fill=sh(m, .7))                             # patte de boutonnage
+        for y in range(170, 252, 14):
+            d.ellipse((193, y - 2, 197, y + 2), fill=rgb(o.get('bouton', 0xE8E4DA)), outline=sh(m, .6))
+        if not o.get('ouverte'):
+            d.polygon([(176, 160), (191, 160), (186, 172)], fill=sc, outline=sh(sc, .7))   # pointes de col
+            d.polygon([(208, 160), (193, 160), (198, 172)], fill=sc, outline=sh(sc, .7))
+        else:
+            d.polygon([(172, 160), (184, 160), (192, 186), (184, 182)], fill=sc, outline=sh(sc, .7))   # col camp, revers
+            d.polygon([(212, 160), (200, 160), (192, 186), (200, 182)], fill=sc, outline=sh(sc, .7))
+        if o.get('poche', True):
+            d.rectangle((202, 176, 214, 190), outline=sh(m, .68))
+        if sleeve >= 12:
+            for k in ('O',):
+                x0 = ARM[k][0]
+                d.ellipse((x0 + 14, 248, x0 + 17, 251), fill=rgb(o.get('bouton', 0xE8E4DA)))
+    draw_on(t, det)
+    if o.get('ouverte'):
+        cut(t, [(184, 160), (200, 160), (192, 184)])                                  # col ouvert : la peau se voit
+
+
+def paint_btp(o, t):
+    """Gilet de chantier haute visibilité sur un t-shirt : bandes réfléchissantes, bretelles, poches, BTP dans le dos."""
+    m, tee = o['main'], o.get('tee', 0x2A2A2E)
+    fill_top(t, tee, 3.5, 12, noise=.04)
+    hem(t, SLEEVES, ARM, U(3.5), .84, 3)
+    for k in TORSO:
+        x0, _, x1, _ = BODY[k]
+        t.fill((x0, 160, x1, 256), m, noise=.02, grad=(1.06, .94))
+    t.fill(BODY['top'], m)
+    for y in (U(6.2), U(9.6)):
+        band(t, TORSO, BODY, y, 8, hivis=None)
+    for x in (166, 210, 262, 306):
+        t.fill((x, 160, x + 8, U(6.2)), REFL, noise=.01, sheen=.35)                    # bretelles réfléchissantes
+
+    def det(d):
+        d.line([(192, 160), (192, 256)], fill=sh(m, .6), width=2)
+        d.polygon([(180, 160), (204, 160), (192, 174)], fill=rgb(tee))
+        for x in (164, 204):
+            d.rectangle((x, 220, x + 16, 240), outline=sh(m, .6))
+            d.line([(x, 224), (x + 16, 224)], fill=sh(m, .6))
+        d.rectangle((166, 182, 176, 192), outline=sh(m, .6))                          # porte-badge
+    draw_on(t, det)
+    back_text(t, o, 214, 3)
+
+
+def paint_mecano(o, t):
+    """Veste de bleu de travail : empiècement contrasté, poches à rabat, écusson, GARAGE dans le dos."""
+    m, c2 = o['main'], o.get('second', 0x5A5E66)
+    fill_top(t, m, 12, 12, noise=.03, twill=.03)
+    for k in TORSO:
+        x0, _, x1, _ = BODY[k]
+        t.fill((x0, 160, x1, 180), c2, noise=.03, twill=.03)
+    for k in SLEEVES:
+        x0, _, x1, _ = ARM[k]
+        t.fill((x0, 160, x1, 184), c2, noise=.03, twill=.03)
+    t.fill(ARM['top'], c2)
+    hem(t, SLEEVES, ARM, 256, .8, 6, rib=True)
+    hem(t, TORSO, BODY, 256, .85, 6)
+    rnd = random.Random(5)
+    for _ in range(40):                                                            # taches de cambouis
+        x, y = rnd.randrange(130, 446), rnd.randrange(186, 252)
+        if t.a[y, x, 3] > 0:
+            t.mul((x, y, x + rnd.randint(1, 3), y + rnd.randint(1, 2)), .55)
+
+    def det(d):
+        d.line([(180, 180), (320, 180)], fill=rgb(o.get('passepoil', 0xE07A1E)), width=1)
+        d.line([(192, 160), (192, 256)], fill=rgb(SILVER_D), width=2)
+        for x in (166, 200):
+            d.rectangle((x, 188, x + 18, 208), outline=sh(m, .62)); d.rectangle((x, 188, x + 18, 194), fill=sh(m, .82))
+        d.ellipse((166, 166, 186, 176), fill=rgb(WHITE), outline=rgb(0xC8202A))           # écusson nominatif
+        d.line([(170, 171), (182, 171)], fill=rgb(0x1A2A50))
+    draw_on(t, det)
+    back_text(t, o, 192, 2)
+
+
+def paint_chef(o, t):
+    """Veste de cuisinier : croisée, deux rangs de boutons boules, col officier à liseré tricolore, manches retroussées."""
+    m = o['main']
+    fill_top(t, m, 12, 12, noise=.03, twill=.02)
+    for k in SLEEVES:
+        x0, _, x1, _ = ARM[k]
+        t.fill((x0, 236, x1, 248), sh(m, .94), noise=.02)                              # revers de manche
+        t.rect((x0, 236, x1, 237), sh(m, .75))
+    hem(t, TORSO, BODY, 256, .9, 3)
+
+    def det(d):
+        d.polygon([(172, 160), (224, 160), (224, 256), (172, 256)], fill=sh(m, .97))
+        d.line([(172, 166), (172, 256)], fill=sh(m, .78))                            # bord du croisé
+        for y in (176, 194, 212, 230):
+            for x in (180, 212):
+                d.ellipse((x - 3, y - 3, x + 3, y + 3), fill=rgb(0x1A1A1D), outline=rgb(0x3A3A40))
+        for i, c in enumerate((0x1F3F9E, WHITE, 0xC8202A)):
+            d.line([(160, 161 + i), (224, 161 + i)], fill=rgb(c))
+        d.line([(256, 161), (320, 161)], fill=rgb(0x1F3F9E)); d.line([(256, 162), (320, 162)], fill=rgb(WHITE)); d.line([(256, 163), (320, 163)], fill=rgb(0xC8202A))
+    draw_on(t, det)
+    text(t, 198, 184, 'CHEF', rgb(0x1F3F9E), 1)
+
+
+def paint_serveur(o, t):
+    """Tenue de serveur : chemise blanche, gilet noir boutonné (dos en satin à patte de serrage), nœud papillon."""
+    shirt, vest = o.get('chemise', 0xF2F2EE), o['main']
+    fill_top(t, shirt, 12, 12, noise=.03)
+    hem(t, SLEEVES, ARM, 256, .9, 6)
+    for k in TORSO:
+        x0, _, x1, _ = BODY[k]
+        t.fill((x0, U(1.0), x1, 256), vest, noise=.03, twill=.03)
+    t.fill((256, U(1.0), 320, 256), sh(vest, 1.2), noise=.01, sheen=.3)                 # dos satiné
+    cut_v = [(176, U(1.0)), (208, U(1.0)), (192, U(6.5))]
+
+    def det(d):
+        d.polygon(cut_v, fill=rgb(shirt))
+        d.line([(192, U(6.5)), (192, 256)], fill=sh(vest, .6))
+        for y in (U(7), U(8.4), U(9.8)):
+            d.ellipse((194, y - 2, 198, y + 2), fill=rgb(0x3A3A40))
+        d.line([(166, U(8.6)), (178, U(8.6))], fill=sh(vest, .55)); d.line([(206, U(8.6)), (218, U(8.6))], fill=sh(vest, .55))
+        d.line([(192, U(1)), (192, U(6))], fill=sh(shirt, .8))
+        d.rectangle((272, U(8.5), 304, U(9.2)), fill=sh(vest, .9)); d.rectangle((286, U(8.4), 290, U(9.3)), fill=rgb(SILVER))
+        d.polygon([(184, 160), (190, 164), (184, 168)], fill=rgb(o.get('noeud', 0x141416)))
+        d.polygon([(200, 160), (194, 164), (200, 168)], fill=rgb(o.get('noeud', 0x141416)))
+    draw_on(t, det)
+
+
+def paint_livreur(o, t):
+    """Veste de livreur : orange et noir, matelassage léger, passepoils réfléchissants, LIVRAISON dans le dos."""
+    m, c2 = o['main'], o.get('second', 0x1C1C20)
+    fill_top(t, m, 12, 12, noise=.015, sheen=.1)
+    for k in SLEEVES:
+        x0, _, x1, _ = ARM[k]
+        t.fill((x0, U(6), x1, 256), c2, noise=.015, sheen=.1)
+    for k in ('R', 'L'):
+        x0, _, x1, _ = BODY[k]
+        t.fill((x0, 160, x1, 256), c2, noise=.015, sheen=.1)
+    for y in range(176, 250, 12):
+        for k in TORSO:
+            x0, _, x1, _ = BODY[k]
+            t.mul((x0, y, x1, y + 1), .8)
+    hem(t, SLEEVES, ARM, 256, .8, 6, rib=True)
+    hem(t, TORSO, BODY, 256, .8, 6, rib=True)
+
+    def det(d):
+        for (x0, x1) in ((160, 224), (256, 320)):
+            d.line([(x0, U(6)), (x1, U(6))], fill=rgb(REFL), width=2)
+        for k in SLEEVES:
+            x0 = ARM[k][0]
+            d.line([(x0, U(6)), (x0 + 32, U(6))], fill=rgb(REFL), width=2)
+        d.line([(192, 160), (192, 256)], fill=rgb(SILVER_D), width=2)
+        d.rectangle((190, 166, 194, 174), fill=rgb(SILVER))
+    draw_on(t, det)
+    back_text(t, o, 196, 1)
+    text(t, 202, 172, 'MN', o.get('dos_col', WHITE), 1, glyphs=COMPACT)
+
+
+def paint_miami(o, t):
+    """Costume Miami pastel : veste ouverte sur un t-shirt, manches retroussées, revers, pochette."""
+    m, tee = o['main'], o.get('tee', 0xF2F2EE)
+    fill_top(t, m, 9.5, 12, noise=.04, twill=.02)
+    for k in SLEEVES:
+        x0, _, x1, _ = ARM[k]
+        t.fill((x0, U(8.6), x1, U(9.5)), sh(m, .9), noise=.02)                        # manche retroussée
+        t.rect((x0, U(8.6), x1, U(8.6) + 1), sh(m, .7))
+    hem(t, TORSO, BODY, 256, .9, 3)
+
+    def det(d):
+        d.polygon([(180, 160), (204, 160), (198, 256), (186, 256)], fill=rgb(tee))       # t-shirt dessous
+        d.ellipse((182, 154, 202, 166), fill=sh(tee, .8))
+        lap = sh(m, .9)
+        d.polygon([(170, 160), (180, 160), (188, 214), (184, 214), (172, 180)], fill=lap, outline=sh(m, .65))
+        d.polygon([(214, 160), (204, 160), (196, 214), (200, 214), (212, 180)], fill=lap, outline=sh(m, .65))
+        d.ellipse((199, 216, 203, 220), fill=sh(m, .55))
+        d.line([(166, 230), (180, 230)], fill=sh(m, .7)); d.line([(204, 230), (218, 230)], fill=sh(m, .7))
+        d.polygon([(206, 180), (216, 180), (214, 176), (210, 178), (207, 176)], fill=rgb(o.get('pochette', WHITE)))
+        d.line([(288, 236), (288, 256)], fill=sh(m, .7))
+    draw_on(t, det)
+
+
+def paint_robe_haut(o, t):
+    """Haut de robe : paillettes (bustier) ou moulante à bretelles, fronces."""
+    m = o['main']
+    fill_top(t, m, 0, 12, **tissu(o))
+    rnd = random.Random(9)
+    if o.get('paillettes'):
+        sparkles(t, (128, 160, 320, 256), rnd, m, 2600)
+
+    def det(d):
+        if o.get('fronces'):
+            for i in range(7):
+                d.line([(162, 176 + i * 11), (222, 168 + i * 11)], fill=sh(m, .78))
+    draw_on(t, det)
+    for (x0, x1) in ((160, 224), (256, 320)):
+        if o.get('bustier'):                                                     # bustier : décolleté en cœur devant
+            d0 = U(2.0)
+            cut(t, [(x0, 160), (x1, 160), (x1, d0), (x0 + (x1 - x0) // 2, d0 + (6 if x0 == 160 else 0)), (x0, d0)])
+        else:
+            cut(t, [(x0, 160), (x0 + 8, 160), (x0 + 8, U(1.5)), (x0, U(1.5))]); cut(t, [(x1 - 8, 160), (x1, 160), (x1, U(1.5)), (x1 - 8, U(1.5))])
+            cut(t, [(x0 + 12, 160), (x1 - 12, 160), (x1 - 12, U(1.5)), (x0 + 12, U(1.5))])
+            cut(t, [(x0 + 16, U(1.5)), (x1 - 16, U(1.5)), (x0 + 32, U(3.4))])
+    for k in ('R', 'L'):
+        x0, _, x1, _ = BODY[k]
+        cut(t, [(x0, 160), (x1, 160), (x1, U(2.4)), (x0, U(2.4))])
+    cut(t, [(160, 128), (224, 128), (224, 160), (160, 160)])
+
+
+def paint_parka_fourrure(o, t):
+    """Parka d'hiver : capuche bordée de fausse fourrure (relief), poches à rabat, cordon de serrage, boutons-pressions."""
+    m = o['main']
+    fill_top(t, m, 12, 12, noise=.025, twill=.03)
+    hem(t, SLEEVES, ARM, 256, .78, 6, rib=True)
+
+    def det(d):
+        e = sh(m, .6)
+        d.line([(192, 160), (192, 256)], fill=e, width=2)
+        for y in (172, 196, 220, 244):
+            d.ellipse((188, y - 2, 192, y + 2), fill=rgb(SILVER_D))
+        for x in (164, 202):
+            d.rectangle((x, 222, x + 18, 246), outline=e); d.rectangle((x, 222, x + 18, 228), fill=sh(m, .85))
+            d.rectangle((x, 182, x + 16, 198), outline=e)
+        for (x0, x1) in ((128, 160), (160, 224), (224, 256), (256, 320)):
+            d.line([(x0, 212), (x1, 212)], fill=e)
+        d.line([(182, 212), (180, 220)], fill=rgb(0xE8DCC0)); d.line([(202, 212), (204, 220)], fill=rgb(0xE8DCC0))
+        d.rectangle((328, 180, 344, 190), fill=sh(m, .8))
+    draw_on(t, det)
+
+
+# ---- bas (calque 2)
+
+def legs_fill(t, m, L=12, **kw):
+    for k in LEGS4:
+        x0, _, x1, _ = LEG[k]
+        t.fill((x0, 160, x1, U(L)), m, **kw)
+    t.fill(LEG['top'], m, **kw)
+    for k in TORSO:
+        x0, _, x1, _ = BODY[k]
+        t.fill((x0, 232, x1, 256), m, **kw)
+
+
+def paint_short(o, t):
+    """Shorts et bermudas : jean effiloché, sport à bandes, cargo, bain à motif."""
+    m, L, kind = o['main'], o.get('long', 5), o.get('short', 'sport')
+    if kind in ('jean', 'cargo'):
+        paint_pants(dict(o, pants=kind), t)
+        for k in LEGS4:
+            x0, _, x1, _ = LEG[k]
+            t.clear((x0, U(L), x1, 256))
+        if kind == 'jean':
+            rnd = random.Random(2)
+            for k in LEGS4:
+                x0, _, x1, _ = LEG[k]
+                for x in range(x0, x1):
+                    for y in range(U(L) - 3, U(L) + rnd.randint(0, 3)):
+                        t.a[y, x] = (*rgb(0xE8E4DA), 255) if y >= U(L) - 1 else t.a[y, x]
+        else:
+            hem(t, LEGS4, LEG, U(L), .82, 4)
+        return
+    legs_fill(t, m, L, **tissu(o))
+    if o.get('motif') == 'flamants':
+        flowers(t, random.Random(4), [0xF29AB8, 0xE86FA0], 0x1E7A3C, 70, (0, 160, 128, U(L)), 3)
+        flowers(t, random.Random(5), [0xF29AB8], 0x1E7A3C, 30, (128, 232, 320, 256), 3)
+    hem(t, LEGS4, LEG, U(L), .84, 3)
+    for k in TORSO:
+        x0, _, x1, _ = BODY[k]
+        t.mul((x0, 232, x1, 240), .82); t.ribs((x0, 232, x1, 240), .85)              # taille élastique
+    if o.get('bandes') is not None:
+        for k in ('O', 'I'):
+            x0 = LEG[k][0]
+            t.rect((x0 + 12, 160, x0 + 15, U(L)), o['bandes']); t.rect((x0 + 17, 160, x0 + 20, U(L)), o['bandes'])
+
+    def det(d):
+        d.line([(189, 240), (187, 250)], fill=rgb(WHITE), width=2); d.line([(195, 240), (197, 250)], fill=rgb(WHITE), width=2)
+    draw_on(t, det)
+    if o.get('numero'):
+        text(t, 8, 168, o['numero'], o.get('numero_col', WHITE), 2)
+
+
+def paint_jupe(o, t):
+    """Jupes : plissée, mini en cuir, longue à paillettes, moulante."""
+    m, L = o['main'], o.get('long', 4)
+    legs_fill(t, m, L, **tissu(o))
+    if o.get('plis'):
+        for k in LEGS4:
+            x0, _, x1, _ = LEG[k]
+            for x in range(x0, x1, 6):
+                t.mul((x, 160, x + 3, U(L)), .82); t.mul((x + 3, 160, x + 4, U(L)), 1.12)
+        for k in TORSO:
+            x0, _, x1, _ = BODY[k]
+            for x in range(x0, x1, 6):
+                t.mul((x, 240, x + 3, 256), .82)
+    if o.get('paillettes'):
+        sparkles(t, (0, 160, 128, U(L)), random.Random(3), m, 2600)
+        sparkles(t, (128, 232, 320, 256), random.Random(4), m, 600)
+    for k in TORSO:
+        x0, _, x1, _ = BODY[k]
+        t.mul((x0, 232, x1, 238), .8)                                                 # ceinture
+    hem(t, LEGS4, LEG, U(L), .8, 2)
+    if o.get('zip'):
+        t.rect((287, 236, 289, 256), SILVER)
+    if o.get('fente'):
+        for (x0, x1) in ((0, 32),):
+            cut(t, [(x0 + 22, U(L)), (x0 + 30, U(L)), (x0 + 26, U(L) - 22)])
+
+
+def paint_pantalon_costume(o, t):
+    """Pantalon de costume : pli marqué devant, ceinture à passants, poches italiennes, ourlet."""
+    m = o['main']
+    legs_fill(t, m, 12, noise=.035, twill=.02)
+    for k in TORSO:
+        x0, _, x1, _ = BODY[k]
+        t.fill((x0, 232, x1, 240), sh(m, .9), noise=.02)
+    t.rect((47, 160, 49, 256), sh(m, 1.15)); t.rect((49, 160, 50, 256), sh(m, .82))     # pli
+    t.rect((111, 160, 113, 256), sh(m, 1.1))
+    hem(t, LEGS4, LEG, 256, .86, 3)
+
+    def det(d):
+        for x in (166, 182, 202, 218, 262, 288, 314):
+            d.rectangle((x - 1, 231, x + 1, 241), fill=sh(m, .8))
+        d.line([(192, 240), (192, 252)], fill=sh(m, .72))
+        d.line([(162, 240), (170, 256)], fill=sh(m, .72)); d.line([(222, 240), (214, 256)], fill=sh(m, .72))
+        d.line([(266, 246), (282, 246)], fill=sh(m, .7)); d.line([(294, 246), (310, 246)], fill=sh(m, .7))
+    draw_on(t, det)
+
+
+def paint_legging(o, t):
+    m = o['main']
+    legs_fill(t, m, 12, noise=.015, sheen=.22, grad=(1.06, .88))
+    for k in TORSO:
+        x0, _, x1, _ = BODY[k]
+        t.fill((x0, 228, x1, 256), m, noise=.015, sheen=.22)
+        t.mul((x0, 228, x1, 236), .78)                                               # taille haute
+    if o.get('bandes') is not None:
+        for k in ('O', 'I'):
+            x0 = LEG[k][0]
+            t.rect((x0 + 14, 160, x0 + 18, 256), o['bandes'])
+
+
+def paint_travail(o, t):
+    """Pantalon de travail : cargo, genouillères, bandes haute visibilité, marteau à la ceinture (passant)."""
+    paint_pants(dict(o, pants='cargo'), t)
+    for k in ('F',):
+        x0, _, x1, _ = LEG[k]
+        t.fill((x0 + 4, U(5.2), x1 - 4, U(7.4)), sh(o['main'], .7), noise=.03)
+    if o.get('bandes', True):
+        band(t, LEGS4, LEG, U(9.6), 8, hivis=o.get('hivis', ORANGE_HV))
+    if o.get('bretelles'):
+        for x in (168, 210, 264, 304):
+            t.fill((x, 232, x + 6, 256), sh(o['main'], .8))
+
+
+def paint_pied_de_poule(o, t):
+    """Pantalon de cuisinier : pied-de-poule noir et blanc, taille élastique, coupe ample."""
+    legs_fill(t, o.get('fond', WHITE), 12, noise=.02)
+    yy, xx = np.mgrid[0:256, 0:512]
+    dent = ((xx // 4 + yy // 4) % 2 == 0) | (((xx // 4) % 2 == 1) & ((yy // 4) % 2 == 0) & (xx % 4 == 3 - yy % 4))   # carreau + dent
+    zone = np.zeros((256, 512), bool)
+    zone[160:256, 0:128] = True
+    zone[232:256, 128:320] = True
+    t.a[dent & zone & (t.a[..., 3] > 0), :3] = rgb(o['main'])
+    for k in TORSO:
+        x0, _, x1, _ = BODY[k]
+        t.fill((x0, 232, x1, 240), o['main'], noise=.02); t.ribs((x0, 232, x1, 240), .8)
+    hem(t, LEGS4, LEG, 256, .85, 4)
+
+
+def paint_tablier(o, t):
+    """Tablier de serveur, long, sur un pantalon noir à pli : liens à la taille, poche à stylos."""
+    m, apron = o['main'], o.get('tablier', 0x1C1C20)
+    legs_fill(t, m, 12, noise=.03, twill=.03)
+    for k in LEGS4:
+        x0 = LEG[k][0]
+        if k == 'F':
+            t.rect((x0 + 15, 160, x0 + 17, 256), sh(m, 1.25))                            # pli du pantalon
+    for k in ('F',):
+        x0, _, x1, _ = LEG[k]
+        t.fill((x0, 160, x1, U(9)), apron, noise=.025, twill=.04)
+    for k in ('O', 'I'):
+        x0, _, x1, _ = LEG[k]
+        if k == 'O':
+            t.fill((x0 + 18, 160, x1, U(9)), apron, noise=.025, twill=.04)
+        else:
+            t.fill((x0, 160, x0 + 14, U(9)), apron, noise=.025, twill=.04)
+    t.fill((160, 232, 224, 256), apron, noise=.025, twill=.04)
+    for k in TORSO:
+        x0, _, x1, _ = BODY[k]
+        t.fill((x0, 232, x1, 236), sh(apron, 1.4), noise=.02)                          # liens
+    hem(t, ('F',), LEG, U(9), .7, 2)
+
+    def det(d):
+        d.rectangle((196, 240, 214, 252), outline=sh(apron, 1.6))
+        d.line([(205, 240), (205, 252)], fill=sh(apron, 1.6))
+    draw_on(t, det)
+
+
+# ---- icônes 16 x 16
+
+SIL.update({
+    'tee': ["................", "....XX....XX....", "..XXXXX..XXXXX..", ".XXXXXXXXXXXXXX.", ".XXXXXXXXXXXXXX.", "..XXXXXXXXXXXX..",
+            "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...",
+            "...XXXXXXXXXX...", "................", "................", "................"],
+    'tank': ["................", "....XX....XX....", "....XX....XX....", "....XXX..XXX....", "...XXXXXXXXXX...", "...XXXXXXXXXX...",
+             "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...",
+             "...XXXXXXXXXX...", "................", "................", "................"],
+    'crop': ["................", "................", "....XX....XX....", "..XXXXX..XXXXX..", ".XXXXXXXXXXXXXX.", "..XXXXXXXXXXXX..",
+             "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...", "................", "................", "................",
+             "................", "................", "................", "................"],
+    'brassiere': ["................", "................", "....X......X....", "....X......X....", "...XXX....XXX...", "...XXXXXXXXXX...",
+                  "...XXXXXXXXXX...", "...XXXXXXXXXX...", "................", "................", "................", "................",
+                  "................", "................", "................", "................"],
+    'une_piece': ["................", "....X......X....", "....X......X....", "...XXX....XXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...",
+                  "....XXXXXXXX....", "....XXXXXXXX....", "....XXXXXXXX....", "...XXXXXXXXXX...", "...XXX....XXX...", "....XX....XX....",
+                  "................", "................", "................", "................"],
+    'robe_haut': ["................", "................", "................", "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...",
+                  "....XXXXXXXX....", "....XXXXXXXX....", "....XXXXXXXX....", "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...",
+                  "................", "................", "................", "................"],
+    'jupe': ["................", "................", "................", "....XXXXXXXX....", "....XXXXXXXX....", "....XXXXXXXX....",
+             "...XXXXXXXXXX...", "...XXXXXXXXXX...", "..XXXXXXXXXXXX..", "..XXXXXXXXXXXX..", "................", "................",
+             "................", "................", "................", "................"],
+    'jupe_longue': ["................", "....XXXXXXXX....", "....XXXXXXXX....", "....XXXXXXXX....", "....XXXXXXXX....", "...XXXXXXXXXX...",
+                    "...XXXXXXXXXX...", "...XXXXXXXXXX...", "..XXXXXXXXXXXX..", "..XXXXXXXXXXXX..", "..XXXXXXXXXXXX..", ".XXXXXXXXXXXXXX.",
+                    ".XXXXXXXXXXXXXX.", ".XXXXXXXXXXXXXX.", "................", "................"],
+    'short': ["................", "................", "................", "...XXXXXXXXXX...", "...XXXXXXXXXX...", "...XXXXXXXXXX...",
+              "...XXXXX.XXXX...", "...XXXX..XXXX...", "...XXXX..XXXX...", "...XXXX..XXXX...", "................", "................",
+              "................", "................", "................", "................"],
+    'veste_ouverte': ["................", "...XXXXXXXXXX...", "..XXXX....XXXX..", ".XXXXX....XXXXX.", ".XXXXXX..XXXXXX.", ".XXXXXX..XXXXXX.",
+                      ".XXXXXX..XXXXXX.", ".XXXXXX..XXXXXX.", ".XXX.XX..XX.XXX.", ".XXX.XX..XX.XXX.", ".XXX.XXXXXX.XXX.", "....XXXXXXXX....",
+                      "....XXXXXXXX....", "................", "................", "................"],
+})
+
+
+def icon_mode(o):
+    """Icône 2D des nouveaux vêtements : silhouette ombrée + détails (bandes, col, motif)."""
+    sil, m = SIL[o['sil']], o['main']
+    rnd = random.Random(len(o['id']))
+    im = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+    for y, row in enumerate(sil):
+        for x, ch in enumerate(row):
+            if ch != 'X':
+                continue
+            c = sh(m, 1.0 + (0.12 if x < 8 else -0.05) - y * 0.012)
+            if o.get('icon_haut') is not None and y < o.get('icon_coupe', 4):
+                c = rgb(o['icon_haut'])
+            if y in o.get('icon_bandes', ()):
+                c = rgb(o.get('icon_bande', REFL))
+            if o.get('icon_centre') is not None and x in (7, 8) and 1 <= y <= 12:
+                c = rgb(o['icon_centre'])
+            if o.get('icon_motif') and rnd.random() < .3:
+                c = rgb(rnd.choice(o['icon_motif']))
+            if o.get('icon_rayures') is not None and y % 3 == 1:
+                c = rgb(o['icon_rayures'])
+            im.putpixel((x, y), c + (255,))
+    out = im.copy()
+    for y in range(16):
+        for x in range(16):
+            if im.getpixel((x, y))[3] == 0 and any(0 <= x + dx < 16 and 0 <= y + dy < 16 and im.getpixel((x + dx, y + dy))[3]
+                                                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                out.putpixel((x, y), (16, 16, 16, 255))
+    return out
+
+
+# ---- formes 3D
+
+def shape_chef(slim):
+    b = [ring(-0.7, 0.6, .42, 'main_hi')]
+    for y in (2.0, 4.25, 6.5, 8.75):
+        for x in (-1.5, 2.5):
+            b.append(('body', x - .3, y - .3, -2.45, x + .3, y + .3, -2.3, 'black'))
+    return b
+
+
+def shape_serveur(slim):
+    return [('body', -1.25, 0.15, -2.68, -0.25, 1.15, -2.32, 'accent'), ('body', 0.25, 0.15, -2.68, 1.25, 1.15, -2.32, 'accent'),
+            ('body', -0.3, 0.35, -2.76, 0.3, 0.95, -2.32, 'accent_dark')] + shape_polo(slim)
+
+
+def shape_btp(slim):
+    return sym([('body', 0.4, 7.4, -2.55, 3.3, 9.8, -2.3, 'main'), ('body', 0.4, 7.1, -2.6, 3.3, 7.6, -2.3, 'dark')]) + [ring(-0.4, 0.4, .4, 'main')]
+
+
+def shape_livreur(slim):
+    return [ring(-0.9, 0.7, .55, 'main_hi'), ('body', -3.3, -0.8, 2.45, 3.3, 2.3, 4.4, 'second'), ('body', -3.5, -1.0, 2.4, 3.5, -0.2, 4.6, 'dark')]
+
+
+def shape_miami(slim):
+    return sym([('body', 1.0, -0.2, -2.55, 2.7, 2.4, -2.3, 'main_hi'), ('body', 0.5, 2.4, -2.5, 1.7, 6.6, -2.3, 'main_hi')]) + \
+        [('body', 1.9, 2.6, -2.62, 3.0, 3.2, -2.3, 'second')]
+
+
+def shape_fourrure(slim):
+    b = [ring(-1.0, 0.8, .6, 'main_hi'), ('body', -3.4, -0.7, 2.35, 3.4, 3.0, 4.5, 'main'),
+         ('body', -3.9, -1.4, 2.1, 3.9, 0.3, 4.95, 'light'), ('body', -3.9, 0.3, 4.3, 3.9, 3.5, 4.95, 'light'),
+         ('body', -3.9, 0.3, 2.1, -3.4, 3.5, 4.3, 'light'), ('body', 3.4, 0.3, 2.1, 3.9, 3.5, 4.3, 'light')]
+    b += sym([('right_leg', -2.5, -0.4, -2.5, 2.5, 3.6, 2.5, 'main'), ('right_leg', -2.56, 3.2, -2.56, 2.56, 3.7, 2.56, 'dark')])
+    return b
+
+
+def shape_hardhat(slim):
+    return [('head', -4.6, -8.6, -4.6, 4.6, -6.0, 4.6, 'main'), ('head', -4.1, -9.3, -4.1, 4.1, -8.6, 4.1, 'main'),
+            ('head', -3.0, -9.7, -3.0, 3.0, -9.3, 3.0, 'main_hi'), ('head', -0.55, -9.95, -4.3, 0.55, -9.3, 4.3, 'light'),
+            ('head', -5.0, -6.35, -5.4, 5.0, -5.9, 5.0, 'main'), ('head', -3.5, -6.45, -6.6, 3.5, -6.0, -5.4, 'main'),
+            ('head', -4.65, -6.1, -4.65, 4.65, -5.6, 4.65, 'dark'), ('head', -1.2, -8.2, -4.68, 1.2, -7.0, -4.6, 'accent')]
+
+
+def shape_toque(slim):
+    b = [('head', -4.6, -8.6, -4.6, 4.6, -6.0, 4.6, 'main'), ('head', -4.65, -6.75, -4.65, 4.65, -6.35, 4.65, 'accent'),
+         ('head', -5.2, -12.6, -5.2, 5.2, -8.6, 5.2, 'main_hi'), ('head', -4.6, -13.2, -4.6, 4.6, -12.6, 4.6, 'main')]
+    for x in (-3.4, -1.15, 1.15, 3.4):
+        b += [('head', x - .2, -12.5, -5.28, x + .2, -8.7, -5.2, 'light'), ('head', x - .2, -12.5, 5.2, x + .2, -8.7, 5.28, 'light')]
+    return b
+
+
+def shape_chapka(slim):
+    return [('head', -4.7, -9.3, -4.7, 4.7, -7.2, 4.7, 'main'), ('head', -4.3, -9.7, -4.3, 4.3, -9.3, 4.3, 'main'),
+            ('head', -4.95, -7.6, -5.05, 4.95, -5.6, -4.6, 'light'), ('head', -4.95, -7.6, 4.6, 4.95, -4.4, 5.0, 'light'),
+            ('head', -5.0, -7.4, -3.0, -4.6, -2.4, 3.0, 'light'), ('head', 4.6, -7.4, -3.0, 5.0, -2.4, 3.0, 'light'),
+            ('head', -4.98, -7.25, -4.6, 4.98, -6.9, 4.6, 'light')]
+
+
+SHAPES.update({'CHEF': shape_chef, 'SERVEUR': shape_serveur, 'GILET_BTP': shape_btp, 'LIVREUR': shape_livreur, 'MIAMI': shape_miami,
+               'FOURRURE': shape_fourrure, 'CASQUE_CHANTIER': shape_hardhat, 'TOQUE': shape_toque, 'CHAPKA': shape_chapka,
+               'GENOUILLERES': lambda slim: shape_cargo(slim) + sym([('right_leg', -1.6, 5.2, -2.55, 1.6, 7.4, -2.25, 'dark'),
+                                                                    ('right_leg', -1.7, 5.6, -2.6, 1.7, 6.0, -2.5, 'strap')]),
+               'PLISSEE': lambda slim: sym([('right_leg', -2.45, 3.4, -2.45, 2.45, 4.0, 2.45, 'main')])})
+
+
+def M(id, fr, piece, shape, paint, sil, **p):
+    return C(id, fr, fr, 'mode', shape, piece=piece, paint=paint, sil=sil, icon=icon_mode, **p)
+
+
+GARDEROBE = [
+    # ---- travail
+    M('gilet_chantier', 'Gilet de chantier haute visibilité', 'chestplate', 'GILET_BTP', paint_btp, 'tank', main=ORANGE_HV, tee=0x2A2A2E,
+      dos='BTP', dos_col=0x1A1A1D, dark=sh(ORANGE_HV, .75), icon_bandes=(6, 9)),
+    M('pantalon_travail', 'Pantalon de travail à genouillères', 'leggings', 'GENOUILLERES', paint_travail, 'pants', main=0x3A3D44,
+      strap=0x1A1A1D, icon_bandes=(11,), icon_bande=ORANGE_HV),
+    M('veste_mecano', 'Veste de mécanicien', 'chestplate', 'POLO2', paint_mecano, 'veste', main=0x1E2A4A, second=0x5A5E66, dos='GARAGE',
+      dos_col=WHITE, icon_haut=0x5A5E66, icon_coupe=3),
+    M('pantalon_mecano', 'Pantalon de mécanicien', 'leggings', 'CARGO', paint_travail, 'pants', main=0x1E2A4A, bandes=False, bretelles=True),
+    M('veste_cuisinier', 'Veste de cuisinier', 'chestplate', 'CHEF', paint_chef, 'veste', main=0xF4F4F0, black=0x1A1A1D, icon_centre=0xE0E0DA),
+    M('pantalon_cuisinier', 'Pantalon de cuisinier pied-de-poule', 'leggings', None, paint_pied_de_poule, 'pants', main=0x1A1A1D,
+      icon_rayures=0xF2F2EE),
+    M('tenue_serveur', 'Chemise et gilet de serveur', 'chestplate', 'SERVEUR', paint_serveur, 'veste', main=0x1C1C20, second=0xF2F2EE,
+      accent=0x141416, icon_centre=0xF2F2EE),
+    M('tablier_serveur', 'Pantalon et tablier de serveur', 'leggings', None, paint_tablier, 'pants', main=0x1E1E22),
+    M('veste_livreur', 'Veste de livreur', 'chestplate', 'LIVREUR', paint_livreur, 'veste', main=0xF07A1A, second=0x1C1C20, dos='LIVRAISON',
+      dos_col=WHITE, icon_bandes=(7,), icon_bande=REFL),
+    # ---- sport
+    M('maillot_foot', 'Maillot de foot MineNorth FC', 'chestplate', 'POLO2', paint_tee, 'tee', main=0x1F4FB0, col='v', col_col=WHITE,
+      liseré=WHITE, bandes_côtés=True, numero='10', devant='MN', devant_y=176, second=WHITE, tissu='lycra', icon_haut=WHITE, icon_coupe=2),
+    M('maillot_basket', 'Maillot de basket', 'chestplate', None, paint_tee, 'tank', main=0xC8202A, manches=0, col='debardeur', numero='23',
+      numero_col=WHITE, numero_contour=0x141416, tissu='lycra', icon_bandes=(6,), icon_bande=WHITE),
+    M('short_sport', 'Short de sport noir', 'leggings', None, paint_short, 'short', main=0x1C1C20, long=4.5, bandes=WHITE, tissu='lycra'),
+    M('short_basket', 'Short de basket rouge', 'leggings', None, paint_short, 'short', main=0xC8202A, long=6, bandes=WHITE, tissu='lycra',
+      numero='23'),
+    M('brassiere_sport', 'Brassière de sport rose', 'chestplate', None, paint_tee, 'brassiere', main=0xE86FA0, manches=0, court=6,
+      col='brassiere', tissu='lycra', logo='swoosh'),
+    M('legging_sport', 'Legging de sport noir', 'leggings', None, paint_legging, 'pants', main=0x1A1A1E, bandes=0xE86FA0),
+    # ---- soirée / cérémonie
+    M('costume_miami_rose', 'Veste de costume Miami rose', 'chestplate', 'MIAMI', paint_miami, 'veste_ouverte', main=0xF2A6B8, tee=0xF2F2EE,
+      pochette=0x2EC4C4, second=0x2EC4C4, icon_centre=0xF2F2EE),
+    M('pantalon_miami_rose', 'Pantalon de costume Miami rose', 'leggings', None, paint_pantalon_costume, 'pants', main=0xF2A6B8),
+    M('costume_miami_ciel', 'Veste de costume Miami bleu ciel', 'chestplate', 'MIAMI', paint_miami, 'veste_ouverte', main=0x9AD0EC,
+      tee=0xF2F2EE, pochette=0xF2A6B8, second=0xF2A6B8, icon_centre=0xF2F2EE),
+    M('pantalon_miami_ciel', 'Pantalon de costume Miami bleu ciel', 'leggings', None, paint_pantalon_costume, 'pants', main=0x9AD0EC),
+    M('chemise_hawaienne', 'Chemise hawaïenne', 'chestplate', 'POLO2', paint_chemise, 'tee', main=0x1C8EA8, manches=3.5, ouverte=True,
+      motif='hawaii', fleurs=[0xF26A8A, 0xF2F2EE, 0xF2C230], feuille=0x1E7A3C, col_col=0x1C8EA8, second=0x1C8EA8,
+      icon_motif=[0xF26A8A, 0xF2F2EE, 0x1E7A3C]),
+    M('chemise_hawaienne_rouge', 'Chemise hawaïenne rouge', 'chestplate', 'POLO2', paint_chemise, 'tee', main=0xB01B24, manches=3.5,
+      ouverte=True, motif='hawaii', fleurs=[0xF2F2EE, 0xF2C230], feuille=0x1E5A3A, col_col=0xB01B24, second=0xB01B24,
+      icon_motif=[0xF2F2EE, 0xF2C230]),
+    M('chemise_blanche', 'Chemise blanche', 'chestplate', 'POLO2', paint_chemise, 'veste', main=0xF4F4F0, second=0xF4F4F0, poche=False),
+    M('robe_paillettes', 'Robe bustier à paillettes argentée', 'chestplate', None, paint_robe_haut, 'robe_haut', main=0xB8BEC8, paillettes=True,
+      bustier=True, tissu='satin'),
+    M('jupe_paillettes', 'Jupe longue à paillettes argentée', 'leggings', None, paint_jupe, 'jupe_longue', main=0xB8BEC8, long=11.6,
+      paillettes=True, tissu='satin', fente=True),
+    M('robe_moulante', 'Robe moulante noire', 'chestplate', None, paint_robe_haut, 'robe_haut', main=0x141418, fronces=True, tissu='lycra'),
+    M('jupe_moulante', 'Jupe moulante noire', 'leggings', None, paint_jupe, 'jupe', main=0x141418, long=4.5, tissu='lycra', zip=True),
+    # ---- bain
+    M('maillot_une_piece', 'Maillot de bain une pièce rouge', 'chestplate', None, paint_tee, 'une_piece', main=0xD01F2E, manches=0,
+      col='une_piece', tissu='lycra'),
+    M('short_bain_flamants', 'Short de bain flamants roses', 'leggings', None, paint_short, 'short', main=0x2EC4C4, long=5, motif='flamants',
+      icon_motif=[0xF29AB8, 0x1E7A3C]),
+    # ---- hiver
+    M('parka_fourrure_kaki', 'Parka à capuche fourrée kaki', 'chestplate', 'FOURRURE', paint_parka_fourrure, 'veste', main=0x4E5636,
+      light=0xD8CCB4, icon_haut=0xD8CCB4, icon_coupe=2),
+    M('parka_fourrure_noire', 'Parka à capuche fourrée noire', 'chestplate', 'FOURRURE', paint_parka_fourrure, 'veste', main=0x1C1C20,
+      light=0xC8C0B4, icon_haut=0xC8C0B4, icon_coupe=2),
+    # ---- femme
+    M('crop_top_blanc', 'Crop top blanc', 'chestplate', None, paint_tee, 'crop', main=0xF4F4F0, court=7, col='rond'),
+    M('crop_top_noir', 'Crop top noir', 'chestplate', None, paint_tee, 'crop', main=0x1C1C20, court=7, col='rond'),
+    M('top_bretelles', 'Top à bretelles satiné émeraude', 'chestplate', None, paint_tee, 'tank', main=0x1E6A4E, manches=0, col='bretelles', tissu='satin'),
+    M('jupe_plissee', 'Jupe plissée écossaise', 'leggings', 'PLISSEE', paint_jupe, 'jupe', main=0x8A1E2A, long=4.2, plis=True,
+      icon_rayures=0x1A2A50),
+    M('mini_jupe_cuir', 'Mini-jupe en cuir noir', 'leggings', None, paint_jupe, 'jupe', main=0x1A1A1D, long=3.6, tissu='cuir', zip=True),
+    M('jean_mom', 'Jean mom taille haute', 'leggings', None, paint_pants, 'pants', main=0x7A9AC8, pants='jean', stitch=0xC8873A),
+    M('short_jean', 'Short en jean effiloché', 'leggings', None, paint_short, 'short', main=0x6A8AB8, long=3.6, short='jean', stitch=0xC8873A),
+    # ---- basiques
+    M('tshirt_blanc', 'T-shirt blanc', 'chestplate', None, paint_tee, 'tee', main=0xF4F4F0),
+    M('tshirt_noir', 'T-shirt noir', 'chestplate', None, paint_tee, 'tee', main=0x1C1C20),
+    M('tshirt_marine_raye', 'Marinière', 'chestplate', None, paint_tee, 'tee', main=0xF4F4F0, rayures=0x1A2A50, manches=12, icon_rayures=0x1A2A50),
+    M('debardeur_blanc', 'Débardeur blanc côtelé', 'chestplate', None, paint_tee, 'tank', main=0xF2F2EE, manches=0, col='debardeur', côtes=True),
+    M('chemise_carreaux', 'Chemise à carreaux en flanelle', 'chestplate', 'POLO2', paint_chemise, 'veste', main=0xA8202A, motif='carreaux',
+      filet1=0xE8C040, filet2=0x1A1A1D, second=0x8A1A22, col_col=0x8A1A22, icon_rayures=0x3A1A1A),
+    M('bermuda_cargo', 'Bermuda cargo beige', 'leggings', 'CARGO', paint_short, 'short', main=0xBFA982, long=7, short='cargo'),
+]
+CLOTHES += GARDEROBE
+HATS += [
+    C('casque_chantier', 'Casque de chantier jaune', 'Casque de chantier jaune', 'hat', 'CASQUE_CHANTIER', main=0xF2C230, light=0xF6D860,
+      dark=0x2A2A2E, accent=ORANGE_HV),
+    C('casque_chantier_blanc', 'Casque de chantier blanc', 'Casque de chantier blanc', 'hat', 'CASQUE_CHANTIER', main=0xEEEEEA,
+      light=0xFAFAF7, dark=0x2A2A2E, accent=0x1F4FB0),
+    C('toque_cuisinier', 'Toque de cuisinier', 'Toque de cuisinier', 'hat', 'TOQUE', main=0xF4F4F0, main_hi=0xFAFAF8, light=0xDCDCD6,
+      accent=0x1F3F9E),
+    C('chapka', 'Chapka en fausse fourrure', 'Chapka en fausse fourrure', 'hat', 'CHAPKA', main=0x2A2420, light=0x8A7A66),
+    C('casquette_livreur', 'Casquette de livreur', 'Casquette de livreur', 'hat', 'CAP', main=0xF07A1A, light=0x1C1C20, accent=0x1C1C20),
+]
+
+
+# ---------------------------------------------------------------- chaussures vendues seules (03/11)
+
+def CH(id, fr, kind, upper, **p):
+    return C(id, fr, fr, 'chaussures', 'SHOE_' + id.upper(), piece='boots', paint=paint_shoe, main=upper, shoe=dict(kind=kind, upper=upper, **p))
+
+
+CHAUSSURES = [
+    # baskets
+    CH('baskets_running_blanches', 'Baskets de running Nayk Air blanches', 'runner', 0xEEEEEC, matiere='maille', sole=0xF6F6F2,
+       logo='swoosh', logo_col=0xE8641E, overlay=0xDCDCDA, lace=0xF2F2EE, heel=0xE8641E, liseré_relief=True, trim=0xE8641E),
+    CH('baskets_running_noires', 'Baskets de running Nayk Air noires', 'runner', 0x1C1C20, matiere='maille', sole=0x1C1C20, tread=0x0E0E10,
+       logo='swoosh', logo_col=0xF2F2EE, overlay=0x26262A, lace=0x1C1C20, trim=0x3A3A40),
+    CH('baskets_new_grises', 'Baskets New Ballance grises', 'basket', 0x9A9DA2, matiere='daim', sole=0xEDEDE8, logo='n', logo_col=0xF2F2EE,
+       overlay=0x7E8186, lace=0xC8CACE, heel=0x6E7176),
+    CH('baskets_montantes_panda', 'Baskets montantes Jordane noir et blanc', 'montante', 0xF2F2EE, sole=0xF2F2EE, tread=0x141416, overlay=0x141416,
+       heel=0x141416, collar=0x141416, logo='jump', logo_col=0x141416, lace=0xF2F2EE, trim=0x141416),
+    CH('baskets_toile_noires', 'Baskets en toile Converso noires', 'toile', 0x1C1C20, matiere='toile', sole=0xF2F2EE, toe=0xF2F2EE,
+       lace=0xF2F2EE, liseré=0x1C1C20, overlay=0x1C1C20, heel=0x1C1C20, logo='tab'),
+    CH('baskets_chunky', 'Baskets chunky Balencio', 'chunky', 0xE8E2D4, matiere='nubuck', sole=0xF2EEE4, overlay=0x9A9DA2, heel=0xB01B24,
+       second=0x7A7E86, trim=0x7A7E86, lace=0x9A9DA2, logo='n', logo_col=0x1A1A1D),
+    CH('baskets_luxe_blanches', 'Baskets Guchi Ace blanches', 'basket', 0xF6F4EE, sole=0xF6F4EE, logo='web', logo_col=0xB01B24, trim=0x1E6B3A,
+       overlay=0xF0EEE8, lace=0xF6F4EE, heel=0xD9AE3E),
+    # chaussures de ville
+    CH('mocassins_cognac', 'Mocassins à mors cognac', 'mocassin', 0x8A4E26, sole=0x3A2414, metal=GOLD, trim=GOLD, overlay=0x6A3A1C, gloss=0xD8A878),
+    CH('mocassins_noirs', 'Mocassins à mors noirs', 'mocassin', 0x161618, sole=0x101012, metal=SILVER, trim=SILVER, overlay=0x0E0E10, gloss=0x8A8A92),
+    CH('derbies_marron', 'Derbies en cuir marron', 'derby', 0x5A3420, sole=0x2A1A10, lace=0x2A1A10, overlay=0x46281A, gloss=0xB0805A),
+    # talons
+    CH('escarpins_noirs', 'Escarpins Loubouton noirs', 'escarpin', 0x141416, matiere='vernis', sole=0xC8101E, heel=0x141416, gloss=0xC8C8D0),
+    CH('escarpins_rouges', 'Escarpins vernis rouges', 'escarpin', 0xB0121E, matiere='vernis', sole=0x1A1A1D, heel=0xB0121E, gloss=0xF2A0A8),
+    CH('escarpins_nude', 'Escarpins nude à bride', 'escarpin', 0xD8B49A, sole=0x2A2420, heel=0xD8B49A, gloss=0xF4E2D4, bride=True, strap=0xD8B49A),
+    CH('sandales_talons_argent', 'Sandales à talons argentées', 'sandale', 0xC4C8CE, matiere='vernis', sole=0x2A2A2E, heel=0xC4C8CE,
+       strap=0xC4C8CE, trim=0xE8ECF0),
+    # été
+    CH('tongs_havaianna', 'Tongs Havaianna jaunes', 'tong', 0x1E8A4A, sole=0xF2C230, sole_dark=0x1E8A4A, strap=0x1E8A4A),
+    CH('tongs_noires', 'Tongs noires', 'tong', 0x1C1C20, sole=0x1C1C20, sole_dark=0x3A3A40, strap=0x2A2A2E),
+    CH('claquettes_nayk', 'Claquettes Nayk noires', 'claquette', 0x1C1C20, sole=0xF2F2EE, lining=0x1C1C20, logo='swoosh', logo_col=0xF2F2EE),
+    CH('claquettes_guchi', 'Claquettes Guchi', 'claquette', 0xF0E8D8, sole=0x1C1C20, lining=0x1C1C20, logo='web', logo_col=0xB01B24),
+    # bottes et boots
+    CH('rangers_noires', 'Rangers en cuir noir', 'rangers', 0x161618, sole=0x101012, lace=0x1A1A1D, eyelet=0x4A4A50, toe=0x1E1E22,
+       heel=0x1E1E22, lining=0x202024, collar=0x0E0E10),
+    CH('boots_timberlande', 'Boots Timberlande', 'chantier', 0xC08A3E, matiere='nubuck', sole=0x5A3A22, tread=0x3A2414, lace=0x8A5A2A,
+       eyelet=0xC9A24A, collar=0x4A2E18, toe=0xC08A3E, heel=0xC08A3E, lining=0xB07E36, fil=0xE0A040),
+    CH('chelsea_noires', 'Bottines Chelsea noires', 'chelsea', 0x161618, sole=0x101012, trim=0x2A2A2E, collar=0x161618, gloss=0x8A8A92),
+    CH('chelsea_daim', 'Bottines Chelsea en daim taupe', 'chelsea', 0x7A6A5A, matiere='daim', sole=0x2A1A10, trim=0x4A3A2A, collar=0x7A6A5A,
+       gloss=0x9A8A7A),
+    CH('santiags', 'Santiags en cuir', 'santiag', 0x6A3A1E, sole=0x2A1A10, heel=0x3A2414, collar=0x4A2814, overlay=0x4A2814, fil=0xE8D8B0,
+       gloss=0xC08A5A),
+    # hiver
+    CH('apres_ski', 'Après-ski Moun Boot argentés', 'apres_ski', 0xBEC2C8, matiere='nylon', sole=0x2A2A2E, collar=0xA8ACB2, lace=0x1A1A1D,
+       trim=0xB01B24, toe=0xBEC2C8, heel=0xBEC2C8, logo_col=0x1A1A1D),
+    CH('bottes_fourrees', 'Bottes fourrées Ougg camel', 'fourree', 0xB88A5A, matiere='daim', sole=0xE8DCC8, lining=0xEDE4D2, toe=0xB88A5A,
+       heel=0xB88A5A),
+    # travail
+    CH('chaussures_securite', 'Chaussures de sécurité', 'securite', 0x1C1C20, matiere='nubuck', sole=0x2A2A2E, tread=0x101012, toe=0x3A3A40,
+       overlay=0x26262A, lace=0x1A1A1D, trim=HIVIS, heel=0x26262A),
+    CH('sabots_cuisine', 'Sabots de cuisine Krocs blancs', 'sabot', 0xF2F2EE, matiere='caoutchouc', sole=0xF2F2EE, strap=0xF2F2EE, trim=0x9A9DA2),
+    CH('sabots_noirs', 'Sabots de cuisine Krocs noirs', 'sabot', 0x1C1C20, matiere='caoutchouc', sole=0x1C1C20, strap=0x1C1C20, trim=0x5A5A60),
+]
+CLOTHES += CHAUSSURES
+for o in SHOES_TENUES + [o for o in CLOTHES if o.get('shoe')]:
+    SHAPES[shoe_shape_name(o)] = (lambda s: lambda slim: shoe_boxes(s))(o['shoe'])
+
 PUFFY = [o['id'] for o in CLOTHES if o['kind'] == 'puffer']
 
 
@@ -1304,7 +2676,7 @@ def item_boxes(shape, boxes):
     return boxes, piv
 
 
-def item_model_3d(o, name, boxes, tex):
+def item_model_3d(o, name, boxes, tex, base=0):
     """Modèle d'objet 3D : les cubes portés, recentrés et mis à l'échelle dans le cube 16 x 16 x 16."""
     boxes, piv = item_boxes(o['shape'], boxes)
     pts = []
@@ -1318,7 +2690,7 @@ def item_model_3d(o, name, boxes, tex):
     c = [(mn[i] + mx[i]) / 2 for i in range(3)]
     E = []
     for (x0, y0, z0, x1, y1, z1, s) in pts:
-        i = SW.index(s)
+        i = SW.index(s) - base
         u, v = (i % 4) * 4, (i // 4) * 4
         f = [round(8 - (x1 - c[0]) * k, 3), round(8 - (y1 - c[1]) * k, 3), round(8 + (z0 - c[2]) * k, 3)]
         t = [round(8 - (x0 - c[0]) * k, 3), round(8 - (y0 - c[1]) * k, 3), round(8 + (z1 - c[2]) * k, 3)]
@@ -1415,11 +2787,30 @@ def main():
         else:                                             # hauts (torse + bras) et chaussures (jambes du calque 1)
             l1 = Tex(seed); (o.get('paint') or paint.get(o['kind']))(o, l1); armor_png(o, l1, None)
         n = o['id'] + '_' + pc
-        (o.get('icon') or icon)(o).save(R + 'textures/item/%s.png' % n)
-        json.dump({'parent': 'item/generated', 'textures': {'layer0': 'minenorth_vetements:item/' + n}}, open(R + 'models/item/%s.json' % n, 'w'), indent=1)
+        if pc == 'boots':                                 # chaussures : la paire en 3D dans l'inventaire
+            shoe_cells(o['shoe'], n + '_acc')
+            item_model_3d(o, n, shoe_item_boxes(o['shoe']), n + '_acc', SHOE0)
+        else:
+            (o.get('icon') or icon)(o).save(R + 'textures/item/%s.png' % n)
+            json.dump({'parent': 'item/generated', 'textures': {'layer0': 'minenorth_vetements:item/' + n}}, open(R + 'models/item/%s.json' % n, 'w'), indent=1)
         lang_fr['item.minenorth_vetements.' + n] = o['fr']
         lang_en['item.minenorth_vetements.' + n] = o['fr']   # noms FR aussi pour un client en anglais
         outfit_lines.append((o['id'], o['fr'], False, pc == 'chestplate', pc == 'leggings', pc == 'boots'))
+    for o in SHOES_TENUES:                                # anciennes tenues : on ne repeint que les chaussures de leur calque 1
+        p = ARMOR + '%s_layer_1.png' % o['id']
+        t = Tex(0)
+        t.a = np.array(Image.open(p).convert('RGBA'), np.float32)
+        t.clear((256, 64, 512, 128))
+        paint_shoe_tex(t, o['shoe'])
+        im = t.img()
+        d = shoe_palette(o['shoe'])
+        for k, key in enumerate(SW[SHOE0:], SHOE0):
+            cx, cy = 256 + 32 * (k % 8), 32 * (k // 8)
+            im.paste(rgb(d[key]) + (255,), (cx, cy, cx + 32, cy + 32))
+        im.save(p)
+        n = o['id'] + '_boots'
+        shoe_cells(o['shoe'], n + '_acc')
+        item_model_3d(dict(shape=None), n, shoe_item_boxes(o['shoe']), n + '_acc', SHOE0)
     for o in HATS:
         armor_png(o, None, None)
         n = o['id'] + '_helmet'
@@ -1436,7 +2827,9 @@ def main():
         lang_en['item.minenorth_vetements.' + o['id']] = o['fr']
 
     # ---- Formes.java
-    shape_of = {o['id']: o['shape'] for o in CLOTHES + HATS + ACCS if o['shape']}
+    # chaussures : forme « <id>_boots » (une tenue peut aussi avoir un haut ou une casquette en relief)
+    shape_of = {o['id'] + ('_boots' if o.get('piece') == 'boots' else ''): o['shape'] for o in CLOTHES + HATS + ACCS if o['shape']}
+    shape_of.update({o['id'] + '_boots': shoe_shape_name(o) for o in SHOES_TENUES})
     used = sorted(set(shape_of.values()))
     L = ['package com.minenorth_vetements.client;', '', 'import java.util.HashMap;', 'import java.util.Map;', 'import java.util.Set;', '',
          '/** Généré par tools/gen_streetwear.py - ne pas éditer. Cubes portés : {partie, x0, y0, z0, x1, y1, z1, pastille} ; parties : '
@@ -1448,19 +2841,26 @@ def main():
          '    static final Set<String> PUFFY = Set.of(' + ', '.join('"%s"' % i for i in PUFFY) + ');', '', '    static {']
     for i, s in sorted(shape_of.items()):
         L.append('        SHAPE_OF.put("%s", "%s");' % (i, s))
-    for s in used:
-        for slim in (False, True):
-            boxes = SHAPES[s](slim)
-            if slim and boxes == SHAPES[s](False):
-                continue
-            key = s + ('/slim' if slim else '')
-            formes[key] = boxes
-            rows = ['{%d, %s, %d}' % (PARTS.index(b[0]), ', '.join(jfloat(v) for v in b[1:7]), SW.index(b[7])) for b in boxes]
-            L.append('        SHAPES.put("%s", new float[][]{' % key)
-            for r in rows:
-                L.append('            ' + r + ',')
-            L.append('        });')
-    L += ['    }', '}', '']
+    # une méthode par groupe de 12 formes : un seul bloc statique dépasserait la limite de 64 Ko de code d'une méthode Java
+    groups = [used[i:i + 12] for i in range(0, len(used), 12)]
+    L += ['        shapes%d();' % g for g in range(len(groups))]
+    L.append('    }')
+    for g, grp in enumerate(groups):
+        L += ['', '    private static void shapes%d() {' % g]
+        for s in grp:
+            for slim in (False, True):
+                boxes = SHAPES[s](slim)
+                if slim and boxes == SHAPES[s](False):
+                    continue
+                key = s + ('/slim' if slim else '')
+                formes[key] = boxes
+                rows = ['{%d, %s, %d}' % (PARTS.index(b[0]), ', '.join(jfloat(v) for v in b[1:7]), SW.index(b[7])) for b in boxes]
+                L.append('        SHAPES.put("%s", new float[][]{' % key)
+                for r in rows:
+                    L.append('            ' + r + ',')
+                L.append('        });')
+        L.append('    }')
+    L += ['}', '']
     open(J + 'client/Formes.java', 'w', encoding='utf-8').write('\n'.join(L))
     json.dump({'formes': formes, 'shape_of': shape_of, 'puffy': PUFFY, 'sw': SW}, open('tools/formes.json', 'w'), indent=0)
 

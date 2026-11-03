@@ -1,0 +1,6 @@
+{
+ "parent": "item/generated",
+ "textures": {
+  "layer0": "minenorth_vetements:item/costume_miami_ciel_chestplate"
+ }
+}

@@ -4,7 +4,8 @@ import java.nio.file.*;
 import java.util.*;
 import javax.imageio.ImageIO;
 
-/** Genere textures d'armure (layer_1/2), icones, modeles et lang. Usage: java tools/Gen.java <racine projet> */
+/** Genere textures d'armure (layer_1/2), icones, modeles et lang. Usage: java tools/Gen.java <racine projet>
+ *  Ensuite : python tools/gen_streetwear.py (chaussures en relief, langues des nouveaux vetements). */
 public class Gen {
     enum Style { TEE, HOODIE, JACKET, POLO, PUFFER, DENIM }
     enum Logo { SWOOSH, STRIPES, BOX, CROC, CAT, MONO, CHAMP, NORD, GG, JUMP, DENIMTAG }
