@@ -76,7 +76,7 @@ final class ClothesExtras {
         return CACHE.computeIfAbsent(key, k -> bake(boxes(slot, style, beanie)));
     }
 
-    private static Map<String, ModelPart> bake(List<Box> boxes) {
+    static Map<String, ModelPart> bake(List<Box> boxes) {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
         Map<String, CubeListBuilder> builders = new HashMap<>();

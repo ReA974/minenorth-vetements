@@ -19,7 +19,8 @@ public class ClothesItem extends ArmorItem {
         consumer.accept(new IClientItemExtensions() {
             @Override
             public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entity, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> original) {
-                return com.minenorth_vetements.client.SlimArmor.model(slot, original);
+                String name = getMaterial().getName();
+                return com.minenorth_vetements.client.SlimArmor.model(slot, entity, name.substring(name.indexOf(':') + 1));
             }
         });
     }

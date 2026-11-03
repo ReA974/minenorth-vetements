@@ -15,6 +15,21 @@ public final class ClientSetup {
     /** Reliefs 3D (ourlets, poignets, semelles) : coupés, ils ne collaient plus aux textures actuelles (512 x 256) et faisaient des blocs qui dépassent. */
     private static final boolean RELIEF = true;   // la couche ne dessine que les casquettes et les tenues RP / accessoires (voir ClothesExtras#hasRelief)
 
+    /** Écran du menu Accessoires (ouvert depuis l'inventaire créatif ou /accessoires). */
+    @SubscribeEvent
+    public static void setup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            net.minecraft.client.gui.screens.MenuScreens.register(MineNorthVetements.ACC_MENU.get(), AccScreen::new);
+            net.minecraft.client.gui.screens.MenuScreens.register(MineNorthVetements.BAG_MENU.get(), BagScreen::new);
+        });
+    }
+
+    /** Touche « Sac » (Options > Commandes > MineNorth – Vêtements). */
+    @SubscribeEvent
+    public static void keys(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) {
+        event.register(BagClient.KEY);
+    }
+
     @SubscribeEvent
     public static void addLayers(EntityRenderersEvent.AddLayers event) {
         for (String skin : new String[]{"default", "slim"}) {

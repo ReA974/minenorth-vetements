@@ -16,41 +16,36 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Accessoire de visage (lunettes, cagoule, bandana, écharpe) : clic droit = le porter (en plus du chapeau), accroupi + clic droit = retirer
- * l'accessoire porté. Un seul accessoire à la fois : en porter un autre rend le précédent.
+ * Accessoire (lunettes, cagoule, chaîne, montre, gants, sac...) : clic droit = le porter dans son emplacement (en plus des vêtements),
+ * accroupi + clic droit = retirer l'accessoire porté dans cet emplacement. En porter un autre au même endroit rend le précédent.
  */
 public class AccessoryItem extends Item {
-    public AccessoryItem(Properties props) { super(props); }
+    private final AccSlot slot;
 
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack held = player.getItemInHand(hand);
-        if (level.isClientSide || !(player instanceof ServerPlayer p)) return InteractionResultHolder.sidedSuccess(held, level.isClientSide);
-        ItemStack worn = Accessories.worn(p);
-        if (p.isShiftKeyDown()) {
-            if (worn.isEmpty()) {
-                p.displayClientMessage(Component.literal("§7Tu ne portes aucun accessoire."), true);
-            } else {
-                Accessories.set(p, ItemStack.EMPTY);
-                if (!p.getInventory().add(worn)) p.drop(worn, false);
-                p.displayClientMessage(Component.literal("§7Accessoire retiré."), true);
-                level.playSound(null, p.blockPosition(), SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.PLAYERS, 0.6f, 1.1f);
-            }
-            return InteractionResultHolder.success(held);
-        }
-        ItemStack one = held.copy();
-        one.setCount(1);
-        held.shrink(1);
-        Accessories.set(p, one);
-        if (!worn.isEmpty() && !p.getInventory().add(worn)) p.drop(worn, false);
-        p.displayClientMessage(Component.literal("§aAccessoire porté."), true);
-        level.playSound(null, p.blockPosition(), SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.PLAYERS, 0.7f, 1.2f);
-        return InteractionResultHolder.success(held);
+    public AccessoryItem(AccSlot slot, Properties props) {
+        super(props);
+        this.slot = slot;
     }
+
+    public AccSlot slot() { return slot; }
+
+    /** Un sac ne se range ni dans une boîte de Shulker ni dans un autre sac (pas de rangement emboîté, pas de duplication). */
+    @Override
+    public boolean canFitInsideContainerItems() { return Bags.capacity(new ItemStack(this)) == 0; }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tip, TooltipFlag flag) {
-        tip.add(Component.literal("§7Clic droit : le porter (en plus du chapeau)."));
-        tip.add(Component.literal("§7Accroupi + clic droit (même main vide) : retirer l'accessoire porté."));
+        tip.add(Component.literal("§6Accessoire · " + slot.label));
+        int cap = Bags.capacity(stack);
+        if (cap > 0) {
+            int n = Bags.count(stack);
+            tip.add(Component.literal("§bSac de rangement · " + cap + " cases" + (n > 0 ? " §7(" + n + " rangé" + (n > 1 ? "s" : "") + ")" : " §8(vide)")));
+            tip.add(Component.literal("§7Porté sur le dos, il s'ouvre avec la touche Sac (B par défaut) ou le bouton « Sac »."));
+        }
+        net.minecraft.resources.ResourceLocation key = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(stack.getItem());
+        if (key != null && key.getPath().startsWith("cagoule_")) tip.add(Component.literal("§8Masque ton identité : pas de nom au-dessus de la tête, « " + Accessories.MASKED_NAME + " » dans le chat."));
+        int vip = VipItems.level(stack);
+        if (vip > 0) tip.add(Component.literal((vip >= 2 ? "§b" : "§d") + "Réservé aux " + (vip >= 2 ? "VIP+" : "VIP et VIP+")));
+        tip.add(Component.literal("§7Se porte depuis le menu des accessoires (inventaire, ou /accessoires)."));
     }
 }

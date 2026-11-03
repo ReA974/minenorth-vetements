@@ -70,6 +70,12 @@ def tops(im, c):
     im.rect(8, 16, 4, 4, c)
 
 
+def legtops(im, c):
+    """Calque jambes : seulement le dessus des jambes (le dessus du torse ferait une plaque autour du cou, voir fix_pantalons.py)."""
+    im.rect(4, 16, 4, 4, c)
+    im.rect(8, 16, 4, 4, c)
+
+
 def paint_suit(o):
     j, shirt, tie, lap = o['main'], o['shirt'], o['tie'], o['lapel']
     l1, l2 = Img(64, 32), Img(64, 32)
@@ -111,7 +117,7 @@ def paint_suit(o):
         l1.px(6, 29, 0x4A4A52)
     p = o['pants']
     legs(l2, lambda f, x, y: sh(p, 1.12) if f == 'front' and x == 1 and y > 1 else p)
-    tops(l2, p)
+    legtops(l2, p)
 
     def b(face, x, y):
         if y < 9:
@@ -150,7 +156,7 @@ def paint_dress(o):
     if o.get('boots'):
         legs(l1, lambda f, x, y: o['shoe'], 10, 12)
     legs(l2, lambda f, x, y: c if y < o.get('skirt', 12) else None)
-    tops(l2, c)
+    legtops(l2, c)
     torso(l2, lambda f, x, y: (ac if y == 9 else c) if y >= 9 else None)
     if o.get('flower'):
         for (fx, fy) in ((1, 1), (2, 2)):

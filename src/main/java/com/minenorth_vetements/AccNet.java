@@ -17,32 +17,64 @@ import java.util.function.Supplier;
 public final class AccNet {
     private AccNet() {}
 
-    private static final String PROTOCOL = "2";
+    private static final String PROTOCOL = "5";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(MineNorthVetements.MODID, "acc"), () -> PROTOCOL, PROTOCOL::equals, PROTOCOL::equals);
 
     public static void register() {
         CHANNEL.registerMessage(0, Sync.class, Sync::encode, Sync::decode, Sync::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(1, Remove.class, (m, b) -> {}, b -> new Remove(), Remove::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(2, OpenMenu.class, (m, b) -> {}, b -> new OpenMenu(), OpenMenu::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(3, OpenBag.class, (m, b) -> {}, b -> new OpenBag(), OpenBag::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 
-    /** Demande de retrait de l'accessoire (clic droit dans le vide, accroupi, main vide) : le serveur revérifie tout. */
+    /** Demande de retrait du dernier accessoire porté (clic droit dans le vide, accroupi, main vide) : le serveur revérifie tout. */
     public record Remove() {
         static void handle(Remove m, Supplier<NetworkEvent.Context> c) {
             c.get().enqueueWork(() -> {
                 net.minecraft.server.level.ServerPlayer p = c.get().getSender();
-                if (p != null && p.isShiftKeyDown() && p.getMainHandItem().isEmpty()) Accessories.remove(p);
+                if (p != null && p.isShiftKeyDown() && p.getMainHandItem().isEmpty()) Accessories.removeLast(p);
             });
             c.get().setPacketHandled(true);
         }
     }
 
-    /** entityId du joueur et accessoire porté (EMPTY = aucun). */
-    public record Sync(int entityId, ItemStack stack) {
-        static void encode(Sync m, FriendlyByteBuf b) { b.writeVarInt(m.entityId); b.writeItem(m.stack); }
-        static Sync decode(FriendlyByteBuf b) { return new Sync(b.readVarInt(), b.readItem()); }
+    /** Demande d'ouverture du menu Accessoires (bouton de l'inventaire créatif). */
+    /** Demande d'ouverture du sac porté (touche, bouton de l'inventaire ou du menu Accessoires) : le serveur vérifie qu'il y a bien un sac. */
+    public record OpenBag() {
+        static void handle(OpenBag m, Supplier<NetworkEvent.Context> c) {
+            c.get().enqueueWork(() -> {
+                net.minecraft.server.level.ServerPlayer p = c.get().getSender();
+                if (p != null && p.isAlive() && !p.isSpectator()) BagMenu.open(p);
+            });
+            c.get().setPacketHandled(true);
+        }
+    }
+
+    public record OpenMenu() {
+        static void handle(OpenMenu m, Supplier<NetworkEvent.Context> c) {
+            c.get().enqueueWork(() -> {
+                net.minecraft.server.level.ServerPlayer p = c.get().getSender();
+                if (p != null && p.isAlive()) AccMenu.open(p);
+            });
+            c.get().setPacketHandled(true);
+        }
+    }
+
+    /** entityId du joueur et accessoires portés, un par emplacement (EMPTY = aucun). */
+    public record Sync(int entityId, ItemStack[] stacks) {
+        static void encode(Sync m, FriendlyByteBuf b) {
+            b.writeVarInt(m.entityId);
+            for (int i = 0; i < Accessories.N; i++) b.writeItem(i < m.stacks.length ? Bags.withoutContents(m.stacks[i]) : ItemStack.EMPTY);   // jamais le contenu des sacs
+        }
+        static Sync decode(FriendlyByteBuf b) {
+            int id = b.readVarInt();
+            ItemStack[] st = new ItemStack[Accessories.N];
+            for (int i = 0; i < st.length; i++) st[i] = b.readItem();
+            return new Sync(id, st);
+        }
         static void handle(Sync m, Supplier<NetworkEvent.Context> c) {
-            c.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.minenorth_vetements.client.AccessoryClient.set(m.entityId, m.stack)));
+            c.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.minenorth_vetements.client.AccessoryClient.set(m.entityId, m.stacks)));
             c.get().setPacketHandled(true);
         }
     }

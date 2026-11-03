@@ -21,6 +21,11 @@ public class MineNorthVetements {
     public static final String MODID = "minenorth_vetements";
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    private static final DeferredRegister<net.minecraft.world.inventory.MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
+    public static final RegistryObject<net.minecraft.world.inventory.MenuType<BagMenu>> BAG_MENU = MENUS.register("sac",
+            () -> net.minecraftforge.common.extensions.IForgeMenuType.create(BagMenu::new));
+    public static final RegistryObject<net.minecraft.world.inventory.MenuType<AccMenu>> ACC_MENU = MENUS.register("accessoires",
+            () -> new net.minecraft.world.inventory.MenuType<>(AccMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS));
     private static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     private static final List<RegistryObject<Item>> ALL = new ArrayList<>();
     /** Objets affichés dans l'onglet créatif commun « MineNorth ». */
@@ -30,18 +35,21 @@ public class MineNorthVetements {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         for (OutfitData.Outfit o : OutfitData.ALL) {
             ClothesMaterial mat = new ClothesMaterial(o.id());
-            if (o.cap() && Accessories.isAccessory(o.id())) addAccessory(o.id() + "_helmet");     // lunettes, cagoules, bandanas, écharpes : emplacement accessoire
+            if (o.cap() && Accessories.isAccessory(o.id())) addAccessory(o.id() + "_helmet", AccessoryData.BY_ID.get(o.id()).slot());   // anciens accessoires (lunettes, cagoules...)
             else if (o.cap()) add(o.id() + "_helmet", mat, ArmorItem.Type.HELMET);
             if (o.chest()) add(o.id() + "_chestplate", mat, ArmorItem.Type.CHESTPLATE);
             if (o.legs()) add(o.id() + "_leggings", mat, ArmorItem.Type.LEGGINGS);
             if (o.boots()) add(o.id() + "_boots", mat, ArmorItem.Type.BOOTS);
         }
+        for (String id : AccessoryData.NEW) addAccessory(id, AccessoryData.BY_ID.get(id).slot());   // chaînes, montres, gants, sacs...
         ITEMS.register(bus);
+        MENUS.register(bus);
         AccNet.register();
+        Accessories.provideMask();
     }
 
-    private static void addAccessory(String name) {
-        ALL.add(ITEMS.register(name, () -> new AccessoryItem(new Item.Properties().stacksTo(1))));
+    private static void addAccessory(String name, AccSlot slot) {
+        ALL.add(ITEMS.register(name, () -> new AccessoryItem(slot, new Item.Properties().stacksTo(1))));
     }
 
     private static void add(String name, ClothesMaterial mat, ArmorItem.Type type) {
