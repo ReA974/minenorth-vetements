@@ -760,6 +760,12 @@ ACCS = [
     C('sac_rando_vert', 'Sac de randonnée vert forêt', 'Sac de randonnée vert forêt', 'DOS', 'HIKING', main=0x2F5A3A, second=0x6A6A70, light=0xC8A050, metal=SILVER),
     # Parachute : se porte dans l'emplacement Dos, se déploie avec Espace en chute (voir Parachute.java)
     C('parachute', 'Parachute', 'Parachute', 'DOS', 'HIKING', main=0x3E4A2C, second=0x1E1E22, light=0xE8601C, metal=SILVER),
+    C('parachute_noir', 'Parachute tactique noir', 'Parachute tactique noir', 'DOS', 'HIKING', main=0x1C1C1F, second=0x2C2C30, light=0x8A8F96, metal=SILVER_D),
+    C('parachute_rouge', 'Parachute rouge et blanc', 'Parachute rouge et blanc', 'DOS', 'HIKING', main=0xB01B24, second=0x1E1E22, light=WHITE, metal=SILVER),
+    C('parachute_bleu', 'Parachute bleu ciel', 'Parachute bleu ciel', 'DOS', 'HIKING', main=0x2A6FC0, second=0x1E1E22, light=0xF2F2EE, metal=SILVER),
+    # parachutes VIP (voile violet et or) et VIP+ (voile noir et or à liseré cyan) : réservés au grade (VipItems)
+    C('parachute_vip', 'Parachute VIP violet et or', 'Parachute VIP violet et or', 'DOS', 'HIKING', main=0x6A28B0, second=0x2A1440, light=0xE0B040, metal=GOLD),
+    C('parachute_prestige', 'Parachute VIP+ Prestige', 'Parachute VIP+ Prestige', 'DOS', 'HIKING', main=0x141416, second=0x2A2A2E, light=0x2FD4E0, metal=GOLD),
     C('sac_luxe_vuiten', 'Sac à dos Louis Vuiten monogramme', 'Sac à dos Louis Vuiten monogramme', 'DOS', 'BACKPACK', main=0x6B4423, dark=0x4A2E18, light=0xC9A24A, metal=GOLD),
     # Réservés aux grades (avantage « vetementsVip » du mod VIP : 1 = VIP, 2 = VIP+), voir VipItems.java
     C('chaine_vip', 'Chaîne cubaine VIP violette', 'VIP purple cuban chain', 'COU', 'CUBAN', main=0xA048E0, metal=0xA048E0, metal_dark=0x5A2088),

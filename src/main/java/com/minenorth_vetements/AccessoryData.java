@@ -55,6 +55,11 @@ final class AccessoryData {
         put("sac_rando_orange", AccSlot.DOS, false);
         put("sac_rando_vert", AccSlot.DOS, false);
         put("parachute", AccSlot.DOS, false);
+        put("parachute_noir", AccSlot.DOS, false);
+        put("parachute_rouge", AccSlot.DOS, false);
+        put("parachute_bleu", AccSlot.DOS, false);
+        put("parachute_vip", AccSlot.DOS, false);
+        put("parachute_prestige", AccSlot.DOS, false);
         put("sac_luxe_vuiten", AccSlot.DOS, false);
         put("chaine_vip", AccSlot.COU, false);
         put("montre_vip", AccSlot.POIGNET, false);
@@ -68,5 +73,5 @@ final class AccessoryData {
     private static void put(String id, AccSlot slot, boolean legacy) { BY_ID.put(id, new Acc(id, slot, legacy)); }
 
     /** Nouveaux accessoires (enregistrés sous leur id), dans l'ordre du catalogue. */
-    static final String[] NEW = {"lunettes_rondes", "lunettes_masque", "chaine_or", "chaine_argent", "chaine_croix", "collier_perles", "echarpe_noire", "montre_or", "montre_argent", "montre_sport", "gourmette_or", "gants_cuir_noir", "gants_cuir_marron", "gants_laine", "sac_dos_noir", "sac_dos_rouge", "sac_dos_kaki", "banane_noire", "banane_guchi", "sacoche_noire", "sacoche_lacroste", "banane_nayk", "sac_sport_noir", "sac_sport_bleu", "sac_rando_orange", "sac_rando_vert", "parachute", "sac_luxe_vuiten", "chaine_vip", "montre_vip", "chaine_diamant", "montre_diamant", "sac_vip", "lunettes_holo", "gants_pompier"};
+    static final String[] NEW = {"lunettes_rondes", "lunettes_masque", "chaine_or", "chaine_argent", "chaine_croix", "collier_perles", "echarpe_noire", "montre_or", "montre_argent", "montre_sport", "gourmette_or", "gants_cuir_noir", "gants_cuir_marron", "gants_laine", "sac_dos_noir", "sac_dos_rouge", "sac_dos_kaki", "banane_noire", "banane_guchi", "sacoche_noire", "sacoche_lacroste", "banane_nayk", "sac_sport_noir", "sac_sport_bleu", "sac_rando_orange", "sac_rando_vert", "parachute", "parachute_noir", "parachute_rouge", "parachute_bleu", "parachute_vip", "parachute_prestige", "sac_luxe_vuiten", "chaine_vip", "montre_vip", "chaine_diamant", "montre_diamant", "sac_vip", "lunettes_holo", "gants_pompier"};
 }

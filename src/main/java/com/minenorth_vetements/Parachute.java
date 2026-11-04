@@ -29,7 +29,8 @@ import java.util.function.Supplier;
  * élytres), Espace ouvre la voile : la descente ralentit fortement, on plane dans la direction du regard, et on se pose sans dégât.
  * Le mouvement est appliqué chez le joueur (Minecraft lui laisse son mouvement) ; le serveur valide l'ouverture (parachute porté, vraie chute),
  * annule les dégâts de chute et dit à tous les joueurs proches d'afficher la voile. Après l'atterrissage il faut {@value #REPACK_SECONDS} s
- * pour replier la voile avant un nouveau saut.
+ * pour replier la voile avant un nouveau saut. Plusieurs modèles (voile de couleur différente) : parachute, _noir, _rouge, _bleu ; _vip (VIP) et
+ * _prestige (VIP+) sont réservés au grade comme les autres accessoires VIP (VipItems).
  */
 @Mod.EventBusSubscriber(modid = MineNorthVetements.MODID)
 public final class Parachute {
@@ -46,10 +47,17 @@ public final class Parachute {
     public static boolean wears(Player p, ItemStack[] worn) {
         ItemStack back = worn != null && worn.length > AccSlot.DOS.ordinal() ? worn[AccSlot.DOS.ordinal()] : ItemStack.EMPTY;
         ResourceLocation k = back.isEmpty() ? null : ForgeRegistries.ITEMS.getKey(back.getItem());
-        return k != null && k.getNamespace().equals(MineNorthVetements.MODID) && k.getPath().equals(ID);
+        return k != null && k.getNamespace().equals(MineNorthVetements.MODID) && (k.getPath().equals(ID) || k.getPath().startsWith(ID + "_"));
     }
 
     /** Peut-on ouvrir la voile maintenant ? (mêmes règles côté joueur et côté serveur) */
+    /** Modèle de parachute porté (« parachute », « parachute_vip »…), ou "". */
+    public static String model(ItemStack[] worn) {
+        ItemStack back = worn != null && worn.length > AccSlot.DOS.ordinal() ? worn[AccSlot.DOS.ordinal()] : ItemStack.EMPTY;
+        ResourceLocation k = back.isEmpty() ? null : ForgeRegistries.ITEMS.getKey(back.getItem());
+        return k == null ? "" : k.getPath();
+    }
+
     public static boolean canOpen(Player p) {
         return !p.onGround() && !p.isInWater() && !p.isInLava() && !p.isPassenger() && !p.isFallFlying() && !p.getAbilities().flying
                 && p.fallDistance >= MIN_FALL && p.getDeltaMovement().y < -0.25;

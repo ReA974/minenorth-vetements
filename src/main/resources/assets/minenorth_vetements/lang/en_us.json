@@ -296,5 +296,10 @@
   "item.minenorth_vetements.toque_cuisinier_helmet": "Toque de cuisinier",
   "item.minenorth_vetements.chapka_helmet": "Chapka en fausse fourrure",
   "item.minenorth_vetements.casquette_livreur_helmet": "Casquette de livreur",
-  "item.minenorth_vetements.parachute": "Parachute"
+  "item.minenorth_vetements.parachute": "Parachute",
+  "item.minenorth_vetements.parachute_noir": "Parachute tactique noir",
+  "item.minenorth_vetements.parachute_rouge": "Parachute rouge et blanc",
+  "item.minenorth_vetements.parachute_bleu": "Parachute bleu ciel",
+  "item.minenorth_vetements.parachute_vip": "Parachute VIP violet et or",
+  "item.minenorth_vetements.parachute_prestige": "Parachute VIP+ Prestige"
 }

@@ -21,7 +21,7 @@ public final class VipItems {
 
     private static final Map<String, Integer> LEVEL = Map.of(
             "chaine_vip", 1, "montre_vip", 1, "sac_vip", 1,
-            "chaine_diamant", 2, "montre_diamant", 2, "lunettes_holo", 2);
+            "chaine_diamant", 2, "montre_diamant", 2, "lunettes_holo", 2, "parachute_vip", 1, "parachute_prestige", 2);
 
     /** Niveau requis (0 = libre, 1 = VIP, 2 = VIP+). */
     public static int level(ItemStack st) {

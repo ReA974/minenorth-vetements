@@ -97,7 +97,7 @@ public final class ParachuteClient {
             ps.pushPose();
             ps.translate(x, y, z);
             ps.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-Mth.rotLerp(pt, pl.yBodyRotO, pl.yBodyRot)));
-            drawCanopy(vc, ps.last().pose(), pl.tickCount + pt);
+            drawCanopy(vc, ps.last().pose(), pl.tickCount + pt, palette(Parachute.model(AccessoryClient.get(pl.getId()))));
             ps.popPose();
         }
         buf.endBatch(RenderType.debugQuads());
@@ -113,12 +113,24 @@ public final class ParachuteClient {
         return new float[]{x, y};
     }
 
-    private static void drawCanopy(VertexConsumer vc, Matrix4f m, float time) {
+    /** Couleurs des caissons de la voile, par modèle (répétées sur l'envergure). */
+    private static int[] palette(String model) {
+        return switch (model) {
+            case "parachute_noir" -> new int[]{0xFF1C1C1F, 0xFF4A4E54};
+            case "parachute_rouge" -> new int[]{0xFFC8202E, 0xFFF2F2EE};
+            case "parachute_bleu" -> new int[]{0xFF2A8FE0, 0xFFF2F2EE};
+            case "parachute_vip" -> new int[]{0xFF7A30C8, 0xFFE0B040};
+            case "parachute_prestige" -> new int[]{0xFF141416, 0xFFE0B040, 0xFF141416, 0xFF2FD4E0};
+            default -> new int[]{0xFFE8601C, 0xFFF2F0EA};
+        };
+    }
+
+    private static void drawCanopy(VertexConsumer vc, Matrix4f m, float time, int[] pal) {
         float sway = Mth.sin(time * 0.08f);
         float zf = -CHORD / 2 + 0.25f, zb = CHORD / 2 + 0.25f;   // un peu en avant du joueur, comme une aile qui tire
         for (int i = 0; i < CELLS; i++) {
             float[] a = point(i, sway), b = point(i + 1, sway);
-            int c = i % 2 == 0 ? 0xFFE8601C : 0xFFF2F0EA;
+            int c = pal[i % pal.length];
             int d = shade(c, 0.78f);
             // extrados (dessus), intrados (dessous, plus sombre), bord d'attaque
             quad(vc, m, a[0], a[1], zf, b[0], b[1], zf, b[0], b[1], zb, a[0], a[1], zb, c);

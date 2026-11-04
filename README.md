@@ -98,3 +98,7 @@ Sous les 5 accessoires : **gilet pare-balles**, **cagoule / masque**, **brassard
 `zc_armband`, classe `ZcSlots`, par réflexion). L'objet reste là où ZeroContact le lit (protection, rendu) : plus besoin du menu de ZeroContact.
 Toujours 3 cases quand Curios et ZeroContact sont installés (une case pas encore synchronisée est inerte) ; ajoutées après l'inventaire.
 L'écran MineNorth Inventaire (mod minenorth-inventaire) a les mêmes cases dans son panneau Équipement.
+
+## Parachutes : plusieurs modèles (04/11)
+`parachute` (voile orange et blanche), `parachute_noir` (tactique, voile noire et grise), `parachute_rouge`, `parachute_bleu`, et réservés au grade
+(`VipItems`) : `parachute_vip` (VIP, voile violet et or), `parachute_prestige` (VIP+, voile noir, or et cyan). La couleur de la voile suit le modèle porté.
