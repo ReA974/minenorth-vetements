@@ -104,13 +104,19 @@ L'écran MineNorth Inventaire (mod minenorth-inventaire) a les mêmes cases dans
 (`VipItems`) : `parachute_vip` (VIP, voile violet et or), `parachute_prestige` (VIP+, voile noir, or et cyan). La couleur de la voile suit le modèle porté.
 
 ## Tenues de motard et casques de moto (04/11)
-Aperçus : `apercu-motards.png`, parachutes `apercu-parachutes-fermes.png` / `apercu-parachutes-ouverts.png` (outil `tools/apercu_parachutes.py`).
+Aperçus : `apercu-motards.png` (régénéré par `python tools/apercu_motards.py <skin.png> apercu-motards.png`), parachutes `apercu-parachutes-fermes.png` / `apercu-parachutes-ouverts.png` (outil `tools/apercu_parachutes.py`).
 - **Blousons** (`paint_moto`, formes `MOTO` / `MOTO_RACING`) : cuir racing Dayneze noir et rouge, cuir Alpinestarz noir et blanc (bosse dorsale),
   cuir café racer marron, textile Revite gris et jaune fluo, textile Furygane noir et bleu, haute visibilité. Coques d'épaules avec slider, coudes
   protégés, dorsale, soufflets, col officier, poignets à scratch, bandes de course, marque sur la poitrine et dans le dos.
 - **Pantalons** (`paint_moto_pants`, forme `MOTO_PANTS`) : cuir racing, textile, jean renforcé ; genouillères avec slider, renforts de hanches.
 - **Gants** (accessoire Mains, forme `GLOVES_MOTO`) : racing, cuir marron, hiver ; manchette longue et coque de phalanges.
 - **Bottes** : racing Alpinestarz, touring noires, vintage en cuir marron.
+- **Refonte façon Scorpion Exo-R1 (04/11)** : coques arrondies en couches (`rrect` : rectangle aux coins en deux marches ; rayons choisis pour
+  couvrir le casque d'armure à ±4,52), grand écran iridium qui épouse les coins avec fenêtres latérales, mentonnière en pointe (grille, lamelles,
+  prises d'air, déflecteur), écopes et aération frontale à curseur, becquet relevé à ailettes et extracteurs, platines de pivot, nervures, écusson.
+  Blousons : coques d'épaule en 3 plaques avec soufflets et slider, coudes en coupe avec puck, bosse dorsale arrondie (racing), surpiqûres ;
+  pantalons : genouillère étagée, slider de genou extérieur, soufflet ; gants : sangle de manchette, coques de phalanges et de poignet ;
+  bottes (`moto=True`) : protège-tibia, puck de cheville, slider de pointe, sangle, coque de talon.
 - **Casques** : intégraux (`INTEGRAL` : coque fermée, écran fumé, aérations, becquet, bandes) Shoey noir mat, Araï rouge et blanc, AGVE Rossy jaune fluo,
   Shoey chromé iridium, blanc motard police (non vendu) ; jets (`JET` : écran bulle relevé, rebord cuir, pressions, jugulaire) Belle crème, Shoey noir,
   Belle rouge. Marques parodiées façon GTA VI, aucun logo réel.
