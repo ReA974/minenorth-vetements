@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 /**
  * Menu « Accessoires » : les 5 emplacements + l'inventaire du joueur. Ouvert par le serveur (bouton de l'inventaire créatif, /accessoires),
  * c'est un conteneur ordinaire : il se synchronise normalement, y compris en mode créatif où les cases ajoutées à l'inventaire survie
- * n'apparaissent pas. Partage le même {@link AccContainer} que ces cases.
+ * n'apparaissent pas. Partage le même {@link AccContainer} que ces cases. En dessous : gilet, cagoule et brassard de ZeroContact ({@link ZcSlots}).
  */
 public class AccMenu extends AbstractContainerMenu {
     public static final int SLOT_X = 80, SLOT_Y = 26;
@@ -25,6 +25,7 @@ public class AccMenu extends AbstractContainerMenu {
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 9; col++) addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
         for (int col = 0; col < 9; col++) addSlot(new Slot(inv, col, 8 + col * 18, 142));
+        ZcSlots.create(inv.player, SLOT_X, SLOT_Y + 20, 18).forEach(this::addSlot);   // après l'inventaire : indices inchangés
     }
 
     public static void open(ServerPlayer p) {
@@ -38,7 +39,9 @@ public class AccMenu extends AbstractContainerMenu {
         if (!slot.hasItem()) return ItemStack.EMPTY;
         ItemStack st = slot.getItem();
         ItemStack copy = st.copy();
-        if (index < N) {
+        if (index >= N + 36) {   // case ZeroContact -> inventaire
+            if (!moveItemStackTo(st, N, N + 36, true)) return ItemStack.EMPTY;
+        } else if (index < N) {
             if (!moveItemStackTo(st, N, N + 36, true)) return ItemStack.EMPTY;
         } else {
             AccSlot t = Accessories.slotOf(st);

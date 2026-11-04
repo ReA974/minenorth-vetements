@@ -92,3 +92,9 @@ Aperçu : `apercu-tenues-rp.png`.
 - **Police** : radio d'épaule sur la poitrine (polos, blousons, parka) ; **ceinturon** complet (boucle, porte-menottes, étui d'arme sur la hanche,
   porte-chargeur, bâton télescopique, pochette gants) sur le pantalon police et RAID, et sur le polo (rentré dans le pantalon).
 - Toujours des créations originales : aucun insigne officiel, seulement des mots (POLICE, SAPEURS POMPIERS) et le drapeau.
+
+## Cases ZeroContact dans le menu Accessoires (04/11)
+Sous les 5 accessoires : **gilet pare-balles**, **cagoule / masque**, **brassard** = les cases Curios de ZeroContact (`zc_plate_carrier`, `zc_mask`,
+`zc_armband`, classe `ZcSlots`, par réflexion). L'objet reste là où ZeroContact le lit (protection, rendu) : plus besoin du menu de ZeroContact.
+Toujours 3 cases quand Curios et ZeroContact sont installés (une case pas encore synchronisée est inerte) ; ajoutées après l'inventaire.
+L'écran MineNorth Inventaire (mod minenorth-inventaire) a les mêmes cases dans son panneau Équipement.

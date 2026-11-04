@@ -26,7 +26,7 @@ public class AccScreen extends AbstractContainerScreen<AccMenu> {
     @Override
     protected void init() {
         super.init();
-        bagButton = addRenderableWidget(BagClient.button(leftPos + AccMenu.SLOT_X, topPos + AccMenu.SLOT_Y + 22, 5 * 18 - 2));
+        bagButton = addRenderableWidget(BagClient.button(leftPos + AccMenu.SLOT_X, topPos + AccMenu.SLOT_Y + 40, 5 * 18 - 2));
     }
 
     @Override
@@ -38,6 +38,8 @@ public class AccScreen extends AbstractContainerScreen<AccMenu> {
             g.renderComponentTooltip(font, List.of(
                     Component.literal("Accessoire · " + a.type.label).withStyle(ChatFormatting.GOLD),
                     Component.literal(InventoryPanel.HINT[a.type.ordinal()]).withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+        } else if (hoveredSlot != null && !hoveredSlot.hasItem() && menu.getCarried().isEmpty() && com.minenorth_vetements.ZcSlots.label(hoveredSlot) != null) {
+            g.renderTooltip(font, Component.literal(com.minenorth_vetements.ZcSlots.label(hoveredSlot)).withStyle(ChatFormatting.GOLD), mouseX, mouseY);
         } else {
             renderTooltip(g, mouseX, mouseY);
         }
@@ -77,6 +79,6 @@ public class AccScreen extends AbstractContainerScreen<AccMenu> {
     protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
         g.drawString(font, title, titleLabelX, titleLabelY, 0x404040, false);
         g.drawString(font, "Inventaire", inventoryLabelX, inventoryLabelY, 0x404040, false);   // en français même si le jeu est en anglais
-        g.drawString(font, "Survole une case", AccMenu.SLOT_X, AccMenu.SLOT_Y + 40, 0x6A6A6A, false);
+        if (!com.minenorth_vetements.ZcSlots.enabled()) g.drawString(font, "Survole une case", AccMenu.SLOT_X, AccMenu.SLOT_Y + 22, 0x6A6A6A, false);
     }
 }
