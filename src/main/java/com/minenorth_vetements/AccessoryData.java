@@ -68,10 +68,13 @@ final class AccessoryData {
         put("sac_vip", AccSlot.DOS, false);
         put("lunettes_holo", AccSlot.VISAGE, false);
         put("gants_pompier", AccSlot.MAINS, false);
+        put("gants_moto_racing", AccSlot.MAINS, false);
+        put("gants_moto_cuir", AccSlot.MAINS, false);
+        put("gants_moto_hiver", AccSlot.MAINS, false);
     }
 
     private static void put(String id, AccSlot slot, boolean legacy) { BY_ID.put(id, new Acc(id, slot, legacy)); }
 
     /** Nouveaux accessoires (enregistrés sous leur id), dans l'ordre du catalogue. */
-    static final String[] NEW = {"lunettes_rondes", "lunettes_masque", "chaine_or", "chaine_argent", "chaine_croix", "collier_perles", "echarpe_noire", "montre_or", "montre_argent", "montre_sport", "gourmette_or", "gants_cuir_noir", "gants_cuir_marron", "gants_laine", "sac_dos_noir", "sac_dos_rouge", "sac_dos_kaki", "banane_noire", "banane_guchi", "sacoche_noire", "sacoche_lacroste", "banane_nayk", "sac_sport_noir", "sac_sport_bleu", "sac_rando_orange", "sac_rando_vert", "parachute", "parachute_noir", "parachute_rouge", "parachute_bleu", "parachute_vip", "parachute_prestige", "sac_luxe_vuiten", "chaine_vip", "montre_vip", "chaine_diamant", "montre_diamant", "sac_vip", "lunettes_holo", "gants_pompier"};
+    static final String[] NEW = {"lunettes_rondes", "lunettes_masque", "chaine_or", "chaine_argent", "chaine_croix", "collier_perles", "echarpe_noire", "montre_or", "montre_argent", "montre_sport", "gourmette_or", "gants_cuir_noir", "gants_cuir_marron", "gants_laine", "sac_dos_noir", "sac_dos_rouge", "sac_dos_kaki", "banane_noire", "banane_guchi", "sacoche_noire", "sacoche_lacroste", "banane_nayk", "sac_sport_noir", "sac_sport_bleu", "sac_rando_orange", "sac_rando_vert", "parachute", "parachute_noir", "parachute_rouge", "parachute_bleu", "parachute_vip", "parachute_prestige", "sac_luxe_vuiten", "chaine_vip", "montre_vip", "chaine_diamant", "montre_diamant", "sac_vip", "lunettes_holo", "gants_pompier", "gants_moto_racing", "gants_moto_cuir", "gants_moto_hiver"};
 }

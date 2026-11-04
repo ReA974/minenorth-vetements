@@ -30,6 +30,12 @@ final class Formes {
         SHAPE_OF.put("baskets_running_noires_boots", "SHOE_BASKETS_RUNNING_NOIRES");
         SHAPE_OF.put("baskets_toile_noires_boots", "SHOE_BASKETS_TOILE_NOIRES");
         SHAPE_OF.put("bermuda_cargo", "CARGO");
+        SHAPE_OF.put("blouson_moto_alpinestarz", "MOTO_RACING");
+        SHAPE_OF.put("blouson_moto_cafe", "MOTO");
+        SHAPE_OF.put("blouson_moto_dayneze", "MOTO_RACING");
+        SHAPE_OF.put("blouson_moto_furygane", "MOTO");
+        SHAPE_OF.put("blouson_moto_police", "MOTO");
+        SHAPE_OF.put("blouson_moto_revite", "MOTO");
         SHAPE_OF.put("blouson_police_commissaire", "BLOUSON_PN_COMMISSAIRE");
         SHAPE_OF.put("blouson_police_officier", "BLOUSON_PN_OFFICIER");
         SHAPE_OF.put("blouson_police_sous_officier", "BLOUSON_PN_SOUS_OFFICIER");
@@ -49,6 +55,9 @@ final class Formes {
         SHAPE_OF.put("boots_timberlande_boots", "SHOE_BOOTS_TIMBERLANDE");
         SHAPE_OF.put("bottes_feu_boots", "SHOE_BOTTES_FEU");
         SHAPE_OF.put("bottes_fourrees_boots", "SHOE_BOTTES_FOURREES");
+        SHAPE_OF.put("bottes_moto_racing_boots", "SHOE_BOTTES_MOTO_RACING");
+        SHAPE_OF.put("bottes_moto_touring_boots", "SHOE_BOTTES_MOTO_TOURING");
+        SHAPE_OF.put("bottes_moto_vintage_boots", "SHOE_BOTTES_MOTO_VINTAGE");
         SHAPE_OF.put("cargo_beige", "CARGO");
         SHAPE_OF.put("cargo_kaki", "CARGO");
         SHAPE_OF.put("cargo_noir", "CARGO");
@@ -56,6 +65,14 @@ final class Formes {
         SHAPE_OF.put("casque_chantier_blanc", "CASQUE_CHANTIER");
         SHAPE_OF.put("casque_f1", "F1");
         SHAPE_OF.put("casque_f1_blanc", "F1");
+        SHAPE_OF.put("casque_integral_agve", "INTEGRAL");
+        SHAPE_OF.put("casque_integral_arai", "INTEGRAL");
+        SHAPE_OF.put("casque_integral_chrome", "INTEGRAL");
+        SHAPE_OF.put("casque_integral_police", "INTEGRAL");
+        SHAPE_OF.put("casque_integral_shoey_noir", "INTEGRAL");
+        SHAPE_OF.put("casque_jet_belle_creme", "JET");
+        SHAPE_OF.put("casque_jet_noir", "JET");
+        SHAPE_OF.put("casque_jet_rouge", "JET");
         SHAPE_OF.put("casquette_beige", "CAP");
         SHAPE_OF.put("casquette_blanche", "CAP");
         SHAPE_OF.put("casquette_inverse_blanche", "CAP_INV");
@@ -106,12 +123,16 @@ final class Formes {
         SHAPE_OF.put("gants_cuir_marron", "GLOVES");
         SHAPE_OF.put("gants_cuir_noir", "GLOVES");
         SHAPE_OF.put("gants_laine", "GLOVES");
+        SHAPE_OF.put("gants_moto_cuir", "GLOVES_MOTO");
+        SHAPE_OF.put("gants_moto_hiver", "GLOVES_MOTO");
+        SHAPE_OF.put("gants_moto_racing", "GLOVES_MOTO");
         SHAPE_OF.put("gants_pompier", "GLOVES");
         SHAPE_OF.put("gilet_bordeaux", "GILET");
         SHAPE_OF.put("gilet_chantier", "GILET_BTP");
         SHAPE_OF.put("gilet_noir", "GILET");
         SHAPE_OF.put("gourmette_or", "BRACELET");
         SHAPE_OF.put("guchi_vert_boots", "SHOE_GUCHI_VERT");
+        SHAPE_OF.put("jean_moto", "MOTO_PANTS");
         SHAPE_OF.put("jordane_rouge_boots", "SHOE_JORDANE_ROUGE");
         SHAPE_OF.put("jupe_plissee", "PLISSEE");
         SHAPE_OF.put("levys_jean_boots", "SHOE_LEVYS_JEAN");
@@ -134,6 +155,8 @@ final class Formes {
         SHAPE_OF.put("nayk_noir_boots", "SHOE_NAYK_NOIR");
         SHAPE_OF.put("nayk_rouge_boots", "SHOE_NAYK_ROUGE");
         SHAPE_OF.put("pantalon_mecano", "CARGO");
+        SHAPE_OF.put("pantalon_moto_cuir", "MOTO_PANTS");
+        SHAPE_OF.put("pantalon_moto_textile", "MOTO_PANTS");
         SHAPE_OF.put("pantalon_police", "CARGO");
         SHAPE_OF.put("pantalon_pompier", "CARGO");
         SHAPE_OF.put("pantalon_raid", "CARGO");
@@ -206,6 +229,7 @@ final class Formes {
         shapes6();
         shapes7();
         shapes8();
+        shapes9();
     }
 
     private static void shapes0() {
@@ -583,6 +607,42 @@ final class Formes {
             {3, 2.3f, 7.7f, -0.07f, 2.35f, 9.7f, 0.07f, 2},
             {3, 2.3f, 7.7f, 1.03f, 2.35f, 9.7f, 1.17f, 2},
         });
+        SHAPES.put("GLOVES_MOTO", new float[][]{
+            {2, -3.3f, 6.9f, -2.3f, 1.3f, 10.3f, 2.3f, 0},
+            {2, -3.42f, 6.5f, -2.42f, 1.42f, 7.3f, 2.42f, 1},
+            {2, -3.35f, 7.7f, -1.17f, -3.3f, 9.7f, -1.03f, 2},
+            {2, -3.35f, 7.7f, -0.07f, -3.3f, 9.7f, 0.07f, 2},
+            {2, -3.35f, 7.7f, 1.03f, -3.3f, 9.7f, 1.17f, 2},
+            {3, -1.3f, 6.9f, -2.3f, 3.3f, 10.3f, 2.3f, 0},
+            {3, -1.42f, 6.5f, -2.42f, 3.42f, 7.3f, 2.42f, 1},
+            {3, 3.3f, 7.7f, -1.17f, 3.35f, 9.7f, -1.03f, 2},
+            {3, 3.3f, 7.7f, -0.07f, 3.35f, 9.7f, 0.07f, 2},
+            {3, 3.3f, 7.7f, 1.03f, 3.35f, 9.7f, 1.17f, 2},
+            {2, -3.62f, 5.9f, -2.62f, 1.62f, 7.4f, 2.62f, 1},
+            {2, -3.62f, 8.1f, -1.6f, -3.3f, 9.6f, 1.6f, 4},
+            {2, -3.62f, 6.2f, -0.8f, -3.3f, 7.1f, 0.8f, 6},
+            {3, -1.62f, 5.9f, -2.62f, 3.62f, 7.4f, 2.62f, 1},
+            {3, 3.3f, 8.1f, -1.6f, 3.62f, 9.6f, 1.6f, 4},
+            {3, 3.3f, 6.2f, -0.8f, 3.62f, 7.1f, 0.8f, 6},
+        });
+        SHAPES.put("GLOVES_MOTO/slim", new float[][]{
+            {2, -2.3f, 6.9f, -2.3f, 1.3f, 10.3f, 2.3f, 0},
+            {2, -2.42f, 6.5f, -2.42f, 1.42f, 7.3f, 2.42f, 1},
+            {2, -2.35f, 7.7f, -1.17f, -2.3f, 9.7f, -1.03f, 2},
+            {2, -2.35f, 7.7f, -0.07f, -2.3f, 9.7f, 0.07f, 2},
+            {2, -2.35f, 7.7f, 1.03f, -2.3f, 9.7f, 1.17f, 2},
+            {3, -1.3f, 6.9f, -2.3f, 2.3f, 10.3f, 2.3f, 0},
+            {3, -1.42f, 6.5f, -2.42f, 2.42f, 7.3f, 2.42f, 1},
+            {3, 2.3f, 7.7f, -1.17f, 2.35f, 9.7f, -1.03f, 2},
+            {3, 2.3f, 7.7f, -0.07f, 2.35f, 9.7f, 0.07f, 2},
+            {3, 2.3f, 7.7f, 1.03f, 2.35f, 9.7f, 1.17f, 2},
+            {2, -2.62f, 5.9f, -2.62f, 1.62f, 7.4f, 2.62f, 1},
+            {2, -2.62f, 8.1f, -1.6f, -2.3f, 9.6f, 1.6f, 4},
+            {2, -2.62f, 6.2f, -0.8f, -2.3f, 7.1f, 0.8f, 6},
+            {3, -1.62f, 5.9f, -2.62f, 2.62f, 7.4f, 2.62f, 1},
+            {3, 2.3f, 8.1f, -1.6f, 2.62f, 9.6f, 1.6f, 4},
+            {3, 2.3f, 6.2f, -0.8f, 2.62f, 7.1f, 0.8f, 6},
+        });
         SHAPES.put("HIKING", new float[][]{
             {1, -3.6f, -1.5f, 2.3f, 3.6f, 10.5f, 6.6f, 0},
             {1, -3.8f, -2.6f, 2.4f, 3.8f, -0.9f, 6.9f, 1},
@@ -622,6 +682,43 @@ final class Formes {
             {1, -1.3f, 0f, -2.6f, -0.9f, 4.4f, -2.3f, 2},
             {1, -1.35f, 4.4f, -2.65f, -0.85f, 5.1f, -2.25f, 4},
         });
+        SHAPES.put("INTEGRAL", new float[][]{
+            {0, -4.95f, -8.7f, -4.95f, 4.95f, 0.9f, 4.95f, 0},
+            {0, -4.4f, -9.4f, -4.4f, 4.4f, -8.7f, 4.4f, 0},
+            {0, -3f, -9.75f, -3f, 3f, -9.4f, 3f, 12},
+            {0, -4f, -6.1f, -5.25f, 4f, -2.4f, -4.95f, 10},
+            {0, -3.6f, -5.8f, -5.32f, -1f, -5.3f, -5.25f, 11},
+            {0, -4.15f, -6.25f, -5.2f, 4.15f, -6.05f, -4.95f, 1},
+            {0, -4.15f, -2.45f, -5.2f, 4.15f, -2.25f, -4.95f, 1},
+            {0, -1.4f, -1.6f, -5.2f, 1.4f, 0.4f, -4.95f, 1},
+            {0, -0.9f, -9.5f, -4.95f, 0.9f, -8.6f, -4.5f, 1},
+            {0, -2.6f, -8.2f, 4.95f, 2.6f, -6.6f, 5.7f, 6},
+            {0, -4.97f, 0.6f, -4.97f, 4.97f, 1.1f, 4.97f, 1},
+            {0, -0.7f, -9.8f, -4.5f, 0.7f, -9.7f, 4.5f, 3},
+            {0, -2f, -9.5f, -4.96f, -1.4f, -6.3f, 4.96f, 3},
+            {0, 1.4f, -9.5f, -4.96f, 2f, -6.3f, 4.96f, 3},
+            {0, -5.15f, -5f, -1f, -4.95f, -3.6f, 0.4f, 4},
+            {0, 4.95f, -5f, -1f, 5.15f, -3.6f, 0.4f, 4},
+        });
+        SHAPES.put("JET", new float[][]{
+            {0, -4.95f, -8.7f, -4.95f, 4.95f, -5.6f, 4.95f, 0},
+            {0, -4.4f, -9.4f, -4.4f, 4.4f, -8.7f, 4.4f, 0},
+            {0, -3f, -9.75f, -3f, 3f, -9.4f, 3f, 12},
+            {0, -4.95f, -5.6f, 4.3f, 4.95f, 0.6f, 4.95f, 0},
+            {0, -4.75f, -5.75f, -5.05f, 4.75f, -5.35f, -4.6f, 1},
+            {0, -4f, -8.3f, -5.4f, 4f, -5.9f, -5f, 10},
+            {0, -3.4f, -8.1f, -5.46f, -1.2f, -7.6f, -5.4f, 11},
+            {0, -0.6f, -9.6f, -4.4f, 0.6f, -9.45f, 4.4f, 3},
+            {0, -4.95f, -5.6f, -4.2f, -4.3f, 0.6f, 4.3f, 0},
+            {0, -5.1f, -5f, -1.8f, -4.95f, 0.4f, 1.8f, 1},
+            {0, -5.2f, -7.4f, -4.6f, -4.95f, -6.6f, -3.8f, 4},
+            {0, -4.6f, 0.4f, -1.6f, -4.3f, 1.6f, -0.6f, 7},
+            {0, 4.3f, -5.6f, -4.2f, 4.95f, 0.6f, 4.3f, 0},
+            {0, 4.95f, -5f, -1.8f, 5.1f, 0.4f, 1.8f, 1},
+            {0, 4.95f, -7.4f, -4.6f, 5.2f, -6.6f, -3.8f, 4},
+            {0, 4.3f, 0.4f, -1.6f, 4.6f, 1.6f, -0.6f, 7},
+            {0, -4.6f, 1.3f, -1.8f, 4.6f, 1.6f, -0.6f, 7},
+        });
         SHAPES.put("LIVREUR", new float[][]{
             {1, -4.55f, -0.9f, -2.55f, 4.55f, 0.7f, 2.55f, 12},
             {1, -3.3f, -0.8f, 2.45f, 3.3f, 2.3f, 4.4f, 6},
@@ -633,6 +730,65 @@ final class Formes {
             {1, -2.7f, -0.2f, -2.55f, -1f, 2.4f, -2.3f, 12},
             {1, -1.7f, 2.4f, -2.5f, -0.5f, 6.6f, -2.3f, 12},
             {1, 1.9f, 2.6f, -2.62f, 3f, 3.2f, -2.3f, 6},
+        });
+        SHAPES.put("MOTO", new float[][]{
+            {1, -4.5f, -1f, -2.5f, 4.5f, 0.5f, 2.5f, 1},
+            {2, -3.5f, -2.55f, -2.5f, 1.5f, 0.8f, 2.5f, 6},
+            {2, -3.62f, -2.2f, -1.2f, 1.62f, 0.2f, 1.2f, 4},
+            {2, -3.42f, 4.4f, 0.8f, 1.42f, 7.2f, 2.6f, 6},
+            {2, -3.42f, 8.6f, -2.42f, 1.42f, 9.8f, 2.42f, 1},
+            {3, -1.5f, -2.55f, -2.5f, 3.5f, 0.8f, 2.5f, 6},
+            {3, -1.62f, -2.2f, -1.2f, 3.62f, 0.2f, 1.2f, 4},
+            {3, -1.42f, 4.4f, 0.8f, 3.42f, 7.2f, 2.6f, 6},
+            {3, -1.42f, 8.6f, -2.42f, 3.42f, 9.8f, 2.42f, 1},
+        });
+        SHAPES.put("MOTO/slim", new float[][]{
+            {1, -4.5f, -1f, -2.5f, 4.5f, 0.5f, 2.5f, 1},
+            {2, -2.5f, -2.55f, -2.5f, 1.5f, 0.8f, 2.5f, 6},
+            {2, -2.62f, -2.2f, -1.2f, 1.62f, 0.2f, 1.2f, 4},
+            {2, -2.42f, 4.4f, 0.8f, 1.42f, 7.2f, 2.6f, 6},
+            {2, -2.42f, 8.6f, -2.42f, 1.42f, 9.8f, 2.42f, 1},
+            {3, -1.5f, -2.55f, -2.5f, 2.5f, 0.8f, 2.5f, 6},
+            {3, -1.62f, -2.2f, -1.2f, 2.62f, 0.2f, 1.2f, 4},
+            {3, -1.42f, 4.4f, 0.8f, 2.42f, 7.2f, 2.6f, 6},
+            {3, -1.42f, 8.6f, -2.42f, 2.42f, 9.8f, 2.42f, 1},
+        });
+        SHAPES.put("MOTO_PANTS", new float[][]{
+            {4, -2.45f, 4.2f, -2.75f, 2.45f, 7.2f, -2.3f, 6},
+            {4, -1.5f, 4.8f, -2.95f, 1.5f, 6.6f, -2.72f, 4},
+            {4, -2.65f, 0.3f, -1.6f, -2.3f, 3.2f, 1.6f, 6},
+            {5, -2.45f, 4.2f, -2.75f, 2.45f, 7.2f, -2.3f, 6},
+            {5, -1.5f, 4.8f, -2.95f, 1.5f, 6.6f, -2.72f, 4},
+            {5, 2.3f, 0.3f, -1.6f, 2.65f, 3.2f, 1.6f, 6},
+        });
+    }
+
+    private static void shapes3() {
+        SHAPES.put("MOTO_RACING", new float[][]{
+            {1, -4.5f, -1f, -2.5f, 4.5f, 0.5f, 2.5f, 1},
+            {2, -3.5f, -2.55f, -2.5f, 1.5f, 0.8f, 2.5f, 6},
+            {2, -3.62f, -2.2f, -1.2f, 1.62f, 0.2f, 1.2f, 4},
+            {2, -3.42f, 4.4f, 0.8f, 1.42f, 7.2f, 2.6f, 6},
+            {2, -3.42f, 8.6f, -2.42f, 1.42f, 9.8f, 2.42f, 1},
+            {3, -1.5f, -2.55f, -2.5f, 3.5f, 0.8f, 2.5f, 6},
+            {3, -1.62f, -2.2f, -1.2f, 3.62f, 0.2f, 1.2f, 4},
+            {3, -1.42f, 4.4f, 0.8f, 3.42f, 7.2f, 2.6f, 6},
+            {3, -1.42f, 8.6f, -2.42f, 3.42f, 9.8f, 2.42f, 1},
+            {1, -2.4f, -0.6f, 2.35f, 2.4f, 3.2f, 3.6f, 6},
+            {1, -1.8f, -0.9f, 2.6f, 1.8f, 0.2f, 3.3f, 6},
+        });
+        SHAPES.put("MOTO_RACING/slim", new float[][]{
+            {1, -4.5f, -1f, -2.5f, 4.5f, 0.5f, 2.5f, 1},
+            {2, -2.5f, -2.55f, -2.5f, 1.5f, 0.8f, 2.5f, 6},
+            {2, -2.62f, -2.2f, -1.2f, 1.62f, 0.2f, 1.2f, 4},
+            {2, -2.42f, 4.4f, 0.8f, 1.42f, 7.2f, 2.6f, 6},
+            {2, -2.42f, 8.6f, -2.42f, 1.42f, 9.8f, 2.42f, 1},
+            {3, -1.5f, -2.55f, -2.5f, 2.5f, 0.8f, 2.5f, 6},
+            {3, -1.62f, -2.2f, -1.2f, 2.62f, 0.2f, 1.2f, 4},
+            {3, -1.42f, 4.4f, 0.8f, 2.42f, 7.2f, 2.6f, 6},
+            {3, -1.42f, 8.6f, -2.42f, 2.42f, 9.8f, 2.42f, 1},
+            {1, -2.4f, -0.6f, 2.35f, 2.4f, 3.2f, 3.6f, 6},
+            {1, -1.8f, -0.9f, 2.6f, 1.8f, 0.2f, 3.3f, 6},
         });
         SHAPES.put("PARKA", new float[][]{
             {1, -4.72f, -1.2f, -2.72f, 4.72f, 1f, 2.72f, 12},
@@ -678,9 +834,6 @@ final class Formes {
             {1, -2.2f, -0.3f, -2.62f, -0.25f, 1.3f, -2.3f, 6},
             {1, -3f, -0.6f, -2.4f, -2.2f, 0.4f, 1.5f, 6},
         });
-    }
-
-    private static void shapes3() {
         SHAPES.put("POLO_PN_COMMISSAIRE", new float[][]{
             {1, -3f, -0.6f, 1.5f, 3f, 0.4f, 2.62f, 6},
             {1, 0.25f, -0.3f, -2.62f, 2.2f, 1.3f, -2.3f, 6},
@@ -789,6 +942,9 @@ final class Formes {
             {1, 1.692f, 0.792f, 2.3f, 2.642f, 1.742f, 2.6f, 7},
             {1, 2.925f, -0.075f, 2.3f, 3.875f, 0.875f, 2.6f, 7},
         });
+    }
+
+    private static void shapes4() {
         SHAPES.put("SCARF2", new float[][]{
             {1, -4.65f, -1.6f, -2.85f, 4.65f, 0.9f, 2.85f, 0},
             {1, -4.85f, 0.5f, -3.05f, 4.85f, 2f, 3.05f, 1},
@@ -916,9 +1072,6 @@ final class Formes {
             {5, -0.25f, 5.2f, -2.98f, 0.25f, 9f, -2.82f, 22},
             {5, -0.4f, 4.8f, -3.05f, 0.4f, 5.4f, -2.85f, 27},
         });
-    }
-
-    private static void shapes4() {
         SHAPES.put("SHOE_BASKETS_CHUNKY", new float[][]{
             {4, -2.52f, 10.5f, -3.4f, 2.52f, 12.3f, 2.62f, 16},
             {4, -2.2f, 10.65f, -3.72f, 2.2f, 12.25f, -3.4f, 16},
@@ -1145,6 +1298,9 @@ final class Formes {
             {5, 2.34f, 9.4f, 0.6f, 2.47f, 10f, 1.7f, 26},
             {5, 2.34f, 9.9f, -2.25f, 2.47f, 10.3f, -1.9f, 26},
         });
+    }
+
+    private static void shapes5() {
         SHAPES.put("SHOE_BASKETS_TOILE_NOIRES", new float[][]{
             {4, -2.52f, 11.2f, -3.4f, 2.52f, 12.3f, 2.62f, 16},
             {4, -2.2f, 11.35f, -3.72f, 2.2f, 12.25f, -3.4f, 16},
@@ -1271,6 +1427,74 @@ final class Formes {
             {5, -2.25f, 10f, 2.3f, 2.25f, 11.4f, 2.62f, 23},
             {5, -2.62f, 4.1f, -2.62f, 2.62f, 5.2f, 2.62f, 29},
         });
+        SHAPES.put("SHOE_BOTTES_MOTO_RACING", new float[][]{
+            {4, -2.56f, 11.2f, -3.35f, 2.56f, 12.35f, 2.66f, 16},
+            {4, -2.48f, 12.35f, -3.25f, 2.48f, 12.65f, 2.56f, 28},
+            {4, -1.9f, 11.3f, -3.62f, 1.9f, 12.3f, -3.35f, 16},
+            {4, -2.42f, 9.7f, -3.15f, 2.42f, 11.2f, -2.2f, 21},
+            {4, -1.85f, 10f, -3.45f, 1.85f, 11.2f, -3.15f, 21},
+            {4, -2.3f, 9.1f, -2.75f, 2.3f, 9.7f, -2.2f, 18},
+            {4, -2.25f, 10f, 2.3f, 2.25f, 11.2f, 2.62f, 23},
+            {4, -2.46f, 2.4f, -2.46f, 2.46f, 2.95f, 2.46f, 25},
+            {4, -2.52f, 2.2f, -0.35f, -2.4f, 3.4f, 0.35f, 27},
+            {4, 2.4f, 2.2f, -0.35f, 2.52f, 3.4f, 0.35f, 27},
+            {4, -2.4f, 4.15f, -2.4f, 2.4f, 4.9f, 2.4f, 26},
+            {5, -2.56f, 11.2f, -3.35f, 2.56f, 12.35f, 2.66f, 16},
+            {5, -2.48f, 12.35f, -3.25f, 2.48f, 12.65f, 2.56f, 28},
+            {5, -1.9f, 11.3f, -3.62f, 1.9f, 12.3f, -3.35f, 16},
+            {5, -2.42f, 9.7f, -3.15f, 2.42f, 11.2f, -2.2f, 21},
+            {5, -1.85f, 10f, -3.45f, 1.85f, 11.2f, -3.15f, 21},
+            {5, -2.3f, 9.1f, -2.75f, 2.3f, 9.7f, -2.2f, 18},
+            {5, -2.25f, 10f, 2.3f, 2.25f, 11.2f, 2.62f, 23},
+            {5, -2.46f, 2.4f, -2.46f, 2.46f, 2.95f, 2.46f, 25},
+            {5, 2.4f, 2.2f, -0.35f, 2.52f, 3.4f, 0.35f, 27},
+            {5, -2.52f, 2.2f, -0.35f, -2.4f, 3.4f, 0.35f, 27},
+            {5, -2.4f, 4.15f, -2.4f, 2.4f, 4.9f, 2.4f, 26},
+        });
+        SHAPES.put("SHOE_BOTTES_MOTO_TOURING", new float[][]{
+            {4, -2.56f, 11.2f, -3.35f, 2.56f, 12.35f, 2.66f, 16},
+            {4, -2.48f, 12.35f, -3.25f, 2.48f, 12.65f, 2.56f, 28},
+            {4, -1.9f, 11.3f, -3.62f, 1.9f, 12.3f, -3.35f, 16},
+            {4, -2.42f, 9.7f, -3.15f, 2.42f, 11.2f, -2.2f, 21},
+            {4, -1.85f, 10f, -3.45f, 1.85f, 11.2f, -3.15f, 21},
+            {4, -2.3f, 9.1f, -2.75f, 2.3f, 9.7f, -2.2f, 18},
+            {4, -2.25f, 10f, 2.3f, 2.25f, 11.2f, 2.62f, 23},
+            {4, -2.46f, 2.4f, -2.46f, 2.46f, 2.95f, 2.46f, 25},
+            {4, -2.52f, 2.2f, -0.35f, -2.4f, 3.4f, 0.35f, 27},
+            {4, 2.4f, 2.2f, -0.35f, 2.52f, 3.4f, 0.35f, 27},
+            {5, -2.56f, 11.2f, -3.35f, 2.56f, 12.35f, 2.66f, 16},
+            {5, -2.48f, 12.35f, -3.25f, 2.48f, 12.65f, 2.56f, 28},
+            {5, -1.9f, 11.3f, -3.62f, 1.9f, 12.3f, -3.35f, 16},
+            {5, -2.42f, 9.7f, -3.15f, 2.42f, 11.2f, -2.2f, 21},
+            {5, -1.85f, 10f, -3.45f, 1.85f, 11.2f, -3.15f, 21},
+            {5, -2.3f, 9.1f, -2.75f, 2.3f, 9.7f, -2.2f, 18},
+            {5, -2.25f, 10f, 2.3f, 2.25f, 11.2f, 2.62f, 23},
+            {5, -2.46f, 2.4f, -2.46f, 2.46f, 2.95f, 2.46f, 25},
+            {5, 2.4f, 2.2f, -0.35f, 2.52f, 3.4f, 0.35f, 27},
+            {5, -2.52f, 2.2f, -0.35f, -2.4f, 3.4f, 0.35f, 27},
+        });
+        SHAPES.put("SHOE_BOTTES_MOTO_VINTAGE", new float[][]{
+            {4, -2.56f, 11.2f, -3.35f, 2.56f, 12.35f, 2.66f, 16},
+            {4, -2.48f, 12.35f, -3.25f, 2.48f, 12.65f, 2.56f, 28},
+            {4, -1.9f, 11.3f, -3.62f, 1.9f, 12.3f, -3.35f, 16},
+            {4, -2.42f, 9.7f, -3.15f, 2.42f, 11.2f, -2.2f, 21},
+            {4, -1.85f, 10f, -3.45f, 1.85f, 11.2f, -3.15f, 21},
+            {4, -2.3f, 9.1f, -2.75f, 2.3f, 9.7f, -2.2f, 18},
+            {4, -2.25f, 10f, 2.3f, 2.25f, 11.2f, 2.62f, 23},
+            {4, -2.46f, 2.4f, -2.46f, 2.46f, 2.95f, 2.46f, 25},
+            {4, -2.52f, 2.2f, -0.35f, -2.4f, 3.4f, 0.35f, 27},
+            {4, 2.4f, 2.2f, -0.35f, 2.52f, 3.4f, 0.35f, 27},
+            {5, -2.56f, 11.2f, -3.35f, 2.56f, 12.35f, 2.66f, 16},
+            {5, -2.48f, 12.35f, -3.25f, 2.48f, 12.65f, 2.56f, 28},
+            {5, -1.9f, 11.3f, -3.62f, 1.9f, 12.3f, -3.35f, 16},
+            {5, -2.42f, 9.7f, -3.15f, 2.42f, 11.2f, -2.2f, 21},
+            {5, -1.85f, 10f, -3.45f, 1.85f, 11.2f, -3.15f, 21},
+            {5, -2.3f, 9.1f, -2.75f, 2.3f, 9.7f, -2.2f, 18},
+            {5, -2.25f, 10f, 2.3f, 2.25f, 11.2f, 2.62f, 23},
+            {5, -2.46f, 2.4f, -2.46f, 2.46f, 2.95f, 2.46f, 25},
+            {5, 2.4f, 2.2f, -0.35f, 2.52f, 3.4f, 0.35f, 27},
+            {5, -2.52f, 2.2f, -0.35f, -2.4f, 3.4f, 0.35f, 27},
+        });
         SHAPES.put("SHOE_CHAUSSURES_INTERVENTION", new float[][]{
             {4, -2.56f, 11.2f, -3.35f, 2.56f, 12.35f, 2.66f, 16},
             {4, -2.48f, 12.35f, -3.25f, 2.48f, 12.65f, 2.56f, 28},
@@ -1361,9 +1585,6 @@ final class Formes {
             {5, 1.15f, 7.5f, -2.52f, 1.55f, 9.5f, -2.3f, 19},
             {5, -1.55f, 7.5f, -2.52f, -1.15f, 9.5f, -2.3f, 19},
         });
-    }
-
-    private static void shapes5() {
         SHAPES.put("SHOE_CHELSEA_DAIM", new float[][]{
             {4, -2.42f, 11.5f, -3.65f, 2.42f, 12.35f, 2.5f, 16},
             {4, -1.75f, 11.55f, -4f, 1.75f, 12.3f, -3.65f, 16},
@@ -1428,6 +1649,9 @@ final class Formes {
             {5, -2.45f, 10.4f, -3f, 2.45f, 11.6f, -0.4f, 18},
             {5, -1f, 10.32f, -2.4f, 1f, 10.4f, -1.2f, 26},
         });
+    }
+
+    private static void shapes6() {
         SHAPES.put("SHOE_CLAQUETTES_NAYK", new float[][]{
             {4, -2.25f, 11.6f, -3.55f, 2.25f, 12.55f, 2.45f, 16},
             {4, -1.6f, 11.65f, -3.85f, 1.6f, 12.5f, -3.55f, 16},
@@ -1660,9 +1884,6 @@ final class Formes {
             {5, -2.1f, 10.2f, 2.3f, 2.1f, 11.6f, 2.55f, 18},
             {5, 0f, 10.82f, -3.3f, 0.9f, 10.9f, -2.6f, 31},
         });
-    }
-
-    private static void shapes6() {
         SHAPES.put("SHOE_GUCHI_VERT", new float[][]{
             {4, -2.52f, 11.2f, -3.4f, 2.52f, 12.3f, 2.62f, 16},
             {4, -2.2f, 11.35f, -3.72f, 2.2f, 12.25f, -3.4f, 16},
@@ -1775,6 +1996,9 @@ final class Formes {
             {5, -1.55f, 8.9f, -2.52f, -1.15f, 9.5f, -2.3f, 19},
             {5, -1.7f, 10.6f, -3.66f, 1.7f, 10.75f, -3.6f, 17},
         });
+    }
+
+    private static void shapes7() {
         SHAPES.put("SHOE_LOUIS_VUITEN", new float[][]{
             {4, -2.52f, 11.2f, -3.4f, 2.52f, 12.3f, 2.62f, 16},
             {4, -2.2f, 11.35f, -3.72f, 2.2f, 12.25f, -3.4f, 16},
@@ -2103,9 +2327,6 @@ final class Formes {
             {5, 1.15f, 8.6f, -2.6f, 1.5f, 8.97f, -2.36f, 24},
             {5, -1.5f, 8.6f, -2.6f, -1.15f, 8.97f, -2.36f, 24},
         });
-    }
-
-    private static void shapes7() {
         SHAPES.put("SHOE_ROBE_COCKTAIL", new float[][]{
             {4, -2.1f, 12f, -3.8f, 2.1f, 12.5f, -0.6f, 16},
             {4, -1.2f, 12f, -4.3f, 1.2f, 12.45f, -3.8f, 16},
@@ -2180,6 +2401,9 @@ final class Formes {
             {5, -2.1f, 10.2f, 2.3f, 2.1f, 11.6f, 2.55f, 18},
             {5, 0f, 10.82f, -3.3f, 0.9f, 10.9f, -2.6f, 31},
         });
+    }
+
+    private static void shapes8() {
         SHAPES.put("SHOE_SABOTS_CUISINE", new float[][]{
             {4, -2.6f, 11.5f, -3.6f, 2.6f, 12.55f, 2.6f, 16},
             {4, -2.55f, 9.6f, -3.5f, 2.55f, 11.5f, -0.9f, 18},
@@ -2374,9 +2598,6 @@ final class Formes {
             {0, 3.2f, -12.5f, -5.28f, 3.6f, -8.7f, -5.2f, 2},
             {0, 3.2f, -12.5f, 5.2f, 3.6f, -8.7f, 5.28f, 2},
         });
-    }
-
-    private static void shapes8() {
         SHAPES.put("TRENCH", new float[][]{
             {1, -4.55f, -0.6f, -2.55f, 4.55f, 0.8f, 2.55f, 12},
             {4, -2.5f, -0.4f, -2.5f, 2.5f, 7.6f, 2.5f, 0},
@@ -2435,6 +2656,9 @@ final class Formes {
             {3, 2.56f, 7.1f, -0.06f, 2.59f, 7.6f, 0.06f, 8},
             {3, 2.56f, 7.5f, -0.06f, 2.59f, 7.62f, 0.45f, 8},
         });
+    }
+
+    private static void shapes9() {
         SHAPES.put("WATCH_SPORT", new float[][]{
             {3, -1.3f, 6.95f, -2.3f, 3.3f, 8.15f, 2.3f, 7},
             {3, 3.3f, 6.6f, -1.05f, 3.72f, 8.5f, 1.05f, 4},

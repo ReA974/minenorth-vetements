@@ -102,3 +102,16 @@ L'écran MineNorth Inventaire (mod minenorth-inventaire) a les mêmes cases dans
 ## Parachutes : plusieurs modèles (04/11)
 `parachute` (voile orange et blanche), `parachute_noir` (tactique, voile noire et grise), `parachute_rouge`, `parachute_bleu`, et réservés au grade
 (`VipItems`) : `parachute_vip` (VIP, voile violet et or), `parachute_prestige` (VIP+, voile noir, or et cyan). La couleur de la voile suit le modèle porté.
+
+## Tenues de motard et casques de moto (04/11)
+Aperçus : `apercu-motards.png`, parachutes `apercu-parachutes-fermes.png` / `apercu-parachutes-ouverts.png` (outil `tools/apercu_parachutes.py`).
+- **Blousons** (`paint_moto`, formes `MOTO` / `MOTO_RACING`) : cuir racing Dayneze noir et rouge, cuir Alpinestarz noir et blanc (bosse dorsale),
+  cuir café racer marron, textile Revite gris et jaune fluo, textile Furygane noir et bleu, haute visibilité. Coques d'épaules avec slider, coudes
+  protégés, dorsale, soufflets, col officier, poignets à scratch, bandes de course, marque sur la poitrine et dans le dos.
+- **Pantalons** (`paint_moto_pants`, forme `MOTO_PANTS`) : cuir racing, textile, jean renforcé ; genouillères avec slider, renforts de hanches.
+- **Gants** (accessoire Mains, forme `GLOVES_MOTO`) : racing, cuir marron, hiver ; manchette longue et coque de phalanges.
+- **Bottes** : racing Alpinestarz, touring noires, vintage en cuir marron.
+- **Casques** : intégraux (`INTEGRAL` : coque fermée, écran fumé, aérations, becquet, bandes) Shoey noir mat, Araï rouge et blanc, AGVE Rossy jaune fluo,
+  Shoey chromé iridium, blanc motard police (non vendu) ; jets (`JET` : écran bulle relevé, rebord cuir, pressions, jugulaire) Belle crème, Shoey noir,
+  Belle rouge. Marques parodiées façon GTA VI, aucun logo réel.
+- En vente au magasin **Moto Riders** (pack `moto` de minenorth_shops).

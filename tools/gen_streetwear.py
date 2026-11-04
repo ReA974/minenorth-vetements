@@ -2748,6 +2748,215 @@ CHAUSSURES = [
     CH('sabots_noirs', 'Sabots de cuisine Krocs noirs', 'sabot', 0x1C1C20, matiere='caoutchouc', sole=0x1C1C20, strap=0x1C1C20, trim=0x5A5A60),
 ]
 CLOTHES += CHAUSSURES
+
+
+# ---------------------------------------------------------------- tenues de motard (04/11) : blousons, pantalons, gants, bottes, casques
+# Marques parodiées façon GTA VI : Dayneze, Alpinestarz, Revite, Furygane (vêtements) ; Shoey, Araï, AGVE, Belle (casques).
+
+FONT.update({'Z': ["XXX", "..X", ".X.", "X..", "XXX"], 'W': ["X...X", "X...X", "X.X.X", "XX.XX", "X...X"], 'J': ["..X", "..X", "..X", "X.X", ".X."]})
+
+
+def paint_moto(o, t):
+    """Blouson de moto (cuir ou textile) : empiècements contrastés, bandes de course, protections d'épaules et de coudes cousues, dorsale,
+    soufflets d'aisance, col officier, fermeture, poignets à scratch, marque sur la poitrine et dans le dos."""
+    m, c2, ac = o['main'], o.get('second', o['main']), o.get('accent', o['main'])
+    cuir = o.get('tissu') == 'cuir'
+    base = dict(noise=.03, grad=(1.08, .86), sheen=.22) if cuir else dict(noise=.03, twill=.03, grad=(1.04, .88), sheen=.05)
+    for r in faces(BODY) + faces(ARM):
+        t.fill(r, m, **base)
+    t.fill(BODY['top'], sh(m, .85)); t.fill(ARM['top'], sh(c2, .9)); t.fill(ARM['bot'], sh(m, .6))
+    for k in TORSO:                                                                 # empiècement d'épaules contrasté
+        x0, y0, x1, y1 = BODY[k]
+        t.fill((x0, 160, x1, 178), c2, **base)
+        t.fill((x0, 246, x1, 256), sh(m, .7)); t.ribs((x0, 246, x1, 256), .8)       # bas de blouson resserré
+    for k in SLEEVES:
+        x0, y0, x1, y1 = ARM[k]
+        t.fill((x0, 160, x1, 184), c2, **base)                                      # épaule (coque de protection)
+        t.ribs((x0, 162, x1, 182), .88, 4)
+        t.fill((x0, 200, x1, 222), sh(c2, .9), **base); t.ribs((x0, 202, x1, 220), .86, 3)   # coude protégé
+        t.fill((x0, 244, x1, 256), sh(m, .55)); t.rect((x0, 248, x1, 250), sh(m, .4))  # poignet à scratch
+    # bandes de course : diagonale sur la poitrine, bande sur toute la longueur des manches
+    for k in SLEEVES:
+        x0, y0, x1, y1 = ARM[k]
+        if k in ('O', 'B'):
+            t.fill((x0 + 10, 184, x0 + 16, 244), ac, noise=.02)
+    t.fill((256, 186, 320, 238), sh(m, .9), **base); t.ribs((258, 188, 318, 236), .84, 6)   # dorsale (coque dans le dos)
+
+    def det(d):
+        e = sh(m, .55)
+        d.polygon([(160, 196), (176, 178), (184, 178), (168, 196)], fill=rgb(ac))   # diagonale gauche
+        d.polygon([(224, 196), (208, 178), (200, 178), (216, 196)], fill=rgb(ac))   # diagonale droite
+        d.line([(192, 160), (192, 246)], fill=rgb(SILVER_D if cuir else 0x2A2A2E), width=2)   # fermeture
+        d.rectangle((189, 166, 195, 172), fill=rgb(SILVER))
+        for (x0, x1) in ((128, 160), (160, 224), (224, 256), (256, 320)):
+            d.line([(x0, 178), (x1, 178)], fill=e)                                  # couture de l'empiècement
+        for x in (262, 314):                                                        # soufflets d'aisance (accordéon)
+            for y in range(166, 184, 3):
+                d.line([(x - 3, y), (x + 3, y)], fill=sh(c2, .7))
+        d.rounded_rectangle((166, 214, 182, 232), radius=2, outline=e)               # poches à rabat
+        d.rounded_rectangle((202, 214, 218, 232), radius=2, outline=e)
+        if cuir:                                                                    # perforations d'aération
+            for y in range(186, 210, 4):
+                for x in range(166, 184, 4):
+                    d.point((x, y), fill=sh(m, .45))
+    draw_on(t, det)
+    if o.get('poitrine'):
+        text(t, 168, 200, o['poitrine'], o.get('marque_col', WHITE), 1)
+    back_text(t, o, o.get('dos_y', 194), 2)
+
+
+def paint_moto_pants(o, t):
+    """Pantalon de moto : genouillères cousues, soufflets d'aisance au-dessus des genoux, renforts de hanches, bande latérale, ceinture à zip."""
+    m, c2, ac = o['main'], o.get('second', o['main']), o.get('accent', o['main'])
+    cuir = o.get('tissu') == 'cuir'
+    base = dict(noise=.03, grad=(1.05, .88), sheen=.2) if cuir else dict(noise=.03, twill=.03, grad=(1.02, .9), sheen=.04)
+    for r in faces(LEG):
+        t.fill(r, m, **base)
+    for k in TORSO:
+        x0, y0, x1, y1 = BODY[k]
+        t.fill((x0, 232, x1, 256), m, **base)
+        t.fill((x0, 232, x1, 240), sh(m, .7))
+    x0, _, x1, _ = LEG['F']
+    t.fill((x0, 196, x1, 218), c2, **base); t.ribs((x0, 198, x1, 216), .86, 4)    # genou protégé
+    t.ribs((x0, 184, x1, 194), .82, 2)                                              # soufflet au-dessus du genou
+    x0, _, x1, _ = LEG['O']
+    t.fill((x0 + 12, 160, x0 + 18, 250), ac, noise=.02)                             # bande latérale
+
+    def det(d):
+        e = sh(m, .55)
+        d.rounded_rectangle((4, 164, 28, 182), radius=3, fill=sh(c2, .9), outline=e)  # renfort de hanche
+        d.line([(192, 240), (192, 256)], fill=e)
+        d.rectangle((188, 233, 196, 239), fill=rgb(SILVER_D))
+        for x0 in (0, 32, 64, 96):
+            d.rectangle((x0, 246, x0 + 32, 256), fill=sh(m, .7))                     # bas de jambe à zip
+        d.line([(16, 244), (16, 256)], fill=rgb(SILVER))
+    draw_on(t, det)
+
+
+def shape_moto(slim, bosse=False):
+    b = [ring(-1.0, 0.5, .5, 'dark')]                                                # col officier
+    for side in ('right', 'left'):
+        x0, x1 = arm_x(side, slim)
+        p = side + '_arm'
+        b += [(p, x0 - 0.5, -2.55, -2.5, x1 + 0.5, 0.8, 2.5, 'second'),               # coque d'épaule
+              (p, x0 - 0.62, -2.2, -1.2, x1 + 0.62, 0.2, 1.2, 'metal'),              # slider d'épaule
+              (p, x0 - 0.42, 4.4, 0.8, x1 + 0.42, 7.2, 2.6, 'second'),                # coque de coude (arrière du bras)
+              (p, x0 - 0.42, 8.6, -2.42, x1 + 0.42, 9.8, 2.42, 'dark')]               # poignet
+    if bosse:                                                                         # bosse aérodynamique (cuir racing)
+        b += [('body', -2.4, -0.6, 2.35, 2.4, 3.2, 3.6, 'second'), ('body', -1.8, -0.9, 2.6, 1.8, 0.2, 3.3, 'second')]   # au-dessus du lettrage
+    return b
+
+
+def shape_moto_pants(slim):
+    return sym([('right_leg', -2.45, 4.2, -2.75, 2.45, 7.2, -2.3, 'second'), ('right_leg', -1.5, 4.8, -2.95, 1.5, 6.6, -2.72, 'metal'),
+                ('right_leg', -2.65, 0.3, -1.6, -2.3, 3.2, 1.6, 'second')])
+
+
+def shape_gloves_moto(slim):
+    b = shape_gloves(slim)
+    for side in ('right', 'left'):
+        x0, x1 = arm_x(side, slim)
+        p = side + '_arm'
+        out = (x0 - 0.62, x0 - 0.3) if side == 'right' else (x1 + 0.3, x1 + 0.62)
+        b += [(p, x0 - 0.62, 5.9, -2.62, x1 + 0.62, 7.4, 2.62, 'dark'),                # manchette longue
+              (p, out[0], 8.1, -1.6, out[1], 9.6, 1.6, 'metal'),                     # coque de phalanges
+              (p, out[0], 6.2, -0.8, out[1], 7.1, 0.8, 'second')]
+    return b
+
+
+def shape_integral(slim):
+    """Casque intégral : coque fermée (mentonnière comprise), écran fumé, aérations, becquet, déco racing."""
+    b = [('head', -4.95, -8.7, -4.95, 4.95, 0.9, 4.95, 'main'), ('head', -4.4, -9.4, -4.4, 4.4, -8.7, 4.4, 'main'),
+         ('head', -3.0, -9.75, -3.0, 3.0, -9.4, 3.0, 'main_hi'),
+         ('head', -4.0, -6.1, -5.25, 4.0, -2.4, -4.95, 'lens'), ('head', -3.6, -5.8, -5.32, -1.0, -5.3, -5.25, 'lens_hi'),   # écran fumé + reflet
+         ('head', -4.15, -6.25, -5.2, 4.15, -6.05, -4.95, 'dark'), ('head', -4.15, -2.45, -5.2, 4.15, -2.25, -4.95, 'dark'),  # joints d'écran
+         ('head', -1.4, -1.6, -5.2, 1.4, 0.4, -4.95, 'dark'),                              # aérations de mentonnière
+         ('head', -0.9, -9.5, -4.95, 0.9, -8.6, -4.5, 'dark'),                             # aération frontale
+         ('head', -2.6, -8.2, 4.95, 2.6, -6.6, 5.7, 'second'),                             # becquet arrière
+         ('head', -4.97, 0.6, -4.97, 4.97, 1.1, 4.97, 'dark'),                             # bord de coque
+         ('head', -0.7, -9.8, -4.5, 0.7, -9.7, 4.5, 'accent'), ('head', -2.0, -9.5, -4.96, -1.4, -6.3, 4.96, 'accent'),
+         ('head', 1.4, -9.5, -4.96, 2.0, -6.3, 4.96, 'accent')]                            # bandes racing
+    b += sym([('head', -5.15, -5.0, -1.0, -4.95, -3.6, 0.4, 'metal')])                   # pivots d'écran
+    return b
+
+
+def shape_jet(slim):
+    """Casque jet : coque ouverte, rebord cuir, écran bulle teinté relevé, pressions, jugulaire."""
+    b = [('head', -4.95, -8.7, -4.95, 4.95, -5.6, 4.95, 'main'), ('head', -4.4, -9.4, -4.4, 4.4, -8.7, 4.4, 'main'),
+         ('head', -3.0, -9.75, -3.0, 3.0, -9.4, 3.0, 'main_hi'),
+         ('head', -4.95, -5.6, 4.3, 4.95, 0.6, 4.95, 'main'),                              # nuque
+         ('head', -4.75, -5.75, -5.05, 4.75, -5.35, -4.6, 'dark'),                         # rebord de front (cuir)
+         ('head', -4.0, -8.3, -5.4, 4.0, -5.9, -5.0, 'lens'), ('head', -3.4, -8.1, -5.46, -1.2, -7.6, -5.4, 'lens_hi'),   # écran relevé
+         ('head', -0.6, -9.6, -4.4, 0.6, -9.45, 4.4, 'accent')]
+    b += sym([('head', -4.95, -5.6, -4.2, -4.3, 0.6, 4.3, 'main'), ('head', -5.1, -5.0, -1.8, -4.95, 0.4, 1.8, 'dark'),   # côtés + oreillettes
+              ('head', -5.2, -7.4, -4.6, -4.95, -6.6, -3.8, 'metal'),                       # pressions d'écran
+              ('head', -4.6, 0.4, -1.6, -4.3, 1.6, -0.6, 'strap')])                          # jugulaire
+    b.append(('head', -4.6, 1.3, -1.8, 4.6, 1.6, -0.6, 'strap'))
+    return b
+
+
+SHAPES.update({'MOTO': lambda s: shape_moto(s), 'MOTO_RACING': lambda s: shape_moto(s, True), 'MOTO_PANTS': shape_moto_pants,
+               'GLOVES_MOTO': shape_gloves_moto, 'INTEGRAL': shape_integral, 'JET': shape_jet})
+
+MOTO = [
+    M('blouson_moto_dayneze', 'Blouson cuir racing Dayneze noir et rouge', 'chestplate', 'MOTO_RACING', paint_moto, 'veste', main=0x161618,
+      second=0xB01B24, accent=0xF2F2EE, tissu='cuir', dos='DAYNEZE', dos_y=214, dos_col=WHITE, poitrine='DAYNEZE', metal=SILVER, dark=0x0E0E10,
+      icon_haut=0xB01B24, icon_coupe=4, icon_bandes=(8,), icon_bande=0xF2F2EE),
+    M('blouson_moto_alpinestarz', 'Blouson cuir Alpinestarz noir et blanc', 'chestplate', 'MOTO_RACING', paint_moto, 'veste', main=0x1A1A1D,
+      second=0xEDEDE8, accent=0x2A6FC0, tissu='cuir', dos='ASTARZ', dos_y=214, dos_col=WHITE, poitrine='ASTARZ', metal=SILVER, dark=0x0E0E10,
+      icon_haut=0xEDEDE8, icon_coupe=4, icon_bandes=(8,), icon_bande=0x2A6FC0),
+    M('blouson_moto_cafe', 'Blouson cuir café racer marron', 'chestplate', 'MOTO', paint_moto, 'veste', main=0x5A3420, second=0x4A2814,
+      accent=0xC9A24A, tissu='cuir', poitrine='CAFE', marque_col=0xC9A24A, metal=SILVER, dark=0x2E1A10),
+    M('blouson_moto_revite', 'Blouson textile Revite gris et jaune fluo', 'chestplate', 'MOTO', paint_moto, 'veste', main=0x4A4D54,
+      second=0x26282C, accent=0xD4E21E, tissu='textile', dos='REVITE', dos_col=0xD4E21E, poitrine='REVITE', metal=0x8A8F96, dark=0x1C1C1F,
+      icon_bandes=(8,), icon_bande=0xD4E21E),
+    M('blouson_moto_furygane', 'Blouson textile Furygane noir et bleu', 'chestplate', 'MOTO', paint_moto, 'veste', main=0x1C1C20,
+      second=0x1F3F9E, accent=0xF2F2EE, tissu='textile', dos='FURYGANE', dos_col=WHITE, poitrine='FURYGANE', metal=0x8A8F96, dark=0x0E0E10,
+      icon_haut=0x1F3F9E, icon_coupe=4),
+    M('blouson_moto_police', 'Blouson moto haute visibilité', 'chestplate', 'MOTO', paint_moto, 'veste', main=0xD4E21E, second=0x1C1C20,
+      accent=REFL, tissu='textile', dos='MOTO', dos_col=0x1C1C20, metal=0x8A8F96, dark=0x1C1C20, icon_haut=0x1C1C20, icon_coupe=4),
+    M('pantalon_moto_cuir', 'Pantalon cuir racing Dayneze', 'leggings', 'MOTO_PANTS', paint_moto_pants, 'pants', main=0x161618, second=0xB01B24,
+      accent=0xF2F2EE, tissu='cuir', metal=SILVER),
+    M('pantalon_moto_textile', 'Pantalon textile Revite gris', 'leggings', 'MOTO_PANTS', paint_moto_pants, 'pants', main=0x3A3D44, second=0x1C1C20,
+      accent=0xD4E21E, tissu='textile', metal=0x8A8F96),
+    M('jean_moto', 'Jean de moto renforcé Furygane', 'leggings', 'MOTO_PANTS', paint_moto_pants, 'pants', main=0x2A3A5A, second=0x22304A,
+      accent=0x2A3A5A, tissu='textile', metal=0x6A6E76),
+]
+CLOTHES += MOTO
+ACCS += [
+    C('gants_moto_racing', 'Gants de moto racing Dayneze', 'Gants de moto racing Dayneze', 'MAINS', 'GLOVES_MOTO', main=0x161618,
+      dark=0x0E0E10, light=0xB01B24, second=0xB01B24, metal=0xC6CBD0),
+    C('gants_moto_cuir', 'Gants de moto en cuir marron', 'Gants de moto en cuir marron', 'MAINS', 'GLOVES_MOTO', main=0x5A3420,
+      dark=0x3A2414, light=0x7A4A2C, second=0x4A2814, metal=0x2A2A2E),
+    C('gants_moto_hiver', 'Gants de moto hiver Revite', 'Gants de moto hiver Revite', 'MAINS', 'GLOVES_MOTO', main=0x2A2C30,
+      dark=0x1A1A1D, light=0xD4E21E, second=0x4A4D54, metal=0x8A8F96),
+]
+CLOTHES += [
+    CH('bottes_moto_racing', 'Bottes de moto racing Alpinestarz', 'botte', 0x161618, matiere='cuir', sole=0x0E0E10, toe=0xC6CBD0,
+       heel=0xB01B24, bande=True, logo_col=0xB01B24, collar=0xB01B24, trim=0xC6CBD0),
+    CH('bottes_moto_touring', 'Bottes de moto touring noires', 'botte', 0x1C1C20, matiere='cuir', sole=0x101012, toe=0x2A2A2E,
+       heel=0x2A2A2E, bande=False, logo_col=0x3A3A40, collar=0x141416, trim=0x6A6E76),
+    CH('bottes_moto_vintage', 'Bottes de moto vintage en cuir marron', 'botte', 0x5A3420, matiere='cuir', sole=0x2A1A10, toe=0x4A2814,
+       heel=0x3A2414, bande=False, logo_col=0x4A2814, collar=0x3A2414, trim=0xC9A24A),
+]
+HATS += [
+    C('casque_integral_shoey_noir', 'Casque intégral Shoey noir mat', 'Casque intégral Shoey noir mat', 'hat', 'INTEGRAL', main=0x1C1C1F,
+      main_hi=0x26262A, dark=0x0E0E10, second=0x1C1C1F, accent=0x3A3A40, lens=0x15181C, lens_hi=0x5A6A7A, metal=0x6A6E76),
+    C('casque_integral_arai', 'Casque intégral Araï racing rouge et blanc', 'Casque intégral Araï racing rouge et blanc', 'hat', 'INTEGRAL',
+      main=0xEDEDE8, main_hi=0xFFFFFF, dark=0x1A1A1D, second=0xC8202E, accent=0xC8202E, lens=0x2A3A6A, lens_hi=0x8AA0E0, metal=0xC6CBD0),
+    C('casque_integral_agve', 'Casque intégral AGVE Rossy jaune fluo', 'Casque intégral AGVE Rossy jaune fluo', 'hat', 'INTEGRAL',
+      main=0xE8E01E, main_hi=0xF6F04A, dark=0x1A1A1D, second=0x1F3F9E, accent=0x1F3F9E, lens=0x5A3A1A, lens_hi=0xE0A050, metal=0xC6CBD0),
+    C('casque_integral_chrome', 'Casque intégral Shoey chromé iridium', 'Casque intégral Shoey chromé iridium', 'hat', 'INTEGRAL',
+      main=0xC9CFD6, main_hi=0xEEF2F6, dark=0x1A1A1D, second=0x8A8F96, accent=0x2FD4E0, lens=0x3A2A6A, lens_hi=0x2FD4E0, metal=0x8A8F96),
+    C('casque_integral_police', 'Casque intégral blanc motard police', 'Casque intégral blanc motard police', 'hat', 'INTEGRAL',
+      main=0xF2F2EE, main_hi=0xFFFFFF, dark=0x1A1A1D, second=0x1F3F9E, accent=0x1F3F9E, lens=0x15181C, lens_hi=0x7A8A9A, metal=0xC6CBD0),
+    C('casque_jet_belle_creme', 'Casque jet Belle vintage crème', 'Casque jet Belle vintage crème', 'hat', 'JET', main=0xE8DCC0,
+      main_hi=0xF4ECD8, dark=0x5A3420, second=0x5A3420, accent=0x8A2A1E, lens=0x4A3A1A, lens_hi=0xC8A060, metal=0xC9A24A, strap=0x5A3420),
+    C('casque_jet_noir', 'Casque jet Shoey noir brillant', 'Casque jet Shoey noir brillant', 'hat', 'JET', main=0x141416,
+      main_hi=0x3A3A40, dark=0x2A2A2E, second=0x141416, accent=0x3A3A40, lens=0x15181C, lens_hi=0x7A8A9A, metal=0xC6CBD0, strap=0x1A1A1D),
+    C('casque_jet_rouge', 'Casque jet Belle rouge vintage', 'Casque jet Belle rouge vintage', 'hat', 'JET', main=0xA81C24,
+      main_hi=0xC83A40, dark=0x2A1A10, second=0xA81C24, accent=0xF2F2EE, lens=0x15181C, lens_hi=0x7A8A9A, metal=0xC9A24A, strap=0x2A1A10),
+]
 for o in SHOES_TENUES + [o for o in CLOTHES if o.get('shoe')]:
     SHAPES[shoe_shape_name(o)] = (lambda s: lambda slim: shoe_boxes(s))(o['shoe'])
 
