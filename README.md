@@ -82,3 +82,13 @@ envoyé aux autres clients (`Bags.withoutContents` dans `AccNet.Sync`).
   par tous les joueurs proches, et par soi en levant les yeux. Il faut 4 s pour replier la voile après l'atterrissage.
 - Mouvement appliqué chez le joueur ; le serveur valide l'ouverture (parachute porté, vraie chute), annule les dégâts de chute et diffuse la voile
   (`Parachute`, `client.ParachuteClient`). Réseau des accessoires : **protocole 6** (serveur ET clients).
+
+## Tenues police et pompiers plus réalistes (04/11)
+Aperçu : `apercu-tenues-rp.png`.
+- **Sapeurs-pompiers** : vestes de feu (marine et sable) et parka avec le grand lettrage « SAPEURS / POMPIERS » réfléchissant sur deux lignes
+  dans le dos, radio portative (antenne, cordon de micro) sur la poche poitrine. Tenue de caserne (polo, t-shirt) bleu marine sobre comme la vraie
+  tenue F1 : « SP » brodé côté cœur, drapeau tricolore sur la manche, plus de col rouge ni de flamme. Pantalon de caserne avec deux bandes
+  réfléchissantes en bas. Casquette : écusson blanc et rouge.
+- **Police** : radio d'épaule sur la poitrine (polos, blousons, parka) ; **ceinturon** complet (boucle, porte-menottes, étui d'arme sur la hanche,
+  porte-chargeur, bâton télescopique, pochette gants) sur le pantalon police et RAID, et sur le polo (rentré dans le pantalon).
+- Toujours des créations originales : aucun insigne officiel, seulement des mots (POLICE, SAPEURS POMPIERS) et le drapeau.

@@ -802,9 +802,69 @@ def back_text(t, o, y, default_scale=2):
     sc, sy = o.get('dos_scale', default_scale), o.get('dos_sy')
     gap, gl = (1, COMPACT) if sc == 2 else (None, None)      # 2 : lettrage serré pour tenir dans la partie visible du dos (~52 px)
     w = text_w(s, sc, gap, gl)
+    s2 = o.get('dos2')                        # seconde ligne (SAPEURS / POMPIERS, comme sur les vraies tenues)
+    h = 5 * (sy or sc) + (5 * (sy or sc) + 3 if s2 else 0)
     if o.get('dos_fond') is not None:        # bandeau sombre derrière le lettrage (tenue sable : argent peu lisible sur fond clair)
-        t.fill((260, y - 3, 316, y + 5 * (sy or sc) + 3), o['dos_fond'], noise=.02)
+        t.fill((260, y - 3, 316, y + h + 3), o['dos_fond'], noise=.02)
     text(t, 288 - w // 2, y, s, o.get('dos_col', REFL), sc, sy, gap, gl)
+    if s2:
+        text(t, 288 - text_w(s2, sc, gap, gl) // 2, y + 5 * (sy or sc) + 3, s2, o.get('dos_col', REFL), sc, sy, gap, gl)
+
+
+def radio(t, x, y):
+    """Radio portative clipsée sur la poitrine : boîtier noir, écran, antenne courte, cordon spiralé du micro vers l'épaule."""
+    def det(d):
+        d.rounded_rectangle((x, y, x + 10, y + 20), radius=2, fill=rgb(0x141416), outline=rgb(0x2C2C30))
+        d.rectangle((x + 2, y + 3, x + 8, y + 7), fill=rgb(0x3A6A5A))                   # écran
+        for k in range(3):
+            d.line([(x + 2, y + 10 + k * 3), (x + 8, y + 10 + k * 3)], fill=rgb(0x2C2C30))   # grille du haut-parleur
+        d.line([(x + 8, y), (x + 8, y - 7)], fill=rgb(0x0E0E10), width=2)              # antenne
+        for k in range(4):
+            d.arc((x - 2 - k * 3, y - 6 + k * 2, x + 2 - k * 3, y - 2 + k * 2), 0, 360, fill=rgb(0x141416))   # cordon spiralé
+    draw_on(t, det)
+
+
+def drapeau(t, keys=('O',), y=166):
+    """Écusson tricolore sur le haut des manches (bleu, blanc, rouge)."""
+    for k in keys:
+        x0, _, x1, _ = ARM[k]
+        cx = (x0 + x1) // 2 - 7
+        t.rect((cx - 1, y - 1, cx + 15, y + 9), 0x0E0E12)
+        t.rect((cx, y, cx + 5, y + 8), 0x1F3E9A); t.rect((cx + 5, y, cx + 10, y + 8), 0xF2F2EE); t.rect((cx + 10, y, cx + 14, y + 8), 0xC8202E)
+
+
+def ceinturon(t, metal=None, y=232):
+    """Ceinturon d'intervention noir : boucle, porte-menottes, étui d'arme sur la hanche, porte-chargeur, bâton, gants.
+    y = haut de la ceinture (232 sur le pantalon ; 242 sur le polo, qui recouvre les hanches du pantalon)."""
+    noir, e = 0x141416, 0x2C2C30
+    for k in TORSO:
+        x0, y0, x1, y1 = BODY[k]
+        t.fill((x0, y, x1, y + 9), noir, noise=.02, sheen=.12)
+    dy = y - 232
+    def det(d0):
+        class D:   # décale tout le dessin de dy pixels vers le bas
+            def rectangle(self, b, **k): d0.rectangle((b[0], b[1] + dy, b[2], min(256, b[3] + dy)), **k)
+            def ellipse(self, b, **k): d0.ellipse((b[0], b[1] + dy, b[2], b[3] + dy), **k)
+            def line(self, pts, **k): d0.line([(x, min(255, yy + dy)) for x, yy in pts], **k)
+        d = D()
+        d.rectangle((186, 232, 198, 241), fill=rgb(metal or 0x2A2A2E), outline=rgb(0x0E0E10))   # boucle
+        d.rectangle((200, 238, 214, 250), fill=rgb(noir), outline=rgb(e))                         # porte-chargeur
+        d.line([(207, 238), (207, 250)], fill=rgb(e))
+        d.rectangle((166, 238, 178, 248), fill=rgb(noir), outline=rgb(e))                         # porte-menottes
+        d.ellipse((169, 241, 175, 247), outline=rgb(SILVER_D))
+        d.rectangle((132, 236, 156, 256), fill=rgb(noir), outline=rgb(e))                         # étui d'arme (hanche droite)
+        d.rectangle((136, 236, 152, 242), fill=rgb(0x222226))                                     # crosse
+        d.rectangle((134, 244, 154, 248), fill=rgb(0x2C2C30))                                     # sangle de maintien
+        d.rectangle((228, 236, 236, 256), fill=rgb(0x1E1E22))                                     # bâton télescopique (hanche gauche)
+        d.rectangle((240, 238, 252, 250), fill=rgb(noir), outline=rgb(e))                         # pochette gants
+        d.rectangle((300, 238, 314, 250), fill=rgb(noir), outline=rgb(e))                         # porte-radio / lampe (dos)
+    draw_on(t, det)
+
+
+def paint_police_pants(o, t):
+    """Pantalon d'intervention police : cargo bleu nuit (ou noir RAID) avec le ceinturon complet porté par-dessus."""
+    paint_caserne_pants(o, t)
+    ceinturon(t, o.get('boucle'))
 
 
 def paint_feu(o, t):
@@ -836,7 +896,8 @@ def paint_feu(o, t):
             x0, y0, x1, y1 = ARM[k]
             d.line([(x0, 168), (x1, 168)], fill=sh(m, .78))                           # couture d'épaule
     draw_on(t, det)
-    back_text(t, o, 213)
+    radio(t, 207, 167)
+    back_text(t, o, 210)
 
 
 def paint_parka(o, t):
@@ -907,8 +968,10 @@ def paint_polo(o, t):
             d.polygon([(212, 168), (216, 176), (215, 184), (209, 184), (207, 177)], fill=rgb(0xC62828))
             d.polygon([(212, 174), (214, 179), (213, 183), (210, 183), (210, 179)], fill=rgb(0xF2B21E))
     draw_on(t, det)
+    if o.get('drapeau'):
+        drapeau(t, ('O',), 168)
     if o.get('emblème') == 'texte':
-        text(t, o.get('emblème_x', 204), 184, o['dos'], o.get('emblème_col', o.get('dos_col', WHITE)), 1)          # sous l'empiècement
+        text(t, o.get('emblème_x', 204), 184, o.get('emblème_txt', o['dos']), o.get('emblème_col', o.get('dos_col', WHITE)), 1)          # sous l'empiècement
     back_text(t, o, o.get('dos_y', 182))
 
 
@@ -1618,23 +1681,23 @@ def S(id, fr, piece, shape, paint, sil, **p):
 SECOURS = [
     # pompiers : tenue de feu
     S('veste_feu_marine', 'Veste de feu bleu marine', 'chestplate', 'VESTE_FEU', paint_feu, 'veste', main=NAVY_SP, accent=HIVIS, light=REFL,
-      second=0x2EC46A, dos='POMPIERS', icon_bandes=(6, 11)),
+      second=0x2EC46A, dos='SAPEURS', dos2='POMPIERS', dos_fond=sh(NAVY_SP, .7), icon_bandes=(6, 11)),
     S('veste_feu_sable', 'Veste de feu sable', 'chestplate', 'VESTE_FEU', paint_feu, 'veste', main=SABLE, accent=HIVIS, light=REFL,
-      second=0x2EC46A, dos='POMPIERS', dos_fond=0x2A2620, icon_bandes=(6, 11)),
+      second=0x2EC46A, dos='SAPEURS', dos2='POMPIERS', dos_fond=0x2A2620, icon_bandes=(6, 11)),
     S('surpantalon_feu_marine', 'Surpantalon de feu bleu marine', 'leggings', 'SURPANT', paint_overpants, 'pants', main=NAVY_SP, icon_bandes=(10,)),
     S('surpantalon_feu_sable', 'Surpantalon de feu sable', 'leggings', 'SURPANT', paint_overpants, 'pants', main=SABLE, icon_bandes=(10,)),
     S('bottes_feu', 'Bottes de feu', 'boots', 'SHOE_BOTTES_FEU', paint_shoe, 'bottes', main=0x1C1C20,
       shoe=dict(kind='botte', upper=0x1C1C20, matiere='caoutchouc', sole=0x101012, toe=0x2A2A2E, heel=0x2A2A2E, bande=True, logo_col=HIVIS,
                 collar=0x141416, trim=0x2A2A2E)),
-    S('parka_pompier', 'Parka pompier', 'chestplate', 'PARKA', paint_parka, 'veste', main=NAVY_SP, accent=HIVIS, light=REFL, second=0xC62828,
-      dos='POMPIERS', icon_bandes=(6, 10)),
+    S('parka_pompier', 'Parka pompier', 'chestplate', 'PARKA', paint_parka, 'veste', main=NAVY_SP, accent=HIVIS, light=REFL, second=sh(NAVY_SP, .7),
+      dos='SAPEURS', dos2='POMPIERS', icon_bandes=(6, 10)),
     # pompiers : tenue de caserne
-    S('polo_pompier', 'Polo de caserne pompier', 'chestplate', 'POLO2', paint_polo, 'polo', main=NAVY_SP, second=0xC62828, dos='POMPIERS',
-      dos_col=WHITE, emblème='flamme'),
-    S('tshirt_pompier', 'T-shirt de caserne pompier', 'chestplate', None, paint_polo, 'polo', main=NAVY_SP, tee=True, dos='POMPIERS',
-      dos_col=WHITE, emblème='flamme'),
+    S('polo_pompier', 'Polo de caserne pompier', 'chestplate', 'POLO2', paint_polo, 'polo', main=NAVY_SP, second=sh(NAVY_SP, .72), dos='SAPEURS',
+      dos2='POMPIERS', dos_col=WHITE, emblème='texte', emblème_txt='SP', emblème_x=207, emblème_col=WHITE, drapeau=True),
+    S('tshirt_pompier', 'T-shirt de caserne pompier', 'chestplate', None, paint_polo, 'polo', main=NAVY_SP, tee=True, dos='SAPEURS',
+      dos2='POMPIERS', dos_col=WHITE, emblème='texte', emblème_txt='SP', emblème_x=207, emblème_col=WHITE, drapeau=True),
     S('pantalon_pompier', 'Pantalon de caserne pompier', 'leggings', 'CARGO', paint_caserne_pants, 'pants', main=NAVY_SP, pants='cargo',
-      icon_bandes=(11,), icon_bande=REFL),
+      liserés=(218, 226), icon_bandes=(11,), icon_bande=REFL),
     # SAMU / ambulanciers
     S('veste_samu', 'Veste SAMU haute visibilité', 'chestplate', 'HIVIS', paint_hivis, 'veste', main=NAVY_SAMU, accent=HIVIS, light=REFL,
       dos='SAMU', dos_col=NAVY_SAMU, icon_haut=HIVIS, icon_coupe=7, icon_bandes=(7, 11), icon_bande=REFL),
@@ -1654,7 +1717,7 @@ HATS += [
       dark=0x1A1A1D, accent=HIVIS, second=0xA9AEB4, lens=0xC9A23A, lens_hi=0xF2DE9A, strap=0x1A1A1D, black=0x141416, white=0xFFF6D0),
     C('casque_f1_blanc', 'Casque F1 blanc', 'F1 firefighter helmet (white)', 'hat', 'F1', main=0xEEEEEA, main_hi=0xFAFAF7, light=0xD2D2CC,
       dark=0x1A1A1D, accent=HIVIS, second=0x2A2A2E, lens=0xC9A23A, lens_hi=0xF2DE9A, strap=0x1A1A1D, black=0x141416, white=0xFFF6D0),
-    C('casquette_pompier', 'Casquette pompier', 'Firefighter cap', 'hat', 'CAP', main=NAVY_SP, light=0xC62828, accent=0xF2B21E),
+    C('casquette_pompier', 'Casquette pompier', 'Firefighter cap', 'hat', 'CAP', main=NAVY_SP, light=WHITE, accent=0xC8202E),
     C('casquette_samu', 'Casquette SAMU', 'SAMU cap', 'hat', 'CAP', main=NAVY_SAMU, light=WHITE, accent=0x2B5FC8),
 ]
 ACCS += [
@@ -1747,6 +1810,10 @@ def paint_pn(paint):
         paint(o, t)
         logo_pn(t, 197, 177 if o['sil'] == 'polo' else 181, 26)
         logo_pn(t, 322, 166, 28)
+        if o.get('radio', True):
+            radio(t, 167, 168)                      # radio côté droit de la poitrine, micro vers l'épaule
+        if o['sil'] == 'polo':
+            ceinturon(t, o.get('metal_dark'), 244)  # le polo est rentré : le ceinturon se voit par-dessus
     return f
 
 
@@ -1769,12 +1836,12 @@ for g, gfr, n, col in GRADES_PN:
 POLICE += [
     P('parka_police', 'Parka Police', 'chestplate', 'PARKA', paint_pn(paint_parka), 'veste', accent=REFL, light=REFL, second=0x2B5FC8, hivis=None,
       dos='POLICE', icon_bandes=(6, 10), icon_bande=REFL),
-    P('pantalon_police', 'Pantalon Police', 'leggings', 'CARGO', paint_caserne_pants, 'pants', pants='cargo', liserés=()),
+    P('pantalon_police', 'Pantalon Police', 'leggings', 'CARGO', paint_police_pants, 'pants', pants='cargo', liserés=()),
     # RAID (unité d'intervention) : tenue noire, logo PN, RAID dans le dos ; casque et gilet RAID dans ZeroContact
     S('blouson_raid', "Blouson d'intervention RAID", 'chestplate', 'BLOUSON_RAID', paint_pn(paint_blouson_police), 'veste', main=RAID_NOIR,
       dos='RAID', dos_scale=3, dos_col=WHITE, dark=sh(RAID_NOIR, .7), main_hi=sh(RAID_NOIR, 1.25), metal=SILVER_D, metal_dark=SILVER_D,
       icon_bandes=(10,), icon_bande=REFL),
-    S('pantalon_raid', 'Pantalon RAID', 'leggings', 'CARGO', paint_caserne_pants, 'pants', main=RAID_NOIR, pants='cargo', liserés=()),
+    S('pantalon_raid', 'Pantalon RAID', 'leggings', 'CARGO', paint_police_pants, 'pants', main=RAID_NOIR, pants='cargo', liserés=()),
 ]
 SHAPES['BLOUSON_RAID'] = lambda slim: [ring(-0.9, 0.6, .5, 'main_hi')] + sym([('body', 1.6, -0.36, -1.0, 3.9, 0.0, 1.0, 'dark')])
 CLOTHES += POLICE
