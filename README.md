@@ -74,3 +74,11 @@ Accessoires de l'emplacement Dos = sacs de rangement (`Bags` : contenance par id
 Seul le sac porté s'ouvre (`BagMenu` / `client/BagScreen`, paquet `OpenBag`) : touche `BagClient.KEY` (B), bouton « Sac » de l'inventaire
 (`InventoryPanel`) et du menu Accessoires. Interdits dedans : sacs et objets non rangeables (boîtes de Shulker). Le contenu n'est jamais
 envoyé aux autres clients (`Bags.withoutContents` dans `AccNet.Sync`).
+
+## Parachute (04/11)
+- Objet `parachute` (accessoire, emplacement **Dos / sac**, sac olive avec poignée orange, généré par `tools/gen_streetwear.py`).
+- En chute libre (au moins 3 blocs, ni monté, ni dans l'eau, ni en élytres), **Espace ouvre la voile** : la chute est freinée, on plane dans
+  la direction du regard (plus vite en avançant), et on se pose **sans dégâts**. La voile (caissons orange et blancs, suspentes) est visible
+  par tous les joueurs proches, et par soi en levant les yeux. Il faut 4 s pour replier la voile après l'atterrissage.
+- Mouvement appliqué chez le joueur ; le serveur valide l'ouverture (parachute porté, vraie chute), annule les dégâts de chute et diffuse la voile
+  (`Parachute`, `client.ParachuteClient`). Réseau des accessoires : **protocole 6** (serveur ET clients).

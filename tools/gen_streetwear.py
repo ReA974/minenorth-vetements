@@ -758,6 +758,8 @@ ACCS = [
     C('sac_sport_bleu', 'Sac de sport bleu roi', 'Sac de sport bleu roi', 'DOS', 'DUFFEL', main=0x1F4FB0, light=WHITE, metal=SILVER),
     C('sac_rando_orange', 'Sac de randonnée orange', 'Sac de randonnée orange', 'DOS', 'HIKING', main=0xD2691E, second=0x3A3A40, light=0x7A9A5A, metal=SILVER),
     C('sac_rando_vert', 'Sac de randonnée vert forêt', 'Sac de randonnée vert forêt', 'DOS', 'HIKING', main=0x2F5A3A, second=0x6A6A70, light=0xC8A050, metal=SILVER),
+    # Parachute : se porte dans l'emplacement Dos, se déploie avec Espace en chute (voir Parachute.java)
+    C('parachute', 'Parachute', 'Parachute', 'DOS', 'HIKING', main=0x3E4A2C, second=0x1E1E22, light=0xE8601C, metal=SILVER),
     C('sac_luxe_vuiten', 'Sac à dos Louis Vuiten monogramme', 'Sac à dos Louis Vuiten monogramme', 'DOS', 'BACKPACK', main=0x6B4423, dark=0x4A2E18, light=0xC9A24A, metal=GOLD),
     # Réservés aux grades (avantage « vetementsVip » du mod VIP : 1 = VIP, 2 = VIP+), voir VipItems.java
     C('chaine_vip', 'Chaîne cubaine VIP violette', 'VIP purple cuban chain', 'COU', 'CUBAN', main=0xA048E0, metal=0xA048E0, metal_dark=0x5A2088),

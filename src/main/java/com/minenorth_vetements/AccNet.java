@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 public final class AccNet {
     private AccNet() {}
 
-    private static final String PROTOCOL = "5";
+    private static final String PROTOCOL = "6";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(MineNorthVetements.MODID, "acc"), () -> PROTOCOL, PROTOCOL::equals, PROTOCOL::equals);
 
@@ -26,6 +26,8 @@ public final class AccNet {
         CHANNEL.registerMessage(1, Remove.class, (m, b) -> {}, b -> new Remove(), Remove::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(2, OpenMenu.class, (m, b) -> {}, b -> new OpenMenu(), OpenMenu::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(3, OpenBag.class, (m, b) -> {}, b -> new OpenBag(), OpenBag::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(4, Parachute.Request.class, Parachute.Request::encode, Parachute.Request::decode, Parachute.Request::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(5, Parachute.State.class, Parachute.State::encode, Parachute.State::decode, Parachute.State::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
     /** Demande de retrait du dernier accessoire porté (clic droit dans le vide, accroupi, main vide) : le serveur revérifie tout. */

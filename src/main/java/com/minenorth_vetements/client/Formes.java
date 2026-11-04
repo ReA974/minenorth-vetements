@@ -139,6 +139,7 @@ final class Formes {
         SHAPE_OF.put("pantalon_raid", "CARGO");
         SHAPE_OF.put("pantalon_samu", "CARGO");
         SHAPE_OF.put("pantalon_travail", "GENOUILLERES");
+        SHAPE_OF.put("parachute", "HIKING");
         SHAPE_OF.put("parka_fourrure_kaki", "FOURRURE");
         SHAPE_OF.put("parka_fourrure_noire", "FOURRURE");
         SHAPE_OF.put("parka_police", "PARKA");
