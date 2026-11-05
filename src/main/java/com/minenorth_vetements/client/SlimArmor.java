@@ -32,7 +32,30 @@ public final class SlimArmor {
     private static final Map<String, HumanoidModel<?>> CACHE = new HashMap<>();
 
     public static boolean slim(LivingEntity e) {
-        return e instanceof AbstractClientPlayer p && "slim".equals(p.getModelName());
+        if (!(e instanceof AbstractClientPlayer p)) return false;
+        Boolean drawn = identitySlim(p);   // le corps est dessiné par le mod Identité : manches et accessoires suivent le même bras
+        return drawn != null ? drawn : "slim".equals(p.getModelName());
+    }
+
+    private static java.lang.reflect.Method identity;
+    private static boolean identityTried;
+
+    private static Boolean identitySlim(AbstractClientPlayer p) {
+        if (!identityTried) {
+            identityTried = true;
+            try {
+                if (net.minecraftforge.fml.ModList.get().isLoaded("minenorthidentite"))
+                    identity = Class.forName("fr.minenorth.identite.client.skin.PlayerSkinEvents").getMethod("slimArms", java.util.UUID.class);
+            } catch (ReflectiveOperationException | LinkageError ex) {
+                identity = null;
+            }
+        }
+        if (identity == null) return null;
+        try {
+            return (Boolean) identity.invoke(null, p.getUUID());
+        } catch (ReflectiveOperationException ex) {
+            return null;
+        }
     }
 
     /** Épaisseur du haut porté (0 si aucun vêtement du mod), pour poser les accessoires par-dessus. */
